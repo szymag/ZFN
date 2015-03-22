@@ -60,26 +60,28 @@ class SiecKwadratowa(WektorySieci):
 
     def __init__(self, dlugosc_a1, dlugosc_a2, kat, zakres_1, zakres_2):
         WektorySieci.__init__(self, dlugosc_a1, dlugosc_a2, kat, zakres_1, zakres_2)
-        self.gx = self.lista_wektorow_b1()
-        self.gy = self.lista_wektorow_b2()
 
 
     def rdzen_kwadratowy(self):
         s = self.s
         d = self.d
+        gx = self.lista_wektorow_b1()
+        gy = self.lista_wektorow_b2()
+        MoA = self.MoA
+        MoB = self.MoB
         wsp = []
-        for ii in range(len(self.gx)):
+        for ii in range(len(gx)):
             temp = []
-            for jj in range(len(self.gy)):
-                wspolczynnik_fouriera = (self.MoA - self.MoB) * d ** 2 / s * \
-                                        np.sinc(np.array(self.gx[ii][0] * d / 2 / math.pi)) * np.sinc(
-                    np.array(self.gy[jj][1] * d / 2 / math.pi))
-                temp.append([self.gx[ii][0], self.gy[jj][1], wspolczynnik_fouriera])
+            for jj in range(len(gy)):
+                wspolczynnik_fouriera = (MoA - MoB) * d ** 2 / s * \
+                                        np.sinc(np.array(gx[ii][0] * d / 2 / math.pi)) * np.sinc(
+                    np.array(gy[jj][1] * d / 2 / math.pi))
+                temp.append([gx[ii][0], gy[jj][1], wspolczynnik_fouriera])
             wsp.append(temp)
-        wsp[int(len(self.gx) / 2)][int(len(self.gy) / 2)][2] = self.MoA * (d ** 2 / s) + self.MoB * (1 - d ** 2 / s)
+        wsp[int(len(gx) / 2)][int(len(gy) / 2)][2] = MoA * (d ** 2 / s) + MoB * (1 - d ** 2 / s)
         return wsp
 
-    def rdzen_okragly(self, funkcja):
+    def rdzen_okragly(self):
         s = self.s
         gx = self.lista_wektorow_b1()
         gy = self.lista_wektorow_b2()
@@ -87,10 +89,8 @@ class SiecKwadratowa(WektorySieci):
         MoB = self.MoB
         R = self.R
         wsp = []
-        # wsp = [ [funkcja(jj) for jj in range(len(gy))] for i in range(len(gx))]
         for ii in range(len(gx)):
             temp = []
-
             for jj in range(len(gy)):
                 wspolczynnik_fouriera = 2 * (MoA - MoB) * math.pi * R ** 2 / s * \
                                         scipy.special.j1(math.sqrt(gx[ii][0] ** 2 + gy[jj][1] ** 2) * R) / (
