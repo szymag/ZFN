@@ -61,47 +61,47 @@ class SiecKwadratowa(WektorySieci):
     def __init__(self, dlugosc_a1, dlugosc_a2, kat, zakres_1, zakres_2):
         WektorySieci.__init__(self, dlugosc_a1, dlugosc_a2, kat, zakres_1, zakres_2)
 
+    def wspolczynnik(self, k, liczba1, liczba2):
+
+        if k == 1:
+            wspolczynnik_fouriera = (self.MoA - self.MoB) * self.d ** 2 / self.s * \
+                                    np.sinc(np.array(liczba1 * self.d / 2 / math.pi)) * \
+                                    np.sinc(np.array(liczba2 * self.d / 2 / math.pi))
+        else:
+            wspolczynnik_fouriera = 2 * (self.MoA - self.MoB) * math.pi * self.R ** 2 / self.s * \
+                                    scipy.special.j1(math.sqrt(liczba1 ** 2 + liczba2 ** 2) * self.R) \
+                                    / (math.sqrt(liczba1 ** 2 + liczba2 ** 2) * self.R)
+        return wspolczynnik_fouriera
 
     def rdzen_kwadratowy(self):
-        s = self.s
-        d = self.d
         gx = self.lista_wektorow_b1()
         gy = self.lista_wektorow_b2()
-        MoA = self.MoA
-        MoB = self.MoB
         wsp = []
         for ii in range(len(gx)):
             temp = []
             for jj in range(len(gy)):
-                wspolczynnik_fouriera = (MoA - MoB) * d ** 2 / s * \
-                                        np.sinc(np.array(gx[ii][0] * d / 2 / math.pi)) * np.sinc(
-                    np.array(gy[jj][1] * d / 2 / math.pi))
+                wspolczynnik_fouriera = self.wspolczynnik(1, gx[ii][0], gy[jj][1])
                 temp.append([gx[ii][0], gy[jj][1], wspolczynnik_fouriera])
             wsp.append(temp)
-        wsp[int(len(gx) / 2)][int(len(gy) / 2)][2] = MoA * (d ** 2 / s) + MoB * (1 - d ** 2 / s)
+        wsp[int(len(gx) / 2)][int(len(gy) / 2)][2] = self.MoA * (self.d ** 2 / self.s) \
+                                                     + self.MoB * (1 - self.d ** 2 / self.s)
         return wsp
 
     def rdzen_okragly(self):
-        s = self.s
         gx = self.lista_wektorow_b1()
         gy = self.lista_wektorow_b2()
-        MoA = self.MoA
-        MoB = self.MoB
-        R = self.R
         wsp = []
         for ii in range(len(gx)):
             temp = []
             for jj in range(len(gy)):
-                wspolczynnik_fouriera = 2 * (MoA - MoB) * math.pi * R ** 2 / s * \
-                                        scipy.special.j1(math.sqrt(gx[ii][0] ** 2 + gy[jj][1] ** 2) * R) / (
-                                            math.sqrt(gx[ii][0] ** 2 + gy[jj][1] ** 2) * R)
+                wspolczynnik_fouriera = self.wspolczynnik(2, gx[ii][0], gy[jj][1])
                 temp.append([gx[ii][0], gy[jj][1], wspolczynnik_fouriera])
             wsp.append(temp)
-        wsp[int(len(gx) / 2)][int(len(gy) / 2)][2] = (MoA - MoB) * math.pi * R ** 2 / s + MoB
+        wsp[int(len(gx) / 2)][int(len(gy) / 2)][2] = (self.MoA - self.MoB) * math.pi * self.R ** 2 / self.s + self.MoB
         return wsp
 
 
 q = SiecKwadratowa(10, 10, 90, 5, 5)
-print(q.rdzen_okragly())
+# print(q.rdzen_okragly())
 print("")
-print(q.rdzen_kwadratowy())
+print(q.rdzen_okragly())
