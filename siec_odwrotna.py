@@ -7,24 +7,45 @@ import scipy.special
 
 
 class SiatkaPunktow(object):
+    """
+    Klasa odpowiadająca za stworzenie punktów, w których obliczane są wartości magnetyzacji.
+    """
+
     def __init__(self, zakres_x, zakres_y, krok):
+        """
+        zakres_x: opisuje dla jakiego zakresu na osi x zoastanie obliczona magetyzacja. Przy czy zakres wynosi od
+        -zakres do zakres
+        zakres_y: opisuje dla jakiego zakresu na osi y zoastanie obliczona magetyzacja. Przy czy zakres wynosi od
+        -zakres do zakres
+        krok: Zmienna dyskretyzująca przedział, dzieląca <-zakres, zakres> na 2*zakres+1 przedziałów. Dla każdego
+        zostanie policzona magnetyzacja.
+        """
         self.zakres_x = zakres_x
         self.zakres_y = zakres_y
         self.krok = krok
 
-    def generowanie_punktow(self, liczba):
+    def generowanie_przedzialow(self, param):
+        """
+        Funkcja odpowiadająca za tworzenie listy, tzn. zakresu sieci. 'Param' odpowiada tutaj za współrzędną x lub y.
+        Dpouszcza się sieci kwadratowe.
+        :retrun: zostaje zwrócona lista zawierająca 2*zakres+1 wartości odległych o 'krok od siebie
+        """
         temp = 0
         lista = []
-        while liczba >= temp:
+        while param >= temp:
             lista.extend([temp])
             temp += self.krok
         return lista
 
     def siatka(self):
-
-        tempx = self.generowanie_punktow(self.zakres_x)
-        tempy = self.generowanie_punktow(self.zakres_y)
-
+        """
+        Funkcja odpowiadająca za towrzenie tablicy, listy list.
+        :return: zostaje zwrócona tablica, której wymiary wynoszą poziomo -zakres_x, zakres_x,
+        a pionowo -zakres_y, zakres_y. odległości pomiędzy sąsiadami wynoszą 'krok'. Zawiera dodatkowe
+        miejsce dla wartości magnetyzacji w danym punkcie.
+        """
+        tempx = self.generowanie_przedzialow(self.zakres_x)
+        tempy = self.generowanie_przedzialow(self.zakres_y)
         tablica = []
         for ii in tempx:
             temp = []
@@ -123,6 +144,16 @@ class SiecKwadratowa(WektorySieci):
         wsp[int(len(gx) / 2)][int(len(gy) / 2)][2] = \
             (self.MoA - self.MoB) * math.pi * self.R ** 2 / self.s + self.MoB
         return wsp
+
+
+class siecTrojkatna(WektorySieci):
+    d = 6
+    a = 10
+    s = a ** 2
+    MoA = 10
+    MoB = 4
+    R = 3
+    pass
 
 
 class Magnetyzacja(object):
