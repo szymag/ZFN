@@ -22,16 +22,16 @@ class Rdzen:
                                     / (math.sqrt(liczba1 ** 2 + liczba2 ** 2) * R)
         return wspolczynnik_fouriera
 
-    def wylicz_wspolczynniki_fouriera(self, MoA, MoB, d, s, R):
+    def wylicz_wspolczynniki_fouriera(self, MoA, MoB, d, s, R, k):
         wsp = []
         for ii in range(len(self.gx)):
             temp = []
             for jj in range(len(self.gy)):
-                wspolczynnik_fouriera = self.wspolczynnik_fouriera(1, self.gx[ii][0], self.gy[jj][1], MoA, MoB, d, s, R)
+                wspolczynnik_fouriera = self.wspolczynnik_fouriera(k, self.gx[ii][0], self.gy[jj][1], MoA, MoB, d, s, R)
                 temp.append([self.gx[ii][0], self.gy[jj][1], wspolczynnik_fouriera])
             wsp.append(temp)
         return wsp
 
-    def wylicz_wspolczynniki(self, MoA, MoB, d, s, R):
+    def wylicz_wspolczynniki(self, MoA, MoB, d, s, R, k):
         """ metoda zdefiniowana w klasach pochodnych """
         pass

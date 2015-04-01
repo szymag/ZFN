@@ -3,7 +3,6 @@ from cmath import exp
 
 import numpy as np
 import scipy.special
-
 import matplotlib.pyplot as plt
 
 
@@ -113,12 +112,12 @@ def dane_do_wykresu(krok, ile_wektorow_x, ile_wektorow_y):
     Y = np.arange(0, a / 2, krok)
     X, Y = np.meshgrid(X, Y)
     Z = []
-    for ii in range(len(X)):
-        temp = []
-        for jj in range(len(Y)):
-            temp.append(magnetyzacja_w_punkcie(X[ii][jj], Y[ii][jj], ile_wektorow_x, ile_wektorow_y))
-        Z.append(temp)
-    return (X, Y, np.array(Z))
+    # for ii in range(len(X)):
+    #    temp = []
+    #    for jj in range(len(Y)):
+    #        temp.append(magnetyzacja_w_punkcie(X[ii][jj], Y[ii][jj], ile_wektorow_x, ile_wektorow_y))
+    #    Z.append(temp)
+    return Y
 
 
 def wykres_pcolor(krok, ile_wektorow_x, ile_wektorow_y):
@@ -149,4 +148,5 @@ MoA = 10
 MoB = 4
 R = 3
 
-wykres_pcolor(1, 2, 2)
+# wykres_pcolor(0.1, 10, 10)
+print(dane_do_wykresu(1, 5, 5))

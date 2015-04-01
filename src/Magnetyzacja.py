@@ -26,9 +26,9 @@ class Magnetyzacja(object):
 
     def magnetyzacja_dla_sieci(self, k):
         if k == 1:
-            return self.magnetyzacja(self.siec.wylicz_wspolczynniki('okragly'))
-        elif k == 2:
             return self.magnetyzacja(self.siec.wylicz_wspolczynniki('kwadratowy'))
+        elif k == 2:
+            return self.magnetyzacja(self.siec.wylicz_wspolczynniki('okragly'))
         elif k == 3:
             return None
         elif k == 4:
