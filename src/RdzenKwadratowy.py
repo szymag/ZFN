@@ -9,7 +9,7 @@ class RdzenKwadratowy(Rdzen):
 
     def wylicz_wspolczynniki(self, MoA, MoB, d, s, R, k):
         """ metoda zdefiniowana w klasach pochodnych """
-        wsp = self.wylicz_wspolczynniki_fouriera(MoA, MoB, d, s, R, k)
+        wsp = self.wspolczynniki_fouriera_tablica(MoA, MoB, d, s, R, k)
         wsp[int(len(self.gx) / 2)][int(len(self.gy) / 2)][2] = \
             MoA * (d ** 2 / s) + MoB * (1 - d ** 2 / s)
         return wsp

@@ -7,9 +7,9 @@ from src.RdzenKwadratowy import RdzenKwadratowy
 
 
 class SiecKwadratowa(Siec):
-    def __init__(self, dlugosc_a1, dlugosc_a2, kat, zakres_1, zakres_2):
+    def __init__(self, dlugosc_a1, dlugosc_a2, kat, zakres_wektorow_gx, zakres_wektorow_gy):
         Siec.__init__(self)
-        self.wektory_sieci = WektorySieci(dlugosc_a1, dlugosc_a2, kat, zakres_1, zakres_2)
+        self.wektory_sieci = WektorySieci(dlugosc_a1, dlugosc_a2, kat, zakres_wektorow_gx, zakres_wektorow_gy)
         self.rdzen_okragly = RdzenOkragly(self.wektory_sieci.lista_wektorow_b1(),
             self.wektory_sieci.lista_wektorow_b2())
         self.rdzen_kwadratowy = RdzenKwadratowy(self.wektory_sieci.lista_wektorow_b1(),
