@@ -20,4 +20,3 @@ class SiecKwadratowa(Siec):
             return self.rdzen_okragly.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.r, 'okragly')
         elif rodzaj == 'kwadratowy':
             return self.rdzen_kwadratowy.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.r, 'kwadratowy')
-
