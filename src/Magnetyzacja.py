@@ -4,9 +4,9 @@ import cmath
 
 
 class Magnetyzacja(object):
-    def __init__(self, siatka_punktow, siec_kwadratowa):
+    def __init__(self, siatka_punktow, siec):
         self.siatka_punktow = siatka_punktow
-        self.siec = siec_kwadratowa
+        self.siec = siec
 
     def magnetyzacja_w_punkcie(self, parametry, x, y):
         temp = 0
@@ -24,14 +24,10 @@ class Magnetyzacja(object):
                     self.magnetyzacja_w_punkcie(parametry, table[ii][jj][0], table[ii][jj][1])
         return table
 
-    def magnetyzacja_dla_sieci(self, typ):
-        if typ == 'kwadratowy':
+    def magnetyzacja_dla_sieci(self, typ_rdzenia):
+        if typ_rdzenia == 'kwadratowy':
             return self.magnetyzacja(self.siec.wylicz_wspolczynniki('kwadratowy'))
-        elif typ == 'okragly':
+        elif typ_rdzenia == 'okragly':
             return self.magnetyzacja(self.siec.wylicz_wspolczynniki('okragly'))
-        elif typ == 3:
-            return None
-        elif typ == 4:
-            return None
         else:
             return None

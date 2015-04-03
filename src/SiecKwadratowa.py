@@ -7,16 +7,17 @@ from src.RdzenKwadratowy import RdzenKwadratowy
 
 
 class SiecKwadratowa(Siec):
-    def __init__(self, dlugosc_a1, dlugosc_a2, kat, zakres_wektorow_gx, zakres_wektorow_gy):
-        Siec.__init__(self)
-        self.wektory_sieci = WektorySieci(dlugosc_a1, dlugosc_a2, kat, zakres_wektorow_gx, zakres_wektorow_gy)
+    def __init__(self, dlugosc_a1, dlugosc_a2, zakres_wektorow_gx, zakres_wektorow_gy):
+        Siec.__init__(self, typ_sieci='kwadratowa')
+        self.wektory_sieci = WektorySieci(dlugosc_a1, dlugosc_a2, 90, zakres_wektorow_gx, zakres_wektorow_gy)
         self.rdzen_okragly = RdzenOkragly(self.wektory_sieci.lista_wektorow_b1(),
-            self.wektory_sieci.lista_wektorow_b2())
+            self.wektory_sieci.lista_wektorow_b2(), typ_sieci='kwadratowa')
         self.rdzen_kwadratowy = RdzenKwadratowy(self.wektory_sieci.lista_wektorow_b1(),
-            self.wektory_sieci.lista_wektorow_b2())
+            self.wektory_sieci.lista_wektorow_b2(), typ_sieci='kwadratowa')
 
-    def wylicz_wspolczynniki(self, rodzaj):
-        if rodzaj == 'okragly':
-            return self.rdzen_okragly.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.R, 'okragly')
-        elif rodzaj == 'kwadratowy':
-            return self.rdzen_kwadratowy.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.R, 'kwadratowy')
+
+    def wylicz_wspolczynniki(self, typ_rdzenia):
+        if typ_rdzenia == 'okragly':
+            return self.rdzen_okragly.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.r, 'kwadratowa')
+        elif typ_rdzenia == 'kwadratowy':
+            return self.rdzen_kwadratowy.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.r, 'kwadratowa')

@@ -18,9 +18,10 @@ class Rdzen:
         self.gx = lista_wektorow_b1[:]
         self.gy = lista_wektorow_b2[:]
 
-    def wspolczynniki_fouriera(self, typ, wektor_g1, wektor_g2, MoA, MoB, d, s, r):
+
+    def wspolczynniki_fouriera(self, typ_rdzenia, wektor_g1, wektor_g2, MoA, MoB, d, s, r):
         """
-        :param typ: oznacza, jaki typ rdzenia zostaje wprowadzony.
+        :param typ_rdzenia: oznacza, jaki typ rdzenia zostaje wprowadzony.
         dla typ = 'kwadratowy': rdzeń jest kwadratowy
         dla typ = 'okragly': rdzeń jest okrągły
         :param wektor_g1:
@@ -33,17 +34,17 @@ class Rdzen:
         :return: zwracany jest współczynnik fouriera
         """
         global wspolczynnik_fouriera
-        if typ == 'kwadratowy':
+        if typ_rdzenia == 'kwadratowy':
             wspolczynnik_fouriera = (MoA - MoB) * d ** 2 / s * \
                                     np.sinc(np.array(wektor_g1 * d / 2 / math.pi)) * \
                                     np.sinc(np.array(wektor_g2 * d / 2 / math.pi))
-        elif typ == 'okragly':
+        elif typ_rdzenia == 'okragly':
             wspolczynnik_fouriera = 2 * (MoA - MoB) * math.pi * r ** 2 / s * \
                                     scipy.special.j1(math.sqrt(wektor_g1 ** 2 + wektor_g2 ** 2) * r) \
                                     / (math.sqrt(wektor_g1 ** 2 + wektor_g2 ** 2 + (10 ** -10)) * r)
         return wspolczynnik_fouriera
 
-    def wspolczynniki_fouriera_tablica(self, MoA, MoB, d, s, r, typ):
+    def wspolczynniki_fouriera_tablica(self, MoA, MoB, d, s, r, typ_rdzenia):
         """
         :param MoA: magnetyzacja rdzenia
         :param MoB: magnetyzacja wypełnienia
@@ -56,12 +57,12 @@ class Rdzen:
         for ii in range(len(self.gx)):
             temp = []
             for jj in range(len(self.gy)):
-                wspolczynnik_fouriera = self.wspolczynniki_fouriera(typ, self.gx[ii][0], self.gy[jj][1], MoA, MoB, d, s,
-                                                                    r)
+                wspolczynnik_fouriera = self.wspolczynniki_fouriera(typ_rdzenia, self.gx[ii][0], self.gy[jj][1],
+                                                                    MoA, MoB, d, s, r)
                 temp.append([self.gx[ii][0], self.gy[jj][1], wspolczynnik_fouriera])
             wsp.append(temp)
         return wsp
 
-    def wylicz_wspolczynniki(self, MoA, MoB, d, s, R, typ):
+    def wylicz_wspolczynniki(self, MoA, MoB, d, s, r, typ_sieci):
         """ metoda zdefiniowana w klasach pochodnych """
         pass
