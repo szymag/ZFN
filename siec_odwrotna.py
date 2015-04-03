@@ -12,6 +12,6 @@ siec = SiecKwadratowa(10, 10, 90, 11, 11)
 w = Magnetyzacja(siatka, siec)
 # print(w.magnetyzacja_dla_sieci(1))
 
-r = Wykresy(w.magnetyzacja_dla_sieci('okragly'))
+r = Wykresy(w.magnetyzacja_dla_sieci('kwadratowy'))
 
 r.wykres_pcolor()

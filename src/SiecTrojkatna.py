@@ -10,6 +10,6 @@ class SiecTrojkatna(Siec):
 
     def wylicz_wspolczynniki(self, rodzaj):
         if rodzaj == 'okragly':
-            return self.rdzen_okragly.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.R)
+            return self.rdzen_okragly.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.r)
         elif rodzaj == 'kwadratowy':
-            return self.rdzen_kwadratowy.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.R)
+            return self.rdzen_kwadratowy.wylicz_wspolczynniki(self.MoA, self.MoB, self.d, self.s, self.r)

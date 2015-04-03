@@ -7,7 +7,7 @@ class Siec:
     s = a ** 2
     MoA = 10
     MoB = 4
-    R = 3
+    r = 3
 
     def __init__(self):
         pass
