@@ -24,14 +24,14 @@ class Magnetyzacja(object):
                     self.magnetyzacja_w_punkcie(parametry, table[ii][jj][0], table[ii][jj][1])
         return table
 
-    def magnetyzacja_dla_sieci(self, k):
-        if k == 1:
+    def magnetyzacja_dla_sieci(self, typ):
+        if typ == 'kwadratowy':
             return self.magnetyzacja(self.siec.wylicz_wspolczynniki('kwadratowy'))
-        elif k == 2:
+        elif typ == 'okragly':
             return self.magnetyzacja(self.siec.wylicz_wspolczynniki('okragly'))
-        elif k == 3:
+        elif typ == 3:
             return None
-        elif k == 4:
+        elif typ == 4:
             return None
         else:
             return None
