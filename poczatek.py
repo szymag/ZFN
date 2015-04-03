@@ -28,7 +28,7 @@ def wspolczynniki(zakres_x, zakres_y):
     return wspolczynniki_wektor
 
 
-def wspolczynniki_rdzen_okragly(zakres_x, zakres_y):
+def wspolczynniki_rdzen_okrogly(zakres_x, zakres_y):
     """
     :type zakres_x: współrzędna x-owa wektora G w kwadratowej sieci odwrotnej
     :type zakres_y: współrzędna y-owa wektora G w kwadratowej sieci odwrotnej
@@ -56,7 +56,7 @@ def magnetyzacja_w_punkcie(wspolzedna_x, wspolzedna_y, ilosc_wektorow_x, ilosc_w
     :type wspolzedna_y: współrzędna y-owa, dla której obliczana jest magnetyzacja
     """
     temp = 0
-    wspolczynniki_wektor = wspolczynniki_rdzen_okragly(ilosc_wektorow_x, ilosc_wektorow_y)
+    wspolczynniki_wektor = wspolczynniki_rdzen_okrogly(ilosc_wektorow_x, ilosc_wektorow_y)
     for ii in range(len(wspolczynniki_wektor)):
         for jj in range(len(wspolczynniki_wektor)):
             temp += (wspolczynniki_wektor[ii][jj][2] * (exp(complex(1j) * (
@@ -148,6 +148,4 @@ MoA = 10
 MoB = 4
 R = 3
 
-print(wspolczynniki_rdzen_okragly(5, 5))
-
-# wykres_pcolor(1, 2, 2)
+wykres_pcolor(1, 2, 2)
