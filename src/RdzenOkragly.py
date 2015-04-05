@@ -20,4 +20,7 @@ class RdzenOkragly(Rdzen):
                 (MoA - MoB) * math.pi * r ** 2 / s + MoB
             return wsp
         elif typ_sieci == 'trojkatna':
-            pass
+            wsp = self.wspolczynniki_fouriera_tablica(MoA, MoB, d, s, r, 'okragly')
+            wsp[int(len(self.gx) / 2)][int(len(self.gy) / 2)][2] = \
+                (MoA - MoB) * math.pi * r ** 2 / s + MoB
+            return wsp

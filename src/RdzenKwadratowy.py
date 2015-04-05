@@ -18,4 +18,7 @@ class RdzenKwadratowy(Rdzen):
                 MoA * (d ** 2 / s) + MoB * (1 - d ** 2 / s)
             return wsp
         elif typ_sieci == 'trojkatna':
-            pass
+            wsp = self.wspolczynniki_fouriera_tablica(MoA, MoB, d, s, r, 'kwadratowy')
+            wsp[int(len(self.gx) / 2)][int(len(self.gy) / 2)][2] = \
+                MoA * (d ** 2 / s) + MoB * (1 - d ** 2 / s)
+            return wsp
