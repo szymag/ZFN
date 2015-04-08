@@ -12,5 +12,5 @@ class Siec:
     def __init__(self, typ_sieci):
         self.typ_sieci = typ_sieci
 
-    def wylicz_wspolczynniki(self, typ_rdzenia):
+    def wylicz_wspolczynniki_fouriera(self, typ_rdzenia):
         pass

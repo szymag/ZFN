@@ -26,8 +26,8 @@ class Magnetyzacja(object):
 
     def magnetyzacja_dla_sieci(self, typ_rdzenia):
         if typ_rdzenia == 'kwadratowy':
-            return self.magnetyzacja(self.siec.wylicz_wspolczynniki('kwadratowy'))
+            return self.magnetyzacja(self.siec.wylicz_wspolczynniki_fouriera('kwadratowy'))
         elif typ_rdzenia == 'okragly':
-            return self.magnetyzacja(self.siec.wylicz_wspolczynniki('okragly'))
+            return self.magnetyzacja(self.siec.wylicz_wspolczynniki_fouriera('okragly'))
         else:
             return None
