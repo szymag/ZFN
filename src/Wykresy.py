@@ -1,7 +1,6 @@
 __author__ = 'szymag'
 
-import numpy as np
-import matplotlib.pyplot as plt
+
 
 
 class Wykresy:
@@ -32,26 +31,12 @@ class Wykresy:
         return table
 
     def dane_do_wykresu(self):
-        """
-        :return: zwraca krotkę, zawierającą wszystkie tablice w typie array, wygenerowane przez metodę 'funkcja'
-        """
-        return (np.array(self.funkcja(0)), np.array(self.funkcja(1)), np.array(self.funkcja(2)))
+        pass
 
     def wykres_pcolor(self):
-        """
-        :return: rysowany jestwykres na podstawie danych otrzymanych z metody 'dane_do_wykresu'
-        """
-        dane = self.dane_do_wykresu()
-        x = dane[0]
-        y = dane[1]
-        z = dane[2]
+        pass
 
-        z_min, z_max = np.abs(z).min(), np.abs(z).max()
+    def plot(self):
+        pass
 
-        plt.pcolor(x, y, z, cmap='RdBu', vmin=z_min, vmax=z_max)
-        plt.title('magnetyzacja')
-        plt.axis([x.min(), x.max(), y.min(), y.max()])
-        plt.colorbar()
-
-        return plt.show()
 

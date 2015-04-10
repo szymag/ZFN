@@ -4,15 +4,15 @@ from src.Magnetyzacja import Magnetyzacja
 
 from src.SiecTrojkatna import SiecTrojkatna
 from src.SiatkaPunktow import SiatkaPunktow
-from src.Wykresy import Wykresy
+from src.Plot import Plot
 
-
-siatka = SiatkaPunktow(5, 5, 1)
-siec = SiecTrojkatna(2, 2, 8, 8)
+siatka = SiatkaPunktow(5, 5, 0.07)
+siec = SiecTrojkatna(10, 10, 18, 18)
 w = Magnetyzacja(siatka, siec)
 
-r = Wykresy(w.magnetyzacja_dla_sieci('okragly'))
+r = Plot(w.magnetyzacja_dla_sieci('okragly'))
 
-r.wykres_pcolor()
+# r.wykres_pcolor()
 
+r.plot()
 
