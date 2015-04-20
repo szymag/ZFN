@@ -1,18 +1,20 @@
 __author__ = 'szymag'
 
-from pylab import *
-
-from src.Wykresy import Wykresy
+import matplotlib.pyplot as plt
 
 
-class Plot(Wykresy):
-    def __init__(self, magnetyzacja_dla_sieci):
-        Wykresy.__init__(self, magnetyzacja_dla_sieci)
-        self.magnetyzacja_dla_sieci = magnetyzacja_dla_sieci
+class Plot:
+    def __init__(self, magnetyzacja_pod_plot):
+        self.magnetyzacja_pod_plot = magnetyzacja_pod_plot
 
-    def dane_do_wykresu(self):
-        return (Wykresy.funkcja(self, 1)[0], Wykresy.funkcja(self, 2)[0])
+    def generowanie_danych_plot(self, k):
+        list = []
+        for ii in range(len(self.magnetyzacja_pod_plot[0])):
+            list.append(self.magnetyzacja_pod_plot[0][ii][k])
+        return list
 
     def plot(self):
-        plot(self.dane_do_wykresu()[0], self.dane_do_wykresu()[1])
-        show()
+        for ii in range(len(self.magnetyzacja_pod_plot)):
+            plt.plot(self.generowanie_danych_plot(1), self.generowanie_danych_plot(2))
+        plt.show()
+
