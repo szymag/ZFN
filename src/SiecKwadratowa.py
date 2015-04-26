@@ -15,7 +15,6 @@ class SiecKwadratowa(Siec):
         self.rdzen_kwadratowy = RdzenKwadratowyKwadratowa(self.wektory_sieci.lista_wektorow_b1(),
             self.wektory_sieci.lista_wektorow_b2())
 
-
     def wylicz_wspolczynniki_fouriera(self, typ_rdzenia):
         if typ_rdzenia == 'okragly':
             return self.rdzen_okragly.wylicz_wspolczynniki_fouriera(self.MoA, self.MoB, self.d, self.s, self.r)
