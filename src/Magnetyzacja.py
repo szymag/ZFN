@@ -11,8 +11,8 @@ class Magnetyzacja(object):
     def magnetyzacja_w_punkcie(self, parametry, x, y):
         temp = 0
         for ii, jj in product(range(len(parametry)), range(len(parametry))):
-                temp += (parametry[ii][jj][2]
-                         * (cmath.exp(complex(1j) * (parametry[ii][jj][0] * x + (parametry[ii][jj][1] * y))))).real
+            temp += (parametry[ii][jj][2]
+                     * (cmath.exp(complex(1j) * (parametry[ii][jj][0] * x + (parametry[ii][jj][1] * y))))).real
         return temp
 
     def magnetyzacja(self, parametry):

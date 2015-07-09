@@ -1,17 +1,21 @@
 __author__ = 'szymag'
 
 from src.Magnetyzacja import Magnetyzacja
-from src.SiecTrojkatna import SiecTrojkatna
+from src.SiecKwadratowa import SiecKwadratowa
 from src.SiatkaPunktow import SiatkaPunktow
-from src.DensityPlot import DensityPlot
+from src.Plot import Plot
 
 siatka1 = SiatkaPunktow(5, 5, 0.1)
-siec1 = SiecTrojkatna(10, 10, 5, 5)
+siec1 = SiecKwadratowa(10, 10, 5, 5)
 w = Magnetyzacja(siatka1, siec1)
 
-r = DensityPlot([w.magnetyzacja_dla_sieci('okragly')])
+siatka2 = SiatkaPunktow(5, 5, 0.1)
+siec2 = SiecKwadratowa(10, 10, 10, 10)
+ww = Magnetyzacja(siatka1, siec1)
 
-r.wykres_pcolor()
+r = Plot(ww.magnetyzacja_dla_sieci('kwadratowy'))
 
-# print(r.plot())
 
+# r.wykres_pcolor()
+
+print(r.plot())
