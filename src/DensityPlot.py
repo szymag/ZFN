@@ -1,13 +1,14 @@
 __author__ = 'szymag'
 
-
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 class DensityPlot:
     """
     Klasa odpowiadająca za prezentację wyników w formie graficznej
     """
+
     def __init__(self, lista_magnetyzacja_dla_sieci):
         """
         :param lista_magnetyzacja_dla_sieci: Tworzony jest obiekt, zawierający wartości magnetyzacji, dla danego punktu.
@@ -57,5 +58,3 @@ class DensityPlot:
         plt.colorbar()
 
         return plt.show()
-
-

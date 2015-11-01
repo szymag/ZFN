@@ -1,13 +1,9 @@
 __author__ = 'szymag'
 
-from itertools import product
-
-from numpy import zeros
-
 
 class Rdzen:
     """
-    Klasa. w której obliczane są współczynniki fourierea, dla różnych typów sieci.
+    Klasa. w której obliczane są współczynniki fouriera, dla różnych typów sieci.
     """
 
     def __init__(self, lista_wektorow_b1, lista_wektorow_b2):
@@ -23,13 +19,19 @@ class Rdzen:
         pass
 
     def tablica_wspolczynniki_fouriera(self, MoA, MoB, d, s, r):
-        tablica = zeros((len(self.gy), len(self.gx)), dtype=object)
-        for ii, jj in product(range(len(self.gx)), range(len(self.gy))):
-            wspolczynnik_fouriera = self.wzory_wspolczynniki_fouriera(self.gx[ii][0], self.gy[jj][1],
-                                                                      MoA, MoB, d, s, r)
-            tablica[ii][jj] = [self.gx[ii][0], self.gy[jj][1], wspolczynnik_fouriera]
-        return tablica
+        wsp = []
+        for ii in range(len(self.gx)):
+            temp = []
+            for jj in range(len(self.gy)):
+                wspolczynnik_fouriera = self.wzory_wspolczynniki_fouriera(self.gx[ii][0], self.gy[jj][1],
+                                                                    MoA, MoB, d, s, r)
+                temp.append([self.gx[ii][0], self.gy[jj][1], wspolczynnik_fouriera])
+            wsp.append(temp)
+        return wsp
 
     def wylicz_wspolczynniki_fouriera(self, MoA, MoB, d, s, r):
         """ metoda zdefiniowana w klasach pochodnych """
         pass
+
+    def wylicz_wspolczynnik(self, wektor):
+        return self.wzory_wspolczynniki_fouriera(wektor, wektor, MoA, MoB, d, s, r)

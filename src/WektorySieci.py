@@ -1,5 +1,3 @@
-__author__ = 'szymag'
-
 import math
 
 import numpy as np
@@ -48,7 +46,7 @@ class WektorySieci(object):
         a1 = self.wektor_a1()
         a2 = self.wektor_a2()
         n = self.a_z
-        temp = 2 * math.pi
+        temp = 2 * np.pi
         if k == 1:
             temp *= np.cross(a2, n)
         elif k == 2:
@@ -64,3 +62,5 @@ class WektorySieci(object):
     def wektor_wypadkowy(self):
         return [a + b for a, b in zip(self.wektor_b(1), self.wektor_b(2))]
 
+    def wektor_g(self, k):
+        return [self.wektor_b(k)[k - 1] * i for i in self.zakres_1]
