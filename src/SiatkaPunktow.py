@@ -36,3 +36,12 @@ class SiatkaPunktow(object):
                 temp.append([ii, jj, 0])
             tablica.append(temp)
         return tablica
+
+
+"""
+        tablica = zeros((len(tempy), len(tempx)), dtype=object)
+        for ii, jj in product(tempx, tempy):
+                tablica[ii][jj] = [ii, jj, 0]
+        return tablica
+
+"""
