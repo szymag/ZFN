@@ -1,5 +1,6 @@
 from numpy import zeros
 from numpy import pi, sqrt, cosh, linalg, exp, linspace, dot
+from src.WektorySieci import WektorySieci
 import scipy.special
 
 
@@ -82,25 +83,71 @@ class MacierzDoZagadnienia:
             self.macierz_M[i - self.rozmiar_macierzy_blok][i] += 1
             self.macierz_M[i][i - self.rozmiar_macierzy_blok] -= 1
 
-    def drugie_wyrazenie(self, wektor_1, wektor_2, wektor_q, typ=None):
+    def drugie_wyrazenie(self, wektor_1, wektor_2, wektor_q):
+        """
+        :param wektor_1: i-ty wektor
+        :param wektor_2: j-ty wektor
+        :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
+        :return: Wynikiem jest drugie wyraz sumy.
+        """
         tmp1 = dot(self.suma_roznica_wektorow(wektor_q, wektor_2, "+"),
                    self.suma_roznica_wektorow(wektor_q, wektor_1, "+"))
         tmp2 = self.wspolczynnik(wektor_1, wektor_2)
         return tmp1 * tmp2 / self.H0
 
-    def trzecie_wyrazenie(self):
-        pass
+    def trzecie_wyrazenie(self, wektor_1, wektor_2, wektor_q, typ_macierzy):
+        """
+        :param wektor_1: i-ty wektor.
+        :param wektor_2: j-ty wektor.
+        :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
+        :param typ_macierzy: Określa, do której z macierzy blokowych odnosi się wyrażenie.
+        :return: Wynikiem jest drugie wyraz sumy.
+        """
+        tmp1 = self.norma_wektorow(wektor_q, wektor_2, "+") ** 2
+        tmp2 = self.funkcja_c(wektor_q, wektor_2, self.x, self.d, "+")
+        tmp3 = self.wspolczynnik(wektor_1, wektor_2)
+        if typ_macierzy == "xy":
+            return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1) * (1 - tmp2) * tmp3
+        elif typ_macierzy == "yx":
+            return tmp2 * tmp3 / self.H0
 
     def czwarte_wyrazenie(self, wektor_1, wektor_2):
         """
-        :param wektor_1: i-ty wektor
-        :param wektor_2: j-ty wektor
-        :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M
+        :param wektor_1: i-ty wektor.
+        :param wektor_2: j-ty wektor.
+        :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
         """
         tmp1 = (wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-"))
         tmp2 = self.wspolczynnik(wektor_1, wektor_2)
         tmp3 = (1 - self.funkcja_c(wektor_1, wektor_2, self.x, self.d, "-"))
         return tmp1 * tmp2 * tmp3
+
+    def macierz_xy(self, wektor_1, wektor_2, wektor_q):
+        return \
+            self.drugie_wyrazenie(wektor_1, wektor_2, wektor_q) \
+            + self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "xy") \
+            - self.czwarte_wyrazenie(wektor_1, wektor_2)
+
+    def macierz_yx(self, wektor_1, wektor_2, wektor_q):
+        return \
+            - self.drugie_wyrazenie(wektor_1, wektor_2, wektor_q) \
+            - self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "yx") \
+            + self.czwarte_wyrazenie(wektor_1, wektor_2)
+
+    def lista_wektorow(self):
+        # TODO PRzerobić klasę WektorySieci, tak by mieć siatkę wektorów
+        zakres = int((self.rozmiar_macierzy_blok - 1) / 2)
+        lista = WektorySieci(self.a, self.a, 90, zakres, zakres).wektor_g()
+        return lista
+
+    def wypelnienie_macierzy(self, wektor_q):
+        # TODO Dokończyć budowanie metody
+        indeks = self.rozmiar_macierzy_blok
+        self.delta_kroneckera()
+        for i in range(indeks, 2 * indeks):
+            for j in range(0, indeks):
+                # self.macierz_M[i][j] = self.macierz_xy()
+                pass
 
     def wektor(self):
         return self.lista_wektorow_q
@@ -109,10 +156,8 @@ class MacierzDoZagadnienia:
         print(self.macierz_M)
 
 
-b = MacierzDoZagadnienia(5, 3)
-print(b.wspolczynnik((1, 1), (0, 0)))
-print(b.funkcja_c((1, 0), (3, 0), 3, 5, "-"))
-print(b.norma_wektorow((3, 5), (4, 4), "+"))
-b.delta_kroneckera()
+b = MacierzDoZagadnienia(10, 3)
+# b.wypelnienie_macierzy()
 b.wypisz_macierz()
-print(b.wektor())
+
+print(b.lista_wektorow())

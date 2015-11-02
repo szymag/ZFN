@@ -62,5 +62,6 @@ class WektorySieci(object):
     def wektor_wypadkowy(self):
         return [a + b for a, b in zip(self.wektor_b(1), self.wektor_b(2))]
 
-    def wektor_g(self, k):
-        return [self.wektor_b(k)[k - 1] * i for i in self.zakres_1]
+    def wektor_g(self):
+        return [(self.wektor_b(1)[0] * i, self.wektor_b(2)[1] * i) for i in self.zakres_1]
+
