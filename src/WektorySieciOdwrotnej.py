@@ -1,5 +1,8 @@
-from numpy import array, pi
 from itertools import product
+
+from numpy import array, pi
+
+
 class WektorySieciOdwrotnej:
     def __init__(self, dlugosc_skladowej_y, dlugosc_skladowej_z, ilosc_wektorow):
         self.dlugosc_skladowej_y = dlugosc_skladowej_y
@@ -14,12 +17,6 @@ class WektorySieciOdwrotnej:
             lista = [2 * pi * int(i) / self.dlugosc_skladowej_z for i in lista]
         return lista
 
+    @property
     def lista_wektorow(self):
-        wsp1 = self.wspolrzedna_wektora(1)
-        wsp2 = self.wspolrzedna_wektora(2)
-        pass
-
-a = WektorySieciOdwrotnej(11, 10, 7)
-
-print(a.wspolrzedna_wektora(1))
-print(a.lista_wektorow())
+        return list(product(*(self.wspolrzedna_wektora(1), self.wspolrzedna_wektora(2))))
