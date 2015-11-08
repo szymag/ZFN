@@ -1,4 +1,4 @@
-from numpy import linspace, pi, identity
+from numpy import linspace, pi
 from scipy import linalg
 
 from src.MacierzDoZagadnienia import MacierzDoZagadnienia
@@ -15,10 +15,20 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         return macierz
 
     def zagadnienie_wlasne(self, wektor_q):
-        m_jednostkowa = identity(2 * self.rozmiar_macierzy_blok)
+        # m_jednostkowa = identity(2 * self.rozmiar_macierzy_blok)
         macierz_M = self.utworz_macierz_M(wektor_q)
-        return linalg.eig(m_jednostkowa, macierz_M)[0]
+        return linalg.eig(macierz_M, right=False)
+
+    def zagadnienie_wlasne1(self):
+        # m_jednostkowa = identity(2 * self.rozmiar_macierzy_blok)
+        macierz_M = self.utworz_macierz_M(self.lista_wektorow_q[20])
+        return linalg.eig(macierz_M, right=False)
+
+    def czestosciwlasne(self):
+        wartosci_wlasne = self.zagadnienie_wlasne1()
+        return [k * self.gamma * self.mu0H0 * complex(-1j) for k in wartosci_wlasne]
 
 
-q = ZagadnienieWlasne(103, 4)
-print(q.zagadnienie_wlasne((0, 1)))
+q = ZagadnienieWlasne(103, 40)
+
+print(q.czestosciwlasne())

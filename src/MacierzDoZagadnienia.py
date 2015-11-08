@@ -23,9 +23,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         wekt_wypadkowy = [k[0] + k[1] for k in zipped]
 
         if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.MoA - self.MoB) * pi * self.r ** 2 / self.s + self.MoB
+            return (self.MoA - self.MoB) * pi * self.r ** 2 / (self.a) ** 2 + self.MoB
         else:
-            return 2 * (self.MoA - self.MoB) * pi * self.r ** 2 / self.s * \
+            return 2 * (self.MoA - self.MoB) * pi * self.r ** 2 / (self.a) ** 2 * \
                    scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
                    / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 + (10 ** -10)) * self.r)
 

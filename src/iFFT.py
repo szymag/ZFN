@@ -1,50 +1,34 @@
-__author__ = 'szymag'
-"""
-from src import Siec
-import numpy as np
-from src import SiecKwadratowa
-
-
-class IFFT:
-
-    def __init__(self, siec):
-        self.siec = siec
-
-    def fourier_coefficients(self, siec):
-        print(siec.wylicz_wspolczynniki_fouriera())
-
-    def inverse_fft(self):
-        pass
-"""
-
-import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
+from numpy import fft, zeros, mgrid
 
-Fs = 150  # sampling rate
-Ts = 1.0 / Fs  # sampling interval
-t = np.arange(0, 1, Ts)  # time vector
-ff = 1  # frequency of the signal
-y = np.sin(2 * np.pi * ff * t)
 
-plt.subplot(2, 1, 1)
-plt.plot(t, y, 'k-')
-plt.xlabel('time')
-plt.ylabel('amplitude')
+class FFT:
+    def __init__(self, plik):
+        self.plik = Image.open(plik)
 
-plt.subplot(2, 1, 2)
-n = len(y)  # length of the signal
-k = np.arange(n)
-T = n / Fs
-frq = k / T  # two sides frequency range
-freq = frq[range(int(n / 2))]  # one side frequency range
+    def wez_piksele(self):
+        piksele = [abs((k / 255) - 1) for k in list(self.plik.getdata(0))]
+        rozmiar = self.plik.size
+        tablica_pikseli = list(zeros(rozmiar[1]))
+        for i in range(0, rozmiar[1]):
+            tablica_pikseli[i] = piksele[rozmiar[0] * i:(i + 1) * rozmiar[0]]
+        return tablica_pikseli
 
-Y = np.fft.fft(y) / n  # fft computing and normalization
-print(len(Y))
-Y = Y[range(int(n / 2))]
-print(len(Y))
+    def fft(self):
+        tablica = self.wez_piksele()
+        return fft.fftshift(abs(fft.fft2(tablica, norm="ortho") / 40))
 
-plt.plot(freq, abs(Y), 'r-')
-plt.xlabel('freq (Hz)')
-plt.ylabel('|Y(freq)|')
+    def wykres(self):
+        rozmiar = self.plik.size
+        x, y = mgrid[slice(0, rozmiar[0], 1), slice(0, rozmiar[0], 1)]
+        z = self.fft()
+        #        z_min, z_max = -abs(z).max(), abs(z).max()
+        plt.pcolor(x, y, z, cmap='RdBu')
+        plt.colorbar()
+        plt.show()
 
-plt.show()
+
+q = FFT("3fft.png")
+print(q.fft())
+q.wykres()
