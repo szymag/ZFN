@@ -1,8 +1,8 @@
 from numpy import linspace, pi
 from scipy import linalg
 
-from src.MacierzDoZagadnienia import MacierzDoZagadnienia
-from src.ParametryMaterialowe import ParametryMaterialowe
+from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
+from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
 class ZagadnienieWlasne(ParametryMaterialowe):
@@ -29,6 +29,6 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         return [k * self.gamma * self.mu0H0 * complex(-1j) for k in wartosci_wlasne]
 
 
-q = ZagadnienieWlasne(103, 40)
+q = ZagadnienieWlasne(13, 40)
 
 print(q.czestosciwlasne())

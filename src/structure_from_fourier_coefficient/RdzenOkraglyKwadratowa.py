@@ -4,7 +4,7 @@ import math
 
 import scipy.special
 
-from src.Rdzen import Rdzen
+from src.structure_from_fourier_coefficient.Rdzen import Rdzen
 
 
 class RdzenOkraglyKwadratowa(Rdzen):

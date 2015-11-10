@@ -1,10 +1,10 @@
 __author__ = 'szymag'
 
 from src.Magnetyzacja import Magnetyzacja
-
-from src.SiecTrojkatna import SiecTrojkatna
 from src.SiatkaPunktow import SiatkaPunktow
-from src.Plot import Plot
+from src.SiecTrojkatna import SiecTrojkatna
+
+from src.structure_from_fourier_coefficient.Plot import Plot
 
 siatka = SiatkaPunktow(5, 5, 0.07)
 siec = SiecTrojkatna(10, 10, 18, 18)

@@ -1,9 +1,10 @@
 __author__ = 'szymag'
 
-from src.Siec import Siec
-from src.WektorySieci import WektorySieci
 from src.RdzenOkraglyTrojkatna import RdzenOkraglyTrojkatna
-from src.RdzenKwadratowyTrojkatna import RdzenKwadratowyTrojkatna
+from src.Siec import Siec
+
+from src.structure_from_fourier_coefficient.RdzenKwadratowyTrojkatna import RdzenKwadratowyTrojkatna
+from src.structure_from_fourier_coefficient.WektorySieci import WektorySieci
 
 
 class SiecTrojkatna(Siec):

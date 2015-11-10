@@ -23,7 +23,3 @@ class TablicaWartosciPikseli:
 
     def konwersja_dwa_kolory(self):
         return self.lista_plikow
-
-
-q = TablicaWartosciPikseli()
-q.konwersja_dwa_kolory()

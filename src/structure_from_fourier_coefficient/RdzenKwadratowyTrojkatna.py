@@ -4,10 +4,10 @@ import math
 
 import numpy as np
 
-from src.Rdzen import Rdzen
+from src.structure_from_fourier_coefficient.Rdzen import Rdzen
 
 
-class RdzenKwadratowyKwadratowa(Rdzen):
+class RdzenKwadratowyTrojkatna(Rdzen):
     def __init__(self, lista_wektorow_b1, lista_wektorow_b2):
         Rdzen.__init__(self, lista_wektorow_b1, lista_wektorow_b2)
 

@@ -2,8 +2,8 @@ import scipy.special
 from numpy import pi, sqrt, cosh, linalg, exp, dot
 from numpy import zeros
 
-from src.ParametryMaterialowe import ParametryMaterialowe
-from src.WektorySieciOdwrotnej import WektorySieciOdwrotnej
+from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
+from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 
 class MacierzDoZagadnienia(ParametryMaterialowe):
@@ -133,7 +133,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         return lista.lista_wektorow
 
     def wypelnienie_macierzy(self, wektor_q):
-        # TODO Dokończyć budowanie metody
         indeks = self.rozmiar_macierzy_blok
         lista_wektorow = self.lista_wektorow()
         self.delta_kroneckera()
@@ -147,3 +146,5 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def wypisz_macierz(self):
         print(self.macierz_M)
+
+# TODO Klasy potomne: rozdzielenie obliczeń dla wczytywania wektorów i współczynników z pliku oraz na klasę wykonującą te obliczenia analitycznie
