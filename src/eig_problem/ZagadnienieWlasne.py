@@ -47,11 +47,11 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         for k in self.lista_wektorow_q:
             tmp = [k[0]]
             tmp.extend(self.czestosci_wlasne(k))
-            print(k)
             plik.append(tmp)
         plik = array(plik)
         savetxt("1.txt", plik)
 
 
 q = ZagadnienieWlasne(15, 45)
-q.wypisz_do_pliku()
+# q.wypisz_do_pliku()
+print(q.czestosci_wlasne((4.759988869075444527e+06, 0)))

@@ -1,6 +1,7 @@
 import scipy.special
-from numpy import pi, sqrt, cosh, linalg, exp, dot
+from numpy import pi, sqrt, cosh, exp, dot
 from numpy import zeros, array, savetxt
+
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
@@ -26,16 +27,15 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_2 should be touple'
         assert len(wektor_2) == 2,\
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
-
-        zipped = list(zip(wektor_1, wektor_2))
-        wekt_wypadkowy = [k[0] + k[1] for k in zipped]
+        wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
 
         if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.MoCo - self.MoPy) * pi * self.r ** 2 / self.a ** 2 + self.MoPy
+            return (self.MoCo - self.MoPy) * pi * self.r ** 2 / (self.a ** 2) + self.MoPy
         else:
+            assert wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 != 0, 'division by 0'
             return 2 * (self.MoCo - self.MoPy) * pi * self.r ** 2 / self.a ** 2 * \
                    scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
-                   / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 + (10 ** -10)) * self.r)
+                   / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
 
     def wektor_pozycji(self, wektor_1, wektor_2):
         """
@@ -87,9 +87,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
         zipped = list(zip(wektor_1, wektor_2))
         if znak == "-":
-            return [k[0] - k[1] for k in zipped]
+            return tuple([k[0] - k[1] for k in zipped])
         elif znak == "+":
-            return [k[0] + k[1] for k in zipped]
+            return tuple([k[0] + k[1] for k in zipped])
 
     def funkcja_c(self, wektor_1, wektor_2, znak):
         """
@@ -112,8 +112,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert znak == '+' or znak == '-', \
             'only - and + are permitted'
 
-        wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, znak)
-        return cosh(linalg.norm(wekt_wypadkowy) * self.x) * exp(-linalg.norm(wekt_wypadkowy) * self.d / 2)
+        wekt_wypadkowy = self.norma_wektorow(wektor_1, wektor_2, znak)
+        return cosh(wekt_wypadkowy * self.x) * exp(-wekt_wypadkowy * self.d / 2)
 
     def norma_wektorow(self, wektor_1, wektor_2, znak):
         """
@@ -136,7 +136,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             'only - and + are permitted'
 
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, znak)
-        return linalg.norm(wekt_wypadkowy)
+        return sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2)
 
     def delta_kroneckera(self):
         """
@@ -217,7 +217,11 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert len(wektor_2) == 2,\
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         # TODO Poprawwić mianownik
-        tmp1 = (wektor_1[1] - wektor_2[1]) ** 2 / (10 ** -7 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-"))
+        t = self.norma_wektorow(wektor_1, wektor_2, "-")
+        if t == 0:
+            tmp1 = 0
+        else:
+            tmp1 = (wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-"))
         tmp2 = self.wspolczynnik(wektor_1, wektor_2)
         tmp3 = (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
         return tmp1 * tmp2 * tmp3
@@ -288,6 +292,3 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
 # TODO rozdzielenie obliczeń dla wczytywania wektorów i współczynników z pliku oraz na klasę wykonującą te obliczenia analitycznie
 
-q = MacierzDoZagadnienia(5)
-q.wypelnienie_macierzy((10**7, 0))
-q.wypisz_macierz()
