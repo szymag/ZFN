@@ -140,8 +140,8 @@ def wykres_pcolor(krok, ile_wektorow_x, ile_wektorow_y):
 # szerokość rdzenia - d (w notatkach jako r)
 # szerokość komórki elementarnej
 # powierzchnia; kwadrat o szerokości komórki elementarnej - s
-# magnetyzacja rdzenia - MoA
-# magnetyzacja wypełnienia - MoB
+# magnetyzacja rdzenia - MoCo
+# magnetyzacja wypełnienia - MoPy
 d = 6
 a = 10
 s = a ** 2

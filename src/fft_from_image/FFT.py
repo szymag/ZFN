@@ -8,8 +8,7 @@ class FFT(TablicaWartosciPikseli):
     def __init__(self):
         TablicaWartosciPikseli.__init__(self)
 
-    @staticmethod
-    def fft(tablica):
+    def fft(self, tablica):
         return fft.fftshift(abs(fft.fft2(tablica, norm="ortho")))
 
     def wywolaj_fft(self):
@@ -32,9 +31,12 @@ class FFT(TablicaWartosciPikseli):
         indeks = 1
         for tablica in lista_fft:
             # TODO: usprawnić nazywanie plików
-            savetxt(str(indeks) + ".txt", tablica)
+            savetxt('fft' + str(indeks) + ".txt", tablica)
             indeks += 1
 
     def wczytaj_z_pliku(self):
-        tablica = loadtxt("1.txt")
+        tablica = loadtxt(".txt")
         return tablica
+
+q = FFT()
+q.wypisz_do_pliku()
