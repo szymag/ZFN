@@ -27,14 +27,13 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         macierz_M = self.utworz_macierz_M(wektor_q)
         return linalg.eig(macierz_M, right=False)
 
-
     def czestosci_wlasne(self, wektor_q):
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         wartosci_wlasne = self.zagadnienie_wlasne(wektor_q)
-        czestosci_wlasne = [k * self.gamma * self.mu0H0 * complex(-1j) for k in wartosci_wlasne]
+        czestosci_wlasne = [k * self.gamma * self.mu0H0 / complex(1j) for k in wartosci_wlasne]
         czestosci_wlasne = [k for k in czestosci_wlasne if k.real > 0]
         czestosci_wlasne = list(sorted(czestosci_wlasne, key=lambda x: abs(x)))
         czestosci_wlasne = [k.real for k in czestosci_wlasne]
@@ -52,6 +51,6 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         savetxt("1.txt", plik)
 
 
-q = ZagadnienieWlasne(15, 45)
+q = ZagadnienieWlasne(7, 45)
 # q.wypisz_do_pliku()
-print(q.czestosci_wlasne((4.759988869075444527e+06, 0)))
+print(q.zagadnienie_wlasne((4.759988869075444527e+06, 0)))

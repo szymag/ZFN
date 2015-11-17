@@ -42,7 +42,11 @@ class Test(unittest.TestCase):
     def test_czwarte_wyrazenie(self):
         self.assertEqual(self.q.czwarte_wyrazenie((3, 3), (3, 3)), 0)
         self.assertEqual(self.q.czwarte_wyrazenie((3, -3), (3, -3)), 0)
+        # self.assertEqual(self.q.trzecie_wyrazenie((0.0, 209439510.23931956), (-209439510.23931956, 418879020.4786391),  (6.187985529798077792e+07, 0), 'xy'), -0.93838605811961973)
+        # self.assertEqual(self.q.drugie_wyrazenie((0.0, 209439510.23931956), (-209439510.23931956, 418879020.4786391), (6.187985529798077792e+07, 0)), 0)
 
+        self.assertEqual(self.q.czwarte_wyrazenie((0.0, 209439510.23931956), (-209439510.23931956, 418879020.4786391)),
+                         10)
 
 if __name__ == '__main__':
     unittest.main()

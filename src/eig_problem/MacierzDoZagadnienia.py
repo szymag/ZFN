@@ -194,11 +194,11 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert typ_macierzy == 'xy' or typ_macierzy == 'yx',\
             'it is assumed that block matrixes are named xy or yx'
 
-        tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+') ** 2
-        tmp2 = self.funkcja_c(wektor_q, wektor_2, "+")
+        tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
+        tmp2 = 1 - self.funkcja_c(wektor_q, wektor_2, "+")
         tmp3 = self.wspolczynnik(wektor_1, wektor_2)
         if typ_macierzy == 'xy':
-            return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1) * (1 - tmp2) * tmp3
+            return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1 ** 2) * tmp2 * tmp3
         elif typ_macierzy == 'yx':
             return tmp2 * tmp3 / self.H0
 
@@ -221,7 +221,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         if t == 0:
             tmp1 = 0
         else:
-            tmp1 = (wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-"))
+            tmp1 = (wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * t ** 2)
         tmp2 = self.wspolczynnik(wektor_1, wektor_2)
         tmp3 = (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
         return tmp1 * tmp2 * tmp3
@@ -278,6 +278,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
         indeks = self.rozmiar_macierzy_blok
         lista_wektorow = self.lista_wektorow()
+        assert len(lista_wektorow) == indeks ** 2, 'number of vector do not fit to matrix'
         self.delta_kroneckera()
         for i in range(indeks, 2 * indeks):
             for j in range(0, indeks):
@@ -292,3 +293,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
 # TODO rozdzielenie obliczeń dla wczytywania wektorów i współczynników z pliku oraz na klasę wykonującą te obliczenia analitycznie
 
+        # q = MacierzDoZagadnienia(5)
+        # print(q.czwarte_wyrazenie((-209439510.23931956, 418879020.4786391), (0.0, 209439510.23931956)))
+        # print(q.wypelnienie_macierzy((3.807991095260355622e+07, 0)))
