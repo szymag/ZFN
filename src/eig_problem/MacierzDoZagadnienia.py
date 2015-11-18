@@ -21,14 +21,13 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-
         if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
             return (self.MoCo - self.MoPy) * pi * self.r ** 2 / (self.a ** 2) + self.MoPy
         else:
@@ -47,20 +46,19 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
 
-        zipped = list(zip(wektor_1, wektor_2))
-        wekt_wypadkowy = [k[0] + k[1] for k in zipped]
+        wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
 
         if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.ACo - self.APy) * pi * self.r ** 2 / self.a ** 2 + self.APy
+            return (self.lCo - self.lPy) * pi * self.r ** 2 / self.a ** 2 + self.APy
         else:
-            return 2 * (self.ACo - self.APy) * pi * self.r ** 2 / self.a ** 2 * \
+            return 2 * (self.lCo - self.lPy) * pi * self.r ** 2 / self.a ** 2 * \
                    scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
                    / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 + (10 ** -10)) * self.r)
 
@@ -74,22 +72,21 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(znak) == str, \
             'znak is sign between two vector. Should be string'
         assert znak == '+' or znak == '-', \
             'only - and + are permitted'
 
-        zipped = list(zip(wektor_1, wektor_2))
         if znak == "-":
-            return tuple([k[0] - k[1] for k in zipped])
+            return tuple([k[0] - k[1] for k in zip(wektor_1, wektor_2)])
         elif znak == "+":
-            return tuple([k[0] + k[1] for k in zipped])
+            return tuple([k[0] + k[1] for k in zip(wektor_1, wektor_2)])
 
     def funkcja_c(self, wektor_1, wektor_2, znak):
         """
@@ -101,11 +98,11 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(znak) == str, \
             'znak is sign between two vector. Should be string'
@@ -124,11 +121,11 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(znak) == str, \
             'znak is sign between two vector. Should be string'
@@ -155,21 +152,21 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
-        assert len(wektor_q) == 2,\
+        assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
 
         tmp1 = dot(self.suma_roznica_wektorow(wektor_q, wektor_2, "+"),
                    self.suma_roznica_wektorow(wektor_q, wektor_1, "+"))
         tmp2 = self.wektor_pozycji(wektor_1, wektor_2)
-        return tmp1 * tmp2**2 / self.H0
+        return tmp1 * tmp2 / self.H0
 
     def trzecie_wyrazenie(self, wektor_1, wektor_2, wektor_q, typ_macierzy):
         """
@@ -181,20 +178,21 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
-        assert len(wektor_q) == 2,\
+        assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-        assert typ_macierzy == 'xy' or typ_macierzy == 'yx',\
+        assert typ_macierzy == 'xy' or typ_macierzy == 'yx', \
             'it is assumed that block matrixes are named xy or yx'
-
         tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
+        # print(wektor_q, wektor_2, tmp1)
+        assert tmp1 != 0, (wektor_q, wektor_2, tmp1)
         tmp2 = 1 - self.funkcja_c(wektor_q, wektor_2, "+")
         tmp3 = self.wspolczynnik(wektor_1, wektor_2)
         if typ_macierzy == 'xy':
@@ -210,11 +208,11 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         # TODO Poprawwić mianownik
         t = self.norma_wektorow(wektor_1, wektor_2, "-")
@@ -229,15 +227,15 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     def macierz_xy(self, wektor_1, wektor_2, wektor_q):
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
-        assert len(wektor_q) == 2,\
+        assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         # TODO Dokończyć dokumentację
         return \
@@ -248,15 +246,15 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     def macierz_yx(self, wektor_1, wektor_2, wektor_q):
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
-        assert len(wektor_1) == 2,\
+        assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert type(wektor_2) == tuple, \
             'form of wektor_q is forbidden. wektor_2 should be touple'
-        assert len(wektor_2) == 2,\
+        assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
-        assert len(wektor_q) == 2,\
+        assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
 
         # TODO Dokończyć dokumentację
@@ -267,32 +265,40 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def lista_wektorow(self):
         # TODO Dokończyć dokumentację
-        lista = WektorySieciOdwrotnej(self.a, self.a, self.rozmiar_macierzy_blok)
+        indeks = self.rozmiar_macierzy_blok
+        assert sqrt(indeks) == int(sqrt(indeks)) and indeks % 2 != 0, \
+            'size of bolck matrix shuld gave natural number of sqrt and be odd'
+        lista = WektorySieciOdwrotnej(self.a, self.a, indeks)
         return lista.lista_wektorow
 
     def wypelnienie_macierzy(self, wektor_q):
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
-        assert len(wektor_q) == 2,\
+        assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
 
         indeks = self.rozmiar_macierzy_blok
         lista_wektorow = self.lista_wektorow()
-        assert len(lista_wektorow) == indeks ** 2, 'number of vector do not fit to matrix'
+        assert len(lista_wektorow) == indeks, 'number of vector do not fit to matrix'
         self.delta_kroneckera()
         for i in range(indeks, 2 * indeks):
             for j in range(0, indeks):
                 self.macierz_M[i][j] = \
-                    self.macierz_xy(lista_wektorow[i - indeks], lista_wektorow[j], wektor_q)
+                    self.macierz_xy(lista_wektorow[indeks - i], lista_wektorow[j], wektor_q)
                 self.macierz_M[i - indeks][j + indeks] = \
-                    self.macierz_yx(lista_wektorow[i], lista_wektorow[j - indeks], wektor_q)
+                    self.macierz_yx(lista_wektorow[indeks - i], lista_wektorow[j], wektor_q)
         return self.macierz_M
 
     def wypisz_macierz(self):
         savetxt('macierz.txt', array(self.macierz_M))
 
+
 # TODO rozdzielenie obliczeń dla wczytywania wektorów i współczynników z pliku oraz na klasę wykonującą te obliczenia analitycznie
 
-        # q = MacierzDoZagadnienia(5)
+        # q = MacierzDoZagadnienia(49)
         # print(q.czwarte_wyrazenie((-209439510.23931956, 418879020.4786391), (0.0, 209439510.23931956)))
-        # print(q.wypelnienie_macierzy((3.807991095260355622e+07, 0)))
+        # q.wypelnienie_macierzy((0, 0))
+        # print(q.funkcja_c((-209439510.23931956, 418879020.4786391), (0.0, 0), '+'))
+        # print(q.funkcja_c((-209439510.23931956, 418879020.4786391), (2.094395102393195629e+08, 0), '+'))
+        # q.wypisz_macierz()
+        #print(q.lista_wektorow())
