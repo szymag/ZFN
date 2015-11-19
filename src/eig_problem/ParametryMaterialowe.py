@@ -14,6 +14,8 @@ class ParametryMaterialowe:
     APy = 1.1e-11
     lCo = 2 * ACo / (mu0 * MoCo)
     lPy = 2 * APy / (mu0 * MoPy)
+    # lCo = 7.78e-9
+    # lPy = 5.541e-9
     r = 14e-9
     x = d / 2
 
