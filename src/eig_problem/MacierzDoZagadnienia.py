@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 import scipy.special
 from numpy import pi, sqrt, cosh, exp, dot
 from numpy import zeros, array, savetxt

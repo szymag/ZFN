@@ -4,7 +4,7 @@ import unittest
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 
 
-class Test(unittest.TestCase):
+class TestEigProblem(unittest.TestCase):
     q = MacierzDoZagadnienia(5)
 
     def test_suma_roznica_wektorow(self):
@@ -49,6 +49,3 @@ class Test(unittest.TestCase):
 
         self.assertEqual(self.q.czwarte_wyrazenie((0.0, 209439510.23931956), (-209439510.23931956, 418879020.4786391)),
                          10)
-
-if __name__ == '__main__':
-    unittest.main()
