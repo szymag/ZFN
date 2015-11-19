@@ -215,12 +215,14 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         # TODO Poprawwić mianownik
-        if self.norma_wektorow(wektor_1, wektor_2, "-") == 0:
-            return 0
+        t = self.norma_wektorow(wektor_1, wektor_2, "-")
+        if t == 0:
+            tmp1 = 0
         else:
-            return ((wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * t ** 2))\
-                    * self.wspolczynnik(wektor_1, wektor_2)\
-                    * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
+            tmp1 = (wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * t ** 2)
+        tmp2 = self.wspolczynnik(wektor_1, wektor_2)
+        tmp3 = (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
+        return tmp1 * tmp2 * tmp3
 
     def macierz_xy(self, wektor_1, wektor_2, wektor_q):
         assert type(wektor_1) == tuple, \
