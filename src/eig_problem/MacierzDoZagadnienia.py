@@ -56,11 +56,11 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
 
         if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.lCo - self.lPy) * pi * self.r ** 2 / self.a ** 2 + self.APy
+            return (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2)+ self.lPy
         else:
-            return 2 * (self.lCo - self.lPy) * pi * self.r ** 2 / self.a ** 2 * \
+            return 2 * (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) * \
                    scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
-                   / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 + (10 ** -10)) * self.r)
+                   / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
 
     @staticmethod
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
@@ -191,7 +191,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert typ_macierzy == 'xy' or typ_macierzy == 'yx', \
             'it is assumed that block matrixes are named xy or yx'
         tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
-        # print(wektor_q, wektor_2, tmp1)
         assert tmp1 != 0, (wektor_q, wektor_2, tmp1)
         tmp2 = 1 - self.funkcja_c(wektor_q, wektor_2, "+")
         tmp3 = self.wspolczynnik(wektor_1, wektor_2)
@@ -218,7 +217,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         if self.norma_wektorow(wektor_1, wektor_2, "-") == 0:
             return 0
         else:
-            return ((wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * t ** 2))\
+            return ((wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2))\
                     * self.wspolczynnik(wektor_1, wektor_2)\
                     * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
 
@@ -238,8 +237,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         # TODO Dokończyć dokumentację
         return \
             self.drugie_wyrazenie(wektor_1, wektor_2, wektor_q) \
-            + self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "xy") \
-            - self.czwarte_wyrazenie(wektor_1, wektor_2)
+          + self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "xy") \
+          - self.czwarte_wyrazenie(wektor_1, wektor_2)
 
     def macierz_yx(self, wektor_1, wektor_2, wektor_q):
         assert type(wektor_1) == tuple, \
@@ -281,10 +280,10 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         self.delta_kroneckera()
         for i in range(indeks, 2 * indeks):
             for j in range(0, indeks):
-                self.macierz_M[i][j] = \
-                    self.macierz_xy(lista_wektorow[indeks - i], lista_wektorow[j], wektor_q)
-                self.macierz_M[i - indeks][j + indeks] = \
-                    self.macierz_yx(lista_wektorow[indeks - i], lista_wektorow[j], wektor_q)
+                self.macierz_M[i][j] += \
+                    self.macierz_yx(lista_wektorow[i - indeks], lista_wektorow[j], wektor_q)
+                self.macierz_M[i - indeks][j + indeks] += \
+                    self.macierz_xy(lista_wektorow[i - indeks], lista_wektorow[j], wektor_q)
         return self.macierz_M
 
     def wypisz_macierz(self):
@@ -293,10 +292,12 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
 # TODO rozdzielenie obliczeń dla wczytywania wektorów i współczynników z pliku oraz na klasę wykonującą te obliczenia analitycznie
 
-        # q = MacierzDoZagadnienia(49)
+#q = MacierzDoZagadnienia(9)
         # print(q.czwarte_wyrazenie((-209439510.23931956, 418879020.4786391), (0.0, 209439510.23931956)))
-        # q.wypelnienie_macierzy((0, 0))
+
+#q.wypelnienie_macierzy((0, 0))
         # print(q.funkcja_c((-209439510.23931956, 418879020.4786391), (0.0, 0), '+'))
         # print(q.funkcja_c((-209439510.23931956, 418879020.4786391), (2.094395102393195629e+08, 0), '+'))
-        # q.wypisz_macierz()
+
+#q.wypisz_macierz()
         #print(q.lista_wektorow())
