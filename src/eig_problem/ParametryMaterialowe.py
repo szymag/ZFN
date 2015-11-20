@@ -2,6 +2,9 @@ from numpy import pi
 
 
 class ParametryMaterialowe:
+    """
+    Klasa, w której zawarte są parametry materiałowe.
+    """
     mu0H0 = 0.2
     gamma = 194.6e9
     H0 = mu0H0 / (4e-7 * pi)

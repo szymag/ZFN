@@ -1,5 +1,5 @@
+import scipy
 from numpy import linspace, pi, savetxt
-from scipy import linalg, array
 
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
@@ -8,10 +8,7 @@ from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 class ZagadnienieWlasne(ParametryMaterialowe):
     def __init__(self, rozmiar_macierzy_blok, ilosc_wektorow_q):
         ParametryMaterialowe.__init__(self, rozmiar_macierzy_blok)
-        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.2, ilosc_wektorow_q)]
-
-
-
+        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.21, 0.4, ilosc_wektorow_q)]
 
     def utworz_macierz_M(self, wektor_q):
         assert type(wektor_q) == tuple, \
@@ -28,7 +25,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         macierz_M = self.utworz_macierz_M(wektor_q)
-        return linalg.eig(macierz_M, right=False)
+        return scipy.linalg.eig(macierz_M, right=False)
 
     def czestosci_wlasne(self, wektor_q):
         assert type(wektor_q) == tuple, \
@@ -48,7 +45,3 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
         savetxt('1.txt', plik)
-
-
-q = ZagadnienieWlasne(225, 20)
-q.wypisz_do_pliku()

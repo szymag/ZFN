@@ -10,6 +10,9 @@ from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 
 class MacierzDoZagadnienia(ParametryMaterialowe):
+    """
+    Klasa, w której tworzona jest macierz zagadnienia własnego.
+    """
     def __init__(self, rozmiar_macierzy_blok):
         ParametryMaterialowe.__init__(self, rozmiar_macierzy_blok)
         self.macierz_M = zeros((2 * rozmiar_macierzy_blok, 2 * rozmiar_macierzy_blok))
@@ -20,7 +23,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         z nich różnica.
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :return: współczynnik Fouriera.
+        :return: współczynnik Fouriera dla różnicy wektorów sieci odwrotnej.
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
@@ -36,16 +39,16 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         else:
             assert wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 != 0, 'division by 0'
             return 2 * (self.MoCo - self.MoPy) * pi * self.r ** 2 / self.a ** 2 * \
-                   scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
-                   / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
+                   scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) / \
+                   (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
 
-    def wektor_pozycji(self, wektor_1, wektor_2):
+    def dlugosc_wymiany(self, wektor_1, wektor_2):
         """
-        Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
+        Metoda obliczająca długość wymiany, dla dwóch zadanych wektorów.
         z nich różnica.
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :return: współczynnik Fouriera.
+        :return: Długość wymiany w postaci odpowiadającego różnicy wektorów współczynnika Fouriera.
         """
         assert type(wektor_1) == tuple, \
             'form of wektor_q is forbidden. wektor_1 should be touple'
@@ -59,7 +62,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
 
         if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2)+ self.lPy
+            return (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) + self.lPy
         else:
             return 2 * (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) * \
                    scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
@@ -68,6 +71,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     @staticmethod
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
         """
+        Metoda, która w zależności od znaku oblicza sumę, bądż różnicę wektorów.
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
@@ -93,7 +97,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def funkcja_c(self, wektor_1, wektor_2, znak):
         """
-        Metoda obliczająca wartość funkcji C dla rożnicy wektorów
+        Metoda obliczająca wartość funkcji C zdefinoweanej wzorem: f(g, x) = cosh(|g|x)*exp(-|g|d/2), gdzie g jest
+        wektorem, a x współrzędną iksową, tzn. miejscem na warstwie, dla którego wykreśla się zależność dyspersyjną.
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :param znak: określa czy obliczana ma być różnica, czy suma wektorów.
@@ -117,6 +122,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def norma_wektorow(self, wektor_1, wektor_2, znak):
         """
+        Metoda wyliczająca wypadkową długość dwóch wektorów.
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
@@ -140,7 +146,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def delta_kroneckera(self):
         """
-        Funkcja dodająca do macierzy pierwszy element z wyrażenia na M: 1 lub -1
+        Metoda dodająca do odpowienich elementów macierzowych pierwszy element z wyrażenia na M: 1 lub -1
         """
         for i in range(self.rozmiar_macierzy_blok, 2 * self.rozmiar_macierzy_blok):
             self.macierz_M[i - self.rozmiar_macierzy_blok][i] += 1
@@ -148,6 +154,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def drugie_wyrazenie(self, wektor_1, wektor_2, wektor_q):
         """
+        Metoda obliczająca drugi wyraz na element
         :param wektor_1: i-ty wektor
         :param wektor_2: j-ty wektor
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
@@ -168,7 +175,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
         tmp1 = dot(self.suma_roznica_wektorow(wektor_q, wektor_2, "+"),
                    self.suma_roznica_wektorow(wektor_q, wektor_1, "+"))
-        tmp2 = self.wektor_pozycji(wektor_1, wektor_2)
+        tmp2 = self.dlugosc_wymiany(wektor_1, wektor_2)
         return tmp1 * tmp2 / self.H0
 
     def trzecie_wyrazenie(self, wektor_1, wektor_2, wektor_q, typ_macierzy):
@@ -220,9 +227,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         if self.norma_wektorow(wektor_1, wektor_2, "-") == 0:
             return 0
         else:
-            return ((wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2))\
-                    * self.wspolczynnik(wektor_1, wektor_2)\
-                    * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
+            return ((wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2)) \
+                   * self.wspolczynnik(wektor_1, wektor_2) \
+                   * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
 
     def macierz_xy(self, wektor_1, wektor_2, wektor_q):
         assert type(wektor_1) == tuple, \
@@ -240,8 +247,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         # TODO Dokończyć dokumentację
         return \
             self.drugie_wyrazenie(wektor_1, wektor_2, wektor_q) \
-          + self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "xy") \
-          - self.czwarte_wyrazenie(wektor_1, wektor_2)
+            + self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "xy") \
+            - self.czwarte_wyrazenie(wektor_1, wektor_2)
 
     def macierz_yx(self, wektor_1, wektor_2, wektor_q):
         assert type(wektor_1) == tuple, \
@@ -266,8 +273,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     def lista_wektorow(self):
         # TODO Dokończyć dokumentację
         indeks = self.rozmiar_macierzy_blok
-        assert sqrt(indeks) == int(sqrt(indeks)) and indeks % 2 != 0, \
-            'size of bolck matrix shuld gave natural number of sqrt and be odd'
         lista = WektorySieciOdwrotnej(self.a, self.a, indeks)
         return lista.lista_wektorow
 
@@ -291,16 +296,3 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def wypisz_macierz(self):
         savetxt('macierz.txt', array(self.macierz_M))
-
-
-# TODO rozdzielenie obliczeń dla wczytywania wektorów i współczynników z pliku oraz na klasę wykonującą te obliczenia analitycznie
-
-#q = MacierzDoZagadnienia(9)
-        # print(q.czwarte_wyrazenie((-209439510.23931956, 418879020.4786391), (0.0, 209439510.23931956)))
-
-#q.wypelnienie_macierzy((0, 0))
-        # print(q.funkcja_c((-209439510.23931956, 418879020.4786391), (0.0, 0), '+'))
-        # print(q.funkcja_c((-209439510.23931956, 418879020.4786391), (2.094395102393195629e+08, 0), '+'))
-
-#q.wypisz_macierz()
-        #print(q.lista_wektorow())
