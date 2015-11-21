@@ -2,8 +2,11 @@ from numpy import genfromtxt
 
 
 class FFTzPliku:
-    def __init__(self):
-        self.tablica = genfromtxt('fft1.txt', dtype=complex)
+    def __init__(self, filename=None):
+        if filename is not None:
+            self.tablica = genfromtxt(filename, dtype=complex)
+        else:
+            self.tablica = []
 
     def pr(self):
         print(self.tablica)
