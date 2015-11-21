@@ -9,6 +9,7 @@ class FFTzPliku:
         print(self.tablica)
 
 
-q = FFTzPliku()
+if __name__ == "__main__":
+    q = FFTzPliku()
 
-q.pr()
+    q.pr()
