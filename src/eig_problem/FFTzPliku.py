@@ -1,12 +1,15 @@
-from numpy import genfromtxt
+import numpy as np
 
 
 class FFTzPliku:
-    def __init__(self, filename=None):
-        if filename is not None:
-            self.tablica = genfromtxt(filename, dtype=complex)
-        else:
-            self.tablica = []
+    def __init__(self, filepath=None):
+        self.tablica = []
+
+    def load_table_from(self, filepath=None):
+        if filepath is not None:
+            self.tablica = np.loadtxt(filepath).view(complex)
+            return self.tablica
+
 
     def pr(self):
         print(self.tablica)

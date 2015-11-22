@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 import numpy
 
@@ -11,8 +12,8 @@ class FFT:
     def fft(self, tablica):
         return numpy.fft.fftshift(numpy.fft.fft2(tablica))
 
-    def wywolaj_fft(self):
-        lista_plikow = TablicaWartosciPikseli().tablica_dla_plikow()
+    def wywolaj_fft(self, path='.'):
+        lista_plikow = TablicaWartosciPikseli(path).tablica_dla_plikow()
         lista_fft = [self.fft(k) for k in lista_plikow]
         return lista_fft
 
@@ -26,13 +27,18 @@ class FFT:
             plt.colorbar()
             plt.show()
 
-    def wypisz_do_pliku(self):
-        lista_fft = self.wywolaj_fft()
+    def wypisz_do_pliku(self, path='', lista_fft=None):
+        if lista_fft is None:
+            lista_fft = self.wywolaj_fft(path)
         indeks = 1
+        files = []
         for tablica in lista_fft:
             # TODO: usprawnić nazywanie plików
-            numpy.savetxt('fft' + str(indeks) + ".txt", tablica)
+            filepath = os.path.join(os.path.abspath(path), 'fft' + str(indeks) +'.txt')
+            files.append(filepath)
+            numpy.savetxt(filepath, tablica.view(float))
             indeks += 1
+        return files
 
     def wczytaj_z_pliku(self):
         tablica = numpy.loadtxt(".txt")
