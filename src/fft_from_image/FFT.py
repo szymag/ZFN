@@ -1,4 +1,5 @@
 import os
+
 import matplotlib.pyplot as plt
 import numpy
 
@@ -34,7 +35,7 @@ class FFT:
         files = []
         for tablica in lista_fft:
             # TODO: usprawnić nazywanie plików
-            filepath = os.path.join(os.path.abspath(path), 'fft' + str(indeks) +'.txt')
+            filepath = os.path.join(os.path.abspath(path), 'fft' + str(indeks) + '.txt')
             files.append(filepath)
             numpy.savetxt(filepath, tablica.view(float))
             indeks += 1

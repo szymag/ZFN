@@ -1,7 +1,7 @@
 import logging
-import math
 import os
 import unittest
+
 import numpy as np
 
 from src.eig_problem.FFTzPliku import FFTzPliku
