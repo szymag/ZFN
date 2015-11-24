@@ -65,5 +65,3 @@ class WektorySieci(object):
     def wektor_g(self):
         return [(self.wektor_b(1)[0] * i, self.wektor_b(2)[1] * i) for i in self.zakres_1]
 
-a = WektorySieci(10, 10, 90, 5, 5)
-print(a.wektor_g())

@@ -1,12 +1,13 @@
 import glob
+import os
 
 from PIL import Image
 from numpy import zeros
 
 
 class TablicaWartosciPikseli:
-    def __init__(self):
-        self.lista_plikow = list((glob.glob("*.png")))
+    def __init__(self, start_path="."):
+        self.lista_plikow = list((glob.glob(os.path.join(start_path, "*.png"))))
 
     @staticmethod
     def stworz_tablice(wczytany_plik):
