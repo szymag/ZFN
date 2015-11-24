@@ -20,5 +20,5 @@ class ParametryMaterialowe:
     r = 7e-9
     x = 0
 
-    def __init__(self, rozmiar_macierzy_blok):
-        self.rozmiar_macierzy_blok = rozmiar_macierzy_blok
+    def __init__(self, ilosc_wektorow):
+        self.ilosc_wektorow = ilosc_wektorow

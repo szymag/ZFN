@@ -1,21 +1,20 @@
-import scipy
+from scipy import linalg
 from numpy import linspace, pi, savetxt
-
-from src.eig_problem.MacierzDoZagadnienia1 import MacierzDoZagadnienia1
+from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
 class ZagadnienieWlasne(ParametryMaterialowe):
-    def __init__(self, rozmiar_macierzy_blok, ilosc_wektorow_q):
-        ParametryMaterialowe.__init__(self, rozmiar_macierzy_blok)
-        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.4, ilosc_wektorow_q)]
+    def __init__(self, ilosc_wektorow, ilosc_wektorow_q):
+        ParametryMaterialowe.__init__(self, ilosc_wektorow)
+        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.5, ilosc_wektorow_q)]
 
     def utworz_macierz_M(self, wektor_q):
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-        macierz = MacierzDoZagadnienia1(self.rozmiar_macierzy_blok).wypelnienie_macierzy(wektor_q)
+        macierz = MacierzDoZagadnienia(self.ilosc_wektorow).wypelnienie_macierzy(wektor_q)
         return macierz
 
     def zagadnienie_wlasne(self, wektor_q):
@@ -25,7 +24,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         macierz_M = self.utworz_macierz_M(wektor_q)
-        return scipy.linalg.eig(macierz_M, right=False)
+        return linalg.eig(macierz_M, right=False)
 
     def czestosci_wlasne(self, wektor_q):
         assert type(wektor_q) == tuple, \

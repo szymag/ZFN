@@ -2,10 +2,13 @@ import math
 import unittest
 
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
-
+from src.eig_problem.FFTfromFile import FFTfromFile
+from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 class TestEigProblem(unittest.TestCase):
     q = MacierzDoZagadnienia(5)
+    w = FFTfromFile(9)
+    e = WektorySieciOdwrotnej(30e-9, 30e-9, 9)
 
     def test_suma_roznica_wektorow(self):
         self.assertEqual(self.q.suma_roznica_wektorow((0, 0), (0, 0), '+'), (0, 0))
@@ -28,3 +31,5 @@ class TestEigProblem(unittest.TestCase):
         self.assertEqual(self.q.norma_wektorow((10, 10), (-50, -50), '+'), math.sqrt(40 ** 2 + 40 ** 2))
         self.assertEqual(self.q.norma_wektorow((1000, 0), (0, 0), '+'), 1000)
 
+    def test_wektory(self):
+        self.assertEqual(list(self.w.vector_to_matrix()), list(self.e.lista_wektorow))
