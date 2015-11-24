@@ -13,9 +13,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     """
     Klasa, w której tworzona jest macierz zagadnienia własnego.
     """
-    def __init__(self, rozmiar_macierzy_blok):
-        ParametryMaterialowe.__init__(self, rozmiar_macierzy_blok)
-        self.macierz_M = zeros((2 * rozmiar_macierzy_blok, 2 * rozmiar_macierzy_blok))
+    def __init__(self, ilosc_wektorow):
+        ParametryMaterialowe.__init__(self, ilosc_wektorow)
+        self.macierz_M = zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow))
 
     def wspolczynnik(self, wektor_1, wektor_2):
         """
@@ -128,9 +128,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         Metoda dodająca do odpowienich elementów macierzowych pierwszy element z wyrażenia na M: 1 lub -1
         """
-        for i in range(self.rozmiar_macierzy_blok, 2 * self.rozmiar_macierzy_blok):
-            self.macierz_M[i - self.rozmiar_macierzy_blok][i] += 1
-            self.macierz_M[i][i - self.rozmiar_macierzy_blok] -= 1
+        for i in range(self.ilosc_wektorow, 2 * self.ilosc_wektorow):
+            self.macierz_M[i - self.ilosc_wektorow][i] += 1
+            self.macierz_M[i][i - self.ilosc_wektorow] -= 1
 
     def drugie_wyrazenie(self, wektor_1, wektor_2, wektor_q):
         """
@@ -169,11 +169,11 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert typ_macierzy == 'xy' or typ_macierzy == 'yx', \
             'it is assumed that block matrixes are named xy or yx'
         tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
-        assert tmp1 != 0, (wektor_q, wektor_2, tmp1)
-        tmp2 = 1 - self.funkcja_c(wektor_q, wektor_2, "+")
+        assert tmp1 != 0, 'probably insert forbidden q vector e.g. q = 0, q = 1'
+        tmp2 = self.funkcja_c(wektor_q, wektor_2, "+")
         tmp3 = self.wspolczynnik(wektor_1, wektor_2)
         if typ_macierzy == 'xy':
-            return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1 ** 2) * tmp2 * tmp3
+            return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1 ** 2) * (1 - tmp2) * tmp3
         elif typ_macierzy == 'yx':
             return tmp2 * tmp3 / self.H0
 
@@ -224,7 +224,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def lista_wektorow(self):
         # TODO Dokończyć dokumentację
-        indeks = self.rozmiar_macierzy_blok
+        indeks = self.ilosc_wektorow
         lista = WektorySieciOdwrotnej(self.a, self.a, indeks)
         return lista.lista_wektorow
 
@@ -234,7 +234,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
 
-        indeks = self.rozmiar_macierzy_blok
+        indeks = self.ilosc_wektorow
         lista_wektorow = self.lista_wektorow()
         assert len(lista_wektorow) == indeks, 'number of vector do not fit to matrix'
         self.delta_kroneckera()
@@ -248,3 +248,4 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def wypisz_macierz(self):
         savetxt('macierz.txt', array(self.macierz_M))
+
