@@ -13,7 +13,7 @@ class WektorySieciOdwrotnej:
         self.dlugosc_skladowej_z = dlugosc_skladowej_z
         self.ilosc_wektorow = rozmiar_macierzy_blok
 
-    def wspolrzedna_wektora(self, k):
+    def wspolrzedna_wektora(self, k, typ):
         """
         Metoda zwracająca listę współrzędnych wektora sieci odwrotnej zdefiniowanego następująco: 2*pi*n/a, gdzie a jest
         stałą sieciową, a n liczbą całkowitą numerującą wektor w danym zakresie(-nmax, nmax). Dodatkowo, na metodę
@@ -26,24 +26,22 @@ class WektorySieciOdwrotnej:
         assert k == 1 or k == 2, 'k should bo 1 or 2'
         assert sqrt(self.ilosc_wektorow) == int(sqrt(self.ilosc_wektorow)) and self.ilosc_wektorow % 2 != 0, \
             'size of bolck matrix shuld gave natural number of sqrt and be odd'
-        lista = array(range(int((-sqrt(self.ilosc_wektorow) + 1) / 2), int(sqrt(self.ilosc_wektorow) / 2) + 1))
+        assert typ == 'max' or typ == 'min', 'typ should by max or min'
+        if typ == 'max':
+            indeks = int(2 * sqrt(self.ilosc_wektorow)/2) - 1
+        else:
+            indeks = int(sqrt(self.ilosc_wektorow + 1) /2)
+        lista = array(range(-indeks, indeks + 1))
         if k == 1:
             lista = [2 * pi * int(i) / self.dlugosc_skladowej_y for i in lista]
         elif k == 2:
             lista = [2 * pi * int(i) / self.dlugosc_skladowej_z for i in lista]
         return lista
 
-    def lista_wektorow(self):
+    def lista_wektorow(self, typ):
         """
         Metoda obliczająca iloczyn kartezjański dla dwóch wygenerowanych list metodą 'wspolrzedna_wektora'.
         :return: Lista wektorów sieci odwrotnej.
         """
-        lista = list(product(*(self.wspolrzedna_wektora(1), self.wspolrzedna_wektora(2))))
+        lista = list(product(*(self.wspolrzedna_wektora(1, typ), self.wspolrzedna_wektora(2, typ))))
         return lista
-
-    def wektory_odwrotne(self):
-        lista1 = array(range(int(-self.ilosc_wektorow / 2), 0))
-        lista1 = [((k * (k % 2)), (k * ((k + 1) % 2))) for k in lista1]
-        lista2 = array(range(0, int(-self.ilosc_wektorow / 2)))
-        lista2 = [((k * ((k + 1) % 2)), (k * (k % 2))) for k in lista2]
-        return lista1 + lista2

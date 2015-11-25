@@ -12,7 +12,7 @@ class TablicaWartosciPikseli:
     @staticmethod
     def stworz_tablice(wczytany_plik):
         plik = Image.open(wczytany_plik)
-        piksele = [abs((k / 255) - 1) for k in list(plik.getdata(0))]
+        piksele = [abs((k / 255) - 1) + 1 for k in list(plik.getdata(0))]
         rozmiar = plik.size
         tablica_pikseli = list(zeros(rozmiar[1]))
         for i in range(0, rozmiar[1]):

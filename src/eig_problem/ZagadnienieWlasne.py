@@ -1,7 +1,7 @@
 from numpy import linspace, pi, savetxt
 from scipy import linalg
 
-from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
+from src.eig_problem.MacierzDoZagadnienia1 import MacierzDoZagadnienia1
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
@@ -27,7 +27,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-        macierz = MacierzDoZagadnienia(self.ilosc_wektorow).wypelnienie_macierzy(wektor_q)
+        macierz = MacierzDoZagadnienia1(self.ilosc_wektorow).wypelnienie_macierzy(wektor_q)
         return macierz
 
     def zagadnienie_wlasne(self, wektor_q):
@@ -80,5 +80,5 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         savetxt('1.txt', plik)
 
 
-q = ZagadnienieWlasne(9, 20)
+q = ZagadnienieWlasne(25, 30)
 q.wypisz_do_pliku()

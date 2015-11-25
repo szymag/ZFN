@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-import scipy.special
-from numpy import pi, sqrt, cosh, exp, dot
+from numpy import sqrt, cosh, exp, dot
 from numpy import zeros, array, savetxt
-
+from src.eig_problem.DFT import DFT
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
@@ -16,49 +15,17 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     def __init__(self, ilosc_wektorow):
         ParametryMaterialowe.__init__(self, ilosc_wektorow)
         self.macierz_M = zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow), dtype=complex)
+        self.ilosc_wektorow = ilosc_wektorow
+        self.slownik_dlugosc_wymiany = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[1]
+        self.slownik_wspolczynnik = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[0]
 
     def wspolczynnik(self, wektor_1, wektor_2):
-        """
-        Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
-        z nich różnica.
-        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
-        :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :return: współczynnik Fouriera dla różnicy wektorów sieci odwrotnej.
-        """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-        if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.MoCo - self.MoPy) * pi * self.r ** 2 / (self.a ** 2) + self.MoPy
-        else:
-            assert wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 != 0, 'division by 0'
-            return 2 * (self.MoCo - self.MoPy) * pi * self.r ** 2 / self.a ** 2 * \
-                   scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) / \
-                   (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
+        return self.slownik_wspolczynnik[wekt_wypadkowy]
 
     def dlugosc_wymiany(self, wektor_1, wektor_2):
-        """
-        Metoda obliczająca długość wymiany, dla dwóch zadanych wektorów.
-        z nich różnica.
-        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
-        :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :return: Długość wymiany w postaci odpowiadającego różnicy wektorów współczynnika Fouriera.
-        """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
-
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-
-        if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) + self.lPy
-        else:
-            return 2 * (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) * \
-                   scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
-                   / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
+        return self.slownik_dlugosc_wymiany[wekt_wypadkowy]
 
     @staticmethod
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
@@ -226,17 +193,16 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         # TODO Dokończyć dokumentację
         indeks = self.ilosc_wektorow
         lista = WektorySieciOdwrotnej(self.a, self.a, indeks)
-        return lista.lista_wektorow()
+        return lista.lista_wektorow('min')
 
     def wypelnienie_macierzy(self, wektor_q):
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-
         indeks = self.ilosc_wektorow
         lista_wektorow = self.lista_wektorow()
-        assert len(lista_wektorow()) == indeks, 'number of vector do not fit to matrix'
+        assert len(lista_wektorow) == indeks, 'number of vector do not fit to matrix'
         self.delta_kroneckera()
         for i in range(indeks, 2 * indeks):
             for j in range(0, indeks):
@@ -247,5 +213,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         return self.macierz_M
 
     def wypisz_macierz(self):
-        savetxt('macierz.txt', array(self.macierz_M))
+        savetxt('macierz1.txt', array(self.macierz_M))
+
 

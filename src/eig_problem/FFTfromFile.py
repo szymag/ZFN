@@ -28,7 +28,7 @@ class FFTfromFile(ParametryMaterialowe):
         index = len(self.table[0])
         for i in range(len(self.table)):
             for j in range(len(self.table[0])):
-                coefficient[i + j * index] = self.table[i][j] / max_value
+                coefficient[i + j * index] = self.table[i][j]
         assert max_value >= np.amax(abs(self.table))
         return coefficient
 
@@ -48,11 +48,10 @@ class FFTfromFile(ParametryMaterialowe):
 
     def test_coeff(self):
         table = self.table
-
         max_value = np.amax(self.table)
         normalized_max_value = (self.MoCo - self.MoPy) * np.pi * self.r ** 2 / self.a ** 2 + self.MoPy
-        print(normalized_max_value)
-        table = table / max_value * normalized_max_value
+        table = table * (self.MoCo - self.MoPy)
+        print(np.amax(table))
         table = np.fft.ifft2(np.fft.fftshift(table)).real
         np.savetxt('ifft1.txt', table)
         x, y = np.mgrid[slice(0, 30, 1), slice(0, 30, 1)]

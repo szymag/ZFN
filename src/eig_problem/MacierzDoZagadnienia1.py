@@ -17,7 +17,7 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
     def __init__(self, ilosc_wektorow):
         ParametryMaterialowe.__init__(self, ilosc_wektorow)
         self.macierz_M = zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow), dtype=complex)
-        # self.lista_wspolczynnikow = FFTfromFile(ilosc_wektorow).dict_vector_coeff()
+        self.lista_wspolczynnikow = FFTfromFile(ilosc_wektorow).dict_vector_coeff()
         self.lista_wektorow = FFTfromFile(ilosc_wektorow).vector_to_matrix()
 
     def wspolczynnik(self, wektor_1, wektor_2):
@@ -33,13 +33,11 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
         assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-        if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.MoCo - self.MoPy) * pi * self.r ** 2 / (self.a ** 2) + self.MoPy
+        wspolczynnik = self.lista_wspolczynnikow[wekt_wypadkowy]
+        if wekt_wypadkowy == (0, 0):
+            return wspolczynnik * (self.MoCo - self.MoPy) + self.MoPy
         else:
-            assert wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 != 0, 'division by 0'
-            return 2 * (self.MoCo - self.MoPy) * pi * self.r ** 2 / self.a ** 2 * \
-                   special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) / \
-                   (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
+            return wspolczynnik * (self.MoCo - self.MoPy)
 
     def dlugosc_wymiany(self, wektor_1, wektor_2):
         """
@@ -55,13 +53,12 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
 
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-
-        if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) + self.lPy
+        wspolczynnik = self.lista_wspolczynnikow[wekt_wypadkowy]
+        if wekt_wypadkowy == (0, 0):
+            return wspolczynnik * (self.lCo - self.lPy) + self.lPy
         else:
-            return 2 * (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) * \
-                   special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
-                   / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
+            return wspolczynnik * (self.lCo - self.lPy)
+
     @staticmethod
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
         """
@@ -244,4 +241,3 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
 
     def wypisz_macierz(self):
         savetxt('macierz.txt', array(self.macierz_M))
-

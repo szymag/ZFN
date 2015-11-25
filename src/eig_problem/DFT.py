@@ -36,9 +36,9 @@ class DFT(ParametryMaterialowe):
         # TODO Dokończyć dokumentację
         indeks = self.ilosc_wektorow
         lista = WektorySieciOdwrotnej(self.a, self.a, indeks)
-        return lista.lista_wektorow()
+        return lista.lista_wektorow('max')
 
-    def wspolczynnik(self, wektor_1, wektor_2):
+    def wspolczynnik(self, wekt_wypadkowy):
         """
         Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
         z nich różnica.
@@ -46,20 +46,17 @@ class DFT(ParametryMaterialowe):
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: współczynnik Fouriera dla różnicy wektorów sieci odwrotnej.
         """
-        assert len(wektor_1) == 2, \
+        assert len(wekt_wypadkowy) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
-        wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
         if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.MoCo - self.MoPy) * pi * self.r ** 2 / (self.a ** 2) + self.MoPy
+            return (self.MoCo - self.MoPy) * np.pi * self.r ** 2 / (self.a ** 2) + self.MoPy
         else:
             assert wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 != 0, 'division by 0'
-            return 2 * (self.MoCo - self.MoPy) * pi * self.r ** 2 / self.a ** 2 * \
+            return 2 * (self.MoCo - self.MoPy) * np.pi * self.r ** 2 / self.a ** 2 * \
                    special.j1(np.sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) / \
                    (np.sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
 
-    def dlugosc_wymiany(self, wektor_1, wektor_2):
+    def dlugosc_wymiany(self, wekt_wypadkowy):
         """
         Metoda obliczająca długość wymiany, dla dwóch zadanych wektorów.
         z nich różnica.
@@ -67,16 +64,22 @@ class DFT(ParametryMaterialowe):
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: Długość wymiany w postaci odpowiadającego różnicy wektorów współczynnika Fouriera.
         """
-        assert len(wektor_1) == 2, \
+        assert len(wekt_wypadkowy) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
-
-        wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
 
         if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) + self.lPy
+            return (self.lCo - self.lPy) * np.pi * self.r ** 2 / (self.a ** 2) + self.lPy
         else:
-            return 2 * (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) * \
+            return 2 * (self.lCo - self.lPy) * np.pi * self.r ** 2 / (self.a ** 2) * \
                    special.j1(np.sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
                    / (np.sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
+
+    def slownik_wspolczynnikow(self):
+        lista_wektorow = self.lista_wektorow()
+        dlugosc_wymiany = np.zeros(len(lista_wektorow), dtype=complex)
+        wspolczynnik = np.zeros(len(lista_wektorow), dtype=complex)
+        for i, j in list(enumerate(lista_wektorow)):
+            dlugosc_wymiany[int(i)] = self.dlugosc_wymiany(j)
+            wspolczynnik[int(i)] = self.wspolczynnik(j)
+        return dict(list(zip(lista_wektorow, wspolczynnik))), dict(list(zip(lista_wektorow, dlugosc_wymiany)))
+

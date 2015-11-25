@@ -10,7 +10,7 @@ class FFT:
         pass
 
     def fft(self, tablica):
-        return np.fft.fftshift(np.fft.fft2(tablica))
+        return np.fft.fftshift(np.fft.fft2(tablica, norm='ortho'))/len(tablica)
 
     def wywolaj_fft(self, path='.'):
         lista_plikow = TablicaWartosciPikseli(path).tablica_dla_plikow()
@@ -43,3 +43,6 @@ class FFT:
     def wczytaj_z_pliku(self):
         tablica = np.loadtxt(".txt")
         return tablica
+
+q = FFT()
+q.wypisz_do_pliku()
