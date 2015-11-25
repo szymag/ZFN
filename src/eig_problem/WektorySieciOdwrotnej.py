@@ -33,7 +33,6 @@ class WektorySieciOdwrotnej:
             lista = [2 * pi * int(i) / self.dlugosc_skladowej_z for i in lista]
         return lista
 
-    @property
     def lista_wektorow(self):
         """
         Metoda obliczająca iloczyn kartezjański dla dwóch wygenerowanych list metodą 'wspolrzedna_wektora'.
