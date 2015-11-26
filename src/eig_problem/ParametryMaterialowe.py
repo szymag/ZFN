@@ -17,8 +17,8 @@ class ParametryMaterialowe:
     APy = 1.1e-11
     lCo = 2 * ACo / (mu0 * MoCo)
     lPy = 2 * APy / (mu0 * MoPy)
-    r = 7e-9
+    r = 14e-9
     x = 0
 
-    def __init__(self, rozmiar_macierzy_blok):
-        self.rozmiar_macierzy_blok = rozmiar_macierzy_blok
+    def __init__(self, ilosc_wektorow):
+        self.ilosc_wektorow = ilosc_wektorow

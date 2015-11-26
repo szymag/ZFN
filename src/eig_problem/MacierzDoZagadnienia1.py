@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-import scipy.special
-from numpy import pi, sqrt, cosh, exp, dot
+from numpy import sqrt, cosh, exp, dot
 from numpy import zeros, array, savetxt
 
-from src.eig_problem.FFTzPliku import FFTzPliku
+from src.eig_problem.FFTfromFile import FFTfromFile
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
@@ -14,11 +13,13 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
     Klasa, w której tworzona jest macierz zagadnienia własnego.
     """
 
-    def __init__(self, rozmiar_macierzy_blok):
-        ParametryMaterialowe.__init__(self, rozmiar_macierzy_blok)
-        self.macierz_M = zeros((2 * rozmiar_macierzy_blok, 2 * rozmiar_macierzy_blok))
-        self.lista_wspolczynnikow = FFTzPliku(rozmiar_macierzy_blok).dict_vector_coeff()
-        self.lista_wektorow = FFTzPliku(rozmiar_macierzy_blok).vector_to_matrix()
+    def __init__(self, ilosc_wektorow):
+        ParametryMaterialowe.__init__(self, ilosc_wektorow)
+        self.macierz_M = zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow), dtype=complex)
+        self.ilosc_wektorow = ilosc_wektorow
+        self.lista_wspolczynnik = FFTfromFile(ilosc_wektorow).dict_vector_coeff()
+        self.lista_dlugosc_wymiany = FFTfromFile(ilosc_wektorow).dict_vector_coeff()
+        self.lista_wektorow = FFTfromFile(ilosc_wektorow).vector_to_matrix()
 
     def wspolczynnik(self, wektor_1, wektor_2):
         """
@@ -28,8 +29,16 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: współczynnik Fouriera dla różnicy wektorów sieci odwrotnej.
         """
-        wek_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-        return self.lista_wspolczynnikow[wek_wypadkowy]
+        assert len(wektor_1) == 2, \
+            'form of wektor_q is forbidden. wektor_1 should have two arguments'
+        assert len(wektor_2) == 2, \
+            'form of wektor_q is forbidden. wektor_2 should have two arguments'
+        wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
+        wspolczynnik = self.lista_wspolczynnik[wekt_wypadkowy]
+        if wekt_wypadkowy == (0, 0):
+            return wspolczynnik * (self.MoCo - self.MoPy) + self.MoPy
+        else:
+            return wspolczynnik * (self.MoCo - self.MoPy)
 
     def dlugosc_wymiany(self, wektor_1, wektor_2):
         """
@@ -45,13 +54,11 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
 
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-
-        if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
-            return (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) + self.lPy
+        wspolczynnik = self.lista_wspolczynnik[wekt_wypadkowy]
+        if wekt_wypadkowy == (0, 0):
+            return wspolczynnik * (self.lCo - self.lPy) + self.lPy
         else:
-            return 2 * (self.lCo - self.lPy) * pi * self.r ** 2 / (self.a ** 2) * \
-                   scipy.special.j1(sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
-                   / (sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
+            return wspolczynnik * (self.lCo - self.lPy)
 
     @staticmethod
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
@@ -121,9 +128,9 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
         """
         Metoda dodająca do odpowienich elementów macierzowych pierwszy element z wyrażenia na M: 1 lub -1
         """
-        for i in range(self.rozmiar_macierzy_blok, 2 * self.rozmiar_macierzy_blok):
-            self.macierz_M[i - self.rozmiar_macierzy_blok][i] += 1
-            self.macierz_M[i][i - self.rozmiar_macierzy_blok] -= 1
+        for i in range(self.ilosc_wektorow, 2 * self.ilosc_wektorow):
+            self.macierz_M[i - self.ilosc_wektorow][i] += 1
+            self.macierz_M[i][i - self.ilosc_wektorow] -= 1
 
     def drugie_wyrazenie(self, wektor_1, wektor_2, wektor_q):
         """
@@ -162,11 +169,11 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
         assert typ_macierzy == 'xy' or typ_macierzy == 'yx', \
             'it is assumed that block matrixes are named xy or yx'
         tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
-        assert tmp1 != 0, (wektor_q, wektor_2, tmp1)
-        tmp2 = 1 - self.funkcja_c(wektor_q, wektor_2, "+")
+        assert tmp1 != 0, 'probably insert forbidden q vector e.g. q = 0, q = 1'
+        tmp2 = self.funkcja_c(wektor_q, wektor_2, "+")
         tmp3 = self.wspolczynnik(wektor_1, wektor_2)
         if typ_macierzy == 'xy':
-            return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1 ** 2) * tmp2 * tmp3
+            return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1 ** 2) * (1 - tmp2) * tmp3
         elif typ_macierzy == 'yx':
             return tmp2 * tmp3 / self.H0
 
@@ -216,12 +223,10 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
             + self.czwarte_wyrazenie(wektor_1, wektor_2)
 
     def wypelnienie_macierzy(self, wektor_q):
-        assert type(wektor_q) == tuple, \
-            'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
 
-        indeks = self.rozmiar_macierzy_blok
+        indeks = self.ilosc_wektorow
         lista_wektorow = self.lista_wektorow
         assert len(lista_wektorow) == indeks, 'number of vector do not fit to matrix'
         self.delta_kroneckera()
