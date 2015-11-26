@@ -1,11 +1,14 @@
 import numpy as np
 from scipy import special
-
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 
 class DFT(ParametryMaterialowe):
+    """
+    Klasa obliczająca współczynniki Fouriera w sposób analityczny.
+    """
+
     def __init__(self, ilosc_wektorow):
         ParametryMaterialowe.__init__(self, ilosc_wektorow)
 
@@ -16,7 +19,7 @@ class DFT(ParametryMaterialowe):
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
-        :return: suma lub rożnica wektorów
+        :return: Suma lub rożnica wektorów.
         """
         assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
@@ -33,48 +36,58 @@ class DFT(ParametryMaterialowe):
             return tuple([k[0] + k[1] for k in zip(wektor_1, wektor_2)])
 
     def lista_wektorow(self):
-        # TODO Dokończyć dokumentację
+        """
+        Metoda, której zadaniem jest zwrócenie listy wektorów dla obliczanych współczynników. Zwracane wektory są
+        z dwukrotnie większego zakresu.
+        :return: Lista wektorów.
+        """
         indeks = self.ilosc_wektorow
         lista = WektorySieciOdwrotnej(self.a, self.a, indeks)
         return lista.lista_wektorow('max')
 
-    def wspolczynnik(self, wekt_wypadkowy):
+    def wspolczynnik(self, wektor):
         """
         Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
         z nich różnica.
-        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
-        :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :return: współczynnik Fouriera dla różnicy wektorów sieci odwrotnej.
+        :type wektor: tuple
+        :param wektor: Wektor sieci odwrotnej, dla którego obliczany jest współczynnik Fouriera.
+        :return: Współczynnik Fouriera dla zadanego wektora.
         """
-        assert len(wekt_wypadkowy) == 2, \
+        assert len(wektor) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
+        if wektor[0] == 0 and wektor[1] == 0:
             return (self.MoCo - self.MoPy) * np.pi * self.r ** 2 / (self.a ** 2) + self.MoPy
         else:
-            assert wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2 != 0, 'division by 0'
+            assert wektor[0] ** 2 + wektor[1] ** 2 != 0, 'division by 0'
             return 2 * (self.MoCo - self.MoPy) * np.pi * self.r ** 2 / self.a ** 2 * \
-                   special.j1(np.sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) / \
-                   (np.sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
+                   special.j1(np.sqrt(wektor[0] ** 2 + wektor[1] ** 2) * self.r) / \
+                   (np.sqrt(wektor[0] ** 2 + wektor[1] ** 2) * self.r)
 
-    def dlugosc_wymiany(self, wekt_wypadkowy):
+    def dlugosc_wymiany(self, wektor):
         """
         Metoda obliczająca długość wymiany, dla dwóch zadanych wektorów.
         z nich różnica.
-        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
-        :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :return: Długość wymiany w postaci odpowiadającego różnicy wektorów współczynnika Fouriera.
+        :type wektor: tuple
+        :param wektor: Wektor sieci odwrotnej, dla którego obliczany jest współczynnik Fouriera.
+        :return: Długość wymiany dla zadanego wektora.
         """
-        assert len(wekt_wypadkowy) == 2, \
+        assert len(wektor) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
 
-        if wekt_wypadkowy[0] == 0 and wekt_wypadkowy[1] == 0:
+        if wektor[0] == 0 and wektor[1] == 0:
             return (self.lCo - self.lPy) * np.pi * self.r ** 2 / (self.a ** 2) + self.lPy
         else:
             return 2 * (self.lCo - self.lPy) * np.pi * self.r ** 2 / (self.a ** 2) * \
-                   special.j1(np.sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r) \
-                   / (np.sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2) * self.r)
+                   special.j1(np.sqrt(wektor[0] ** 2 + wektor[1] ** 2) * self.r) \
+                   / (np.sqrt(wektor[0] ** 2 + wektor[1] ** 2) * self.r)
 
     def slownik_wspolczynnikow(self):
+        """
+        Metoda, której zadaniem jest odpowiednie zestawienie współczynników Fouriera oraz długości wymiany
+        wraz z wektorami sieci odwrotnej.
+        :return: Zwraca dwa słowniki. Odpowiednio wektory sieci odwrotnej ze współczynnikami oraz wektory sieci
+        odwrotnej z długościami wymiany.
+        """
         lista_wektorow = self.lista_wektorow()
         dlugosc_wymiany = np.zeros(len(lista_wektorow), dtype=complex)
         wspolczynnik = np.zeros(len(lista_wektorow), dtype=complex)
@@ -82,4 +95,3 @@ class DFT(ParametryMaterialowe):
             dlugosc_wymiany[int(i)] = self.dlugosc_wymiany(j)
             wspolczynnik[int(i)] = self.wspolczynnik(j)
         return dict(list(zip(lista_wektorow, wspolczynnik))), dict(list(zip(lista_wektorow, dlugosc_wymiany)))
-

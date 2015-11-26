@@ -1,4 +1,4 @@
-from numpy import linspace, pi, savetxt
+from numpy import linspace, pi, savetxt, identity
 from scipy import linalg
 
 from src.eig_problem.MacierzDoZagadnienia1 import MacierzDoZagadnienia1
@@ -16,10 +16,11 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow)
-        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.99, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.5, ilosc_wektorow_q)]
 
     def utworz_macierz_M(self, wektor_q):
         """
+        :type wektor_q tuple
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Zwraca tablicę do zagadnienia wlasnego, która została utworzona w klasie "MacierzDoZagadnienia".
         """
@@ -35,10 +36,11 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Poprzez metodę 'utworz_macierz_M' tworzy
         sobie tablicę, dla której następnie oblicza wartości i wektory własne. Jest ona także przystosowana dla
         uogólnionego zagadnienia własnego.
+        :type wektor_q tuple
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        # m_jednostkowa = identity(2 * self.rozmiar_macierzy_blok)
+        m_jednostkowa = identity(2 * self.ilosc_wektorow)
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2,\
@@ -50,6 +52,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         """
         Metoda, w której przelicza się wartości własne w metodzie 'zagadnienie wlasne' na czestosci wlasne' wzbudzen
         w krysztale magnonicznym.
+        :type wektor_q: tuple
         :param wektor_q:  Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Częstości własne, obliczane według wzoru: w = -a.imag * gamma * mu0*H0, gdzie w - cżęstość własne,
         a.imag część urojona wartości własnej. Ponieważ wartości własne są przmnażane przez 1/i, wystarczy wziąć część
@@ -78,7 +81,3 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
         savetxt('1.txt', plik)
-
-
-q = ZagadnienieWlasne(49, 60)
-q.wypisz_do_pliku()

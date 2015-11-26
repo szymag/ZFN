@@ -10,7 +10,8 @@ from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 class MacierzDoZagadnienia1(ParametryMaterialowe):
     """
-    Klasa, w której tworzona jest macierz zagadnienia własnego.
+    Klasa, w której tworzona jest macierz zagadnienia własnego. Pobiera ona współczynniki Fouriera z klasy FFTfromFile.
+    Współczynniki są dla niej tworzone poprzez FFT z pliku graficznego.
     """
 
     def __init__(self, ilosc_wektorow):
@@ -25,6 +26,8 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
         """
         Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
         z nich różnica.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: współczynnik Fouriera dla różnicy wektorów sieci odwrotnej.
@@ -44,6 +47,8 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
         """
         Metoda obliczająca długość wymiany, dla dwóch zadanych wektorów.
         z nich różnica.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: Długość wymiany w postaci odpowiadającego różnicy wektorów współczynnika Fouriera.
@@ -64,6 +69,9 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
         """
         Metoda, która w zależności od znaku oblicza sumę, bądż różnicę wektorów.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type znak: str
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
@@ -87,6 +95,9 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
         """
         Metoda obliczająca wartość funkcji C zdefinoweanej wzorem: f(g, x) = cosh(|g|x)*exp(-|g|d/2), gdzie g jest
         wektorem, a x współrzędną iksową, tzn. miejscem na warstwie, dla którego wykreśla się zależność dyspersyjną.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type znak: str
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :param znak: określa czy obliczana ma być różnica, czy suma wektorów.
@@ -107,6 +118,9 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
     def norma_wektorow(self, wektor_1, wektor_2, znak):
         """
         Metoda wyliczająca wypadkową długość dwóch wektorów.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type znak: str
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
@@ -134,7 +148,10 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
 
     def drugie_wyrazenie(self, wektor_1, wektor_2, wektor_q):
         """
-        Metoda obliczająca drugi wyraz na element
+        Metoda obliczająca człon elmentu macierzowego związana z polem wymiany.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type wektor_q: tuple
         :param wektor_1: i-ty wektor
         :param wektor_2: j-ty wektor
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
@@ -154,6 +171,11 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
 
     def trzecie_wyrazenie(self, wektor_1, wektor_2, wektor_q, typ_macierzy):
         """
+        Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type wektor_q: tuple
+        :type typ_macierzy: str
         :param wektor_1: i-ty wektor.
         :param wektor_2: j-ty wektor.
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
@@ -179,6 +201,9 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
 
     def czwarte_wyrazenie(self, wektor_1, wektor_2):
         """
+        Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
         :param wektor_1: i-ty wektor.
         :param wektor_2: j-ty wektor.
         :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
@@ -196,6 +221,17 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
                    * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
 
     def macierz_xy(self, wektor_1, wektor_2, wektor_q):
+        """
+        Wywołuje metody wyliczające wyrażenia wchodzące do elementów macierzowych. Ta metoda zapełnia górną prawą
+        macierz blokową, wchodzącą do zagadnienia własnego.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type wektor_q: tuple
+        :param wektor_1: i-ty wektor.
+        :param wektor_2: j-ty wektor.
+        :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
+        :return: element macierzowy
+        """
         assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert len(wektor_2) == 2, \
@@ -209,20 +245,37 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
             - self.czwarte_wyrazenie(wektor_1, wektor_2)
 
     def macierz_yx(self, wektor_1, wektor_2, wektor_q):
+        """
+        Wywołuje metody wyliczające wyrażenia wchodzące do elementów macierzowych. Ta metoda zapełnia lewą dolną
+        macierz blokową, wchodzącą do zagadnienia własnego.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type wektor_q: tuple
+        :param wektor_1: i-ty wektor.
+        :param wektor_2: j-ty wektor.
+        :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
+        :return: element macierzowy
+        """
         assert len(wektor_1) == 2, \
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-
-        # TODO Dokończyć dokumentację
         return \
             - self.drugie_wyrazenie(wektor_1, wektor_2, wektor_q) \
             - self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "yx") \
             + self.czwarte_wyrazenie(wektor_1, wektor_2)
 
     def wypelnienie_macierzy(self, wektor_q):
+        """
+        Główna metoda tej klasy. Wywołuje ona dwie metody: 'macierz_xy' oraz 'macierz_yx. W pętli, dla każdego elementu
+        z odpowiednich macierzy blokowych wypełnia je.
+        :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
+        :return: Tablica do zagadnienia własnego.
+        """
+        assert type(wektor_q) == tuple, \
+            'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
 
@@ -239,4 +292,11 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
         return self.macierz_M
 
     def wypisz_macierz(self):
+        """
+        :return: Wypisuje tablice do pliku tekstowego.
+         Ważne! Przed wypisaniem, należy wypełnić macierz_M metodą 'wypełnienie_macierzy'
+        """
         savetxt('macierz.txt', array(self.macierz_M))
+
+    if __name__ == 'main':
+        pass

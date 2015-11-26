@@ -11,6 +11,7 @@ class ParametryMaterialowe:
     mu0 = 4e-7 * pi
     d = 4e-9
     a = 30e-9
+    b = 30e-9
     MoCo = 1.15e6
     MoPy = 0.658e6
     ACo = 2.88e-11

@@ -6,11 +6,21 @@ from numpy import zeros
 
 
 class TablicaWartosciPikseli:
+    """
+    Klasa konwertująca pliki graficzne '*.png' na tablice. Klasa przygotowana jest na obrazki dwukolorowe. Biały kolor
+    oznacza wypełnienie, a czarny rdzeń.
+    """
     def __init__(self, start_path="."):
         self.lista_plikow = list((glob.glob(os.path.join(start_path, "*.png"))))
 
     @staticmethod
     def stworz_tablice(wczytany_plik):
+        """
+        Metoda tworzy tablice, odpowiadającą każdemu plikowi '*.png' w katalogu. Kolorowi czarnemu odpowiada wartość 1,
+        a białemu 0.
+        :param wczytany_plik:
+        :return: Tablica wartości pikseli.
+        """
         plik = Image.open(wczytany_plik)
         piksele = [abs((k / 255) - 1) for k in list(plik.getdata(0))]
         rozmiar = plik.size
@@ -20,7 +30,8 @@ class TablicaWartosciPikseli:
         return tablica_pikseli
 
     def tablica_dla_plikow(self):
+        """
+        Wywołanie metody 'stworz_tablice' dla wszystkich tablic przetwarzanych w klasie.
+        :return: Lista tablic.
+        """
         return [self.stworz_tablice(str(k)) for k in self.lista_plikow]
-
-    def konwersja_dwa_kolory(self):
-        return self.lista_plikow
