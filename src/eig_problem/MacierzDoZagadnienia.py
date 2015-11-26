@@ -3,6 +3,7 @@
 
 from numpy import sqrt, cosh, exp, dot
 from numpy import zeros, array, savetxt
+
 from src.eig_problem.DFT import DFT
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
@@ -18,6 +19,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         self.ilosc_wektorow = ilosc_wektorow
         self.slownik_dlugosc_wymiany = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[1]
         self.slownik_wspolczynnik = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[0]
+        self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.a, ilosc_wektorow).lista_wektorow('min')
 
     def wspolczynnik(self, wektor_1, wektor_2):
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
@@ -189,19 +191,11 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             - self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "yx") \
             + self.czwarte_wyrazenie(wektor_1, wektor_2)
 
-    def lista_wektorow(self):
-        # TODO Dokończyć dokumentację
-        indeks = self.ilosc_wektorow
-        lista = WektorySieciOdwrotnej(self.a, self.a, indeks)
-        return lista.lista_wektorow('min')
-
     def wypelnienie_macierzy(self, wektor_q):
-        assert type(wektor_q) == tuple, \
-            'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         indeks = self.ilosc_wektorow
-        lista_wektorow = self.lista_wektorow()
+        lista_wektorow = self.lista_wektorow
         assert len(lista_wektorow) == indeks, 'number of vector do not fit to matrix'
         self.delta_kroneckera()
         for i in range(indeks, 2 * indeks):

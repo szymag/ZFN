@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from numpy import pi, sqrt, cosh, exp, dot
+from numpy import sqrt, cosh, exp, dot
 from numpy import zeros, array, savetxt
-from scipy import special
 
 from src.eig_problem.FFTfromFile import FFTfromFile
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
@@ -17,7 +16,9 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
     def __init__(self, ilosc_wektorow):
         ParametryMaterialowe.__init__(self, ilosc_wektorow)
         self.macierz_M = zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow), dtype=complex)
-        self.lista_wspolczynnikow = FFTfromFile(ilosc_wektorow).dict_vector_coeff()
+        self.ilosc_wektorow = ilosc_wektorow
+        self.lista_wspolczynnik = FFTfromFile(ilosc_wektorow).dict_vector_coeff()
+        self.lista_dlugosc_wymiany = FFTfromFile(ilosc_wektorow).dict_vector_coeff()
         self.lista_wektorow = FFTfromFile(ilosc_wektorow).vector_to_matrix()
 
     def wspolczynnik(self, wektor_1, wektor_2):
@@ -33,7 +34,7 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
         assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-        wspolczynnik = self.lista_wspolczynnikow[wekt_wypadkowy]
+        wspolczynnik = self.lista_wspolczynnik[wekt_wypadkowy]
         if wekt_wypadkowy == (0, 0):
             return wspolczynnik * (self.MoCo - self.MoPy) + self.MoPy
         else:
@@ -53,7 +54,7 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
 
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-        wspolczynnik = self.lista_wspolczynnikow[wekt_wypadkowy]
+        wspolczynnik = self.lista_wspolczynnik[wekt_wypadkowy]
         if wekt_wypadkowy == (0, 0):
             return wspolczynnik * (self.lCo - self.lPy) + self.lPy
         else:
@@ -222,8 +223,6 @@ class MacierzDoZagadnienia1(ParametryMaterialowe):
             + self.czwarte_wyrazenie(wektor_1, wektor_2)
 
     def wypelnienie_macierzy(self, wektor_q):
-        assert type(wektor_q) == tuple, \
-            'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
 

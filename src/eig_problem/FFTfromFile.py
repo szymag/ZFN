@@ -1,6 +1,8 @@
-import numpy as np
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 import matplotlib.pyplot as plt
+import numpy as np
+
+from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
+
 
 class FFTfromFile(ParametryMaterialowe):
     def __init__(self, ilosc_wektorow, coeff_number=None, filepath='fft1.txt'):
@@ -50,7 +52,7 @@ class FFTfromFile(ParametryMaterialowe):
         table = self.table
         max_value = np.amax(self.table)
         normalized_max_value = (self.MoCo - self.MoPy) * np.pi * self.r ** 2 / self.a ** 2 + self.MoPy
-        table = table * (self.MoCo - self.MoPy)
+        table = table
         print(np.amax(table))
         table = np.fft.ifft2(np.fft.fftshift(table)).real
         np.savetxt('ifft1.txt', table)

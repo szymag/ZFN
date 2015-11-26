@@ -16,7 +16,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow)
-        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.5, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.99, ilosc_wektorow_q)]
 
     def utworz_macierz_M(self, wektor_q):
         """
@@ -80,5 +80,5 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         savetxt('1.txt', plik)
 
 
-q = ZagadnienieWlasne(25, 30)
+q = ZagadnienieWlasne(49, 60)
 q.wypisz_do_pliku()
