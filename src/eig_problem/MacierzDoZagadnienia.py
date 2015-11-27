@@ -4,46 +4,52 @@
 from numpy import sqrt, cosh, exp, dot
 from numpy import zeros, array, savetxt
 
-from src.eig_problem.DFT import DFT
+from src.eig_problem.FFTfromFile import FFTfromFile
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
+from src.eig_problem.DFT import DFT
 
-# TODO: Przebudowa klasy, by złączyć ją z MacierzDoZagadnienia1.
 class MacierzDoZagadnienia(ParametryMaterialowe):
     """
-    Klasa, w której tworzona jest macierz zagadnienia własnego. Opiera ona swoje działanie na współczynnikach Fouriera
-    obliczanych dla struktur analitycznie.
+    Klasa, w której tworzona jest macierz zagadnienia własnego. Pobiera ona współczynniki Fouriera z klasy FFTfromFile.
+    Współczynniki są dla niej tworzone poprzez FFT z pliku graficznego.
     """
-    def __init__(self, ilosc_wektorow):
+
+    def __init__(self, ilosc_wektorow, skad_wspolczynnik):
         ParametryMaterialowe.__init__(self, ilosc_wektorow)
         self.macierz_M = zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow), dtype=complex)
         self.ilosc_wektorow = ilosc_wektorow
-        self.slownik_dlugosc_wymiany = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[1]
-        self.slownik_wspolczynnik = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[0]
-        self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
+        if skad_wspolczynnik == 'FFT':
+            self.slownik_wspolczynnik = FFTfromFile(ilosc_wektorow).fourier_coefficient()
+            self.slownik_dlugosc_wymiany = FFTfromFile(ilosc_wektorow).exchange_length()
+            self.lista_wektorow = FFTfromFile(ilosc_wektorow).vector_to_matrix()
+        else:
+            self.slownik_dlugosc_wymiany = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[1]
+            self.slownik_wspolczynnik = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[0]
+            self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
 
     def wspolczynnik(self, wektor_1, wektor_2):
         """
-        Metoda wywołująca odowiednią wartość słownika 'slownik_wspolczynnikow' poprzez zadany klucz. Kluczem jest
-        różnica zadanych wektorów.
+        Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
+        z nich różnica.
         :type wektor_1: tuple
         :type wektor_2: tuple
-        :param wektor_1: i-ty wektor
-        :param wektor_2: j-ty wektor
-        :return: Współczynnik Fouriera.
+        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
+        :param wektor_2: Drugi wektor do obliczenia różnicy.
+        :return: współczynnik Fouriera dla różnicy wektorów sieci odwrotnej.
         """
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
         return self.slownik_wspolczynnik[wekt_wypadkowy]
 
     def dlugosc_wymiany(self, wektor_1, wektor_2):
         """
-        Metoda wywołująca odowiednią wartość słownika 'slownik_dlugosc_wymiany' poprzez zadany klucz. Kluczem jest
-        różnica zadanych wektorów.
+        Metoda obliczająca długość wymiany, dla dwóch zadanych wektorów.
+        z nich różnica.
         :type wektor_1: tuple
         :type wektor_2: tuple
-        :param wektor_1: i-ty wektor
-        :param wektor_2: j-ty wektor
-        :return: Długość wymiany.
+        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
+        :param wektor_2: Drugi wektor do obliczenia różnicy.
+        :return: Długość wymiany w postaci odpowiadającego różnicy wektorów współczynnika Fouriera.
         """
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
         return self.slownik_dlugosc_wymiany[wekt_wypadkowy]
@@ -52,6 +58,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
         """
         Metoda, która w zależności od znaku oblicza sumę, bądż różnicę wektorów.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type znak: str
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
@@ -127,7 +136,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             self.macierz_M[i][i - self.ilosc_wektorow] -= 1
 
     def drugie_wyrazenie(self, wektor_1, wektor_2, wektor_q):
-        # TODO: Dodać drugi typ oddziaływania wymiany.
         """
         Metoda obliczająca człon elmentu macierzowego związana z polem wymiany.
         :type wektor_1: tuple
@@ -172,7 +180,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert typ_macierzy == 'xy' or typ_macierzy == 'yx', \
             'it is assumed that block matrixes are named xy or yx'
         tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
-        #        assert tmp1 != 0, 'probably insert forbidden q vector e.g. q = 0, q = 1'
+        assert tmp1 != 0, 'probably insert forbidden q vector e.g. q = 0, q = 1'
         tmp2 = self.funkcja_c(wektor_q, wektor_2, "+")
         tmp3 = self.wspolczynnik(wektor_1, wektor_2)
         if typ_macierzy == 'xy':
@@ -193,6 +201,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
+        # TODO Poprawwić mianownik
         if self.norma_wektorow(wektor_1, wektor_2, "-") == 0:
             return 0
         else:
@@ -218,6 +227,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
+        # TODO Dokończyć dokumentację
         return \
             self.drugie_wyrazenie(wektor_1, wektor_2, wektor_q) \
             + self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "xy") \
@@ -241,7 +251,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-
         return \
             - self.drugie_wyrazenie(wektor_1, wektor_2, wektor_q) \
             - self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "yx") \
@@ -258,6 +267,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
+
         indeks = self.ilosc_wektorow
         lista_wektorow = self.lista_wektorow
         assert len(lista_wektorow) == indeks, 'number of vector do not fit to matrix'
@@ -275,4 +285,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :return: Wypisuje tablice do pliku tekstowego.
          Ważne! Przed wypisaniem, należy wypełnić macierz_M metodą 'wypełnienie_macierzy'
         """
-        savetxt('macierz1.txt', array(self.macierz_M))
+        savetxt('macierz.txt', array(self.macierz_M))
+
+    if __name__ == 'main':
+        pass

@@ -16,6 +16,32 @@ class FFTfromFile(ParametryMaterialowe):
             assert coeff_number < ilosc_wektorow, 'matrix of element is to small to that number'
             self.coeff_number = coeff_number
 
+    @staticmethod
+    def suma_roznica_wektorow(wektor_1, wektor_2, znak):
+        """
+        Metoda, która w zależności od znaku oblicza sumę, bądż różnicę wektorów.
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type znak: str
+        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
+        :param wektor_2: Drugi wektor do obliczenia różnicy.
+        :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
+        :return: suma lub rożnica wektorów
+        """
+        assert len(wektor_1) == 2, \
+            'form of wektor_q is forbidden. wektor_1 should have two arguments'
+        assert len(wektor_2) == 2, \
+            'form of wektor_q is forbidden. wektor_2 should have two arguments'
+        assert type(znak) == str, \
+            'znak is sign between two vector. Should be string'
+        assert znak == '+' or znak == '-', \
+            'only - and + are permitted'
+
+        if znak == "-":
+            return tuple([k[0] - k[1] for k in zip(wektor_1, wektor_2)])
+        elif znak == "+":
+            return tuple([k[0] + k[1] for k in zip(wektor_1, wektor_2)])
+
     def vector_from_piksel_position(self):
         """
         Dla każdego piksela, na podstawie jego położenia, wyznaczany jest wektor sieci odwrotnej.
@@ -42,16 +68,6 @@ class FFTfromFile(ParametryMaterialowe):
                 coefficient[i + j * index] = self.table[i][j]
         return coefficient
 
-    def dict_vector_coeff(self):
-        """
-        Metoda ta tworzy słownik, gdzi kluczem jest wektor sieci odwrotnej, a wartością współczynnik Fouriera.
-        :return: Słownik
-        """
-        k = self.vector_from_piksel_position()
-        v = self.coefficient()
-        d = zip(k, v)
-        return dict(d)
-
     def vector_to_matrix(self):
         """
         Zwracana jest lista wektorów, służąca dalej do zagadnienia własnego. Metoda jest tak zdefiniowana, by wybierać
@@ -64,6 +80,28 @@ class FFTfromFile(ParametryMaterialowe):
         assert len(list_vector) == int(np.sqrt(len(list_vector))) ** 2, len(list_vector)
         return list_vector
 
+    def fourier_coefficient(self):
+        """
+        Metoda ta tworzy słownik, gdzi kluczem jest wektor sieci odwrotnej, a wartością współczynnik Fouriera.
+        :return: Słownik
+        """
+        k = self.vector_from_piksel_position()
+        v = [(self.MoCo - self.MoPy) * i for i in self.coefficient()]
+        d = dict(zip(k, v))
+        d[(0, 0)] = d[(0, 0)] + self.MoPy
+        return d
+
+    def exchange_length(self):
+        """
+        Metoda ta tworzy słownik, gdzi kluczem jest wektor sieci odwrotnej, a wartością współczynnik Fouriera.
+        :return: Słownik
+        """
+        k = self.vector_from_piksel_position()
+        v = [(self.lCo - self.lPy) * i for i in self.coefficient()]
+        d = dict(zip(k, v))
+        d[(0, 0)] = d[(0, 0)] + self.lPy
+        return d
+
 
 if __name__ == "__main__":
-    pass
+    print(FFTfromFile(9).fourier_coefficient()[(0,0)])
