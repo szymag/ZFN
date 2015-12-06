@@ -1,4 +1,5 @@
 import numpy as np
+
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
@@ -7,14 +8,11 @@ class FFTfromFile(ParametryMaterialowe):
     Klasa, która wczytuje zadany plik tekstowy (domyślnie jest to 'fft1.txt' i wyciąga z niego informację o wektorach
     sieci odrwotnej wraz z odpowiadającymi im współczynnikami Fouriera.
     """
-    def __init__(self, ilosc_wektorow, coeff_number=None, filepath='fft1.txt'):
-        ParametryMaterialowe.__init__(self, ilosc_wektorow)
+
+    def __init__(self, ilosc_wektorow, typ_pole_wymiany, filepath='fft1.txt'):
+        ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
         self.table = np.loadtxt(filepath).view(complex)
-        if coeff_number is None:
-            self.coeff_number = ilosc_wektorow
-        else:
-            assert coeff_number < ilosc_wektorow, 'matrix of element is to small to that number'
-            self.coeff_number = coeff_number
+        self.coeff_number = ilosc_wektorow
 
     @staticmethod
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
@@ -104,4 +102,4 @@ class FFTfromFile(ParametryMaterialowe):
 
 
 if __name__ == "__main__":
-    print(FFTfromFile(9).fourier_coefficient()[(0,0)])
+    pass

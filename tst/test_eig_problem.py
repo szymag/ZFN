@@ -1,9 +1,10 @@
 import math
 import unittest
 
-from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.FFTfromFile import FFTfromFile
+from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
+
 
 class TestEigProblem(unittest.TestCase):
     q = MacierzDoZagadnienia(5)
@@ -32,4 +33,4 @@ class TestEigProblem(unittest.TestCase):
         self.assertEqual(self.q.norma_wektorow((1000, 0), (0, 0), '+'), 1000)
 
     def test_wektory(self):
-        self.assertEqual(list(self.w.vector_to_matrix()), list(self.e.lista_wektorow))
+        self.assertEqual(list(self.w.vector()), list(self.e.lista_wektorow))

@@ -4,10 +4,11 @@
 from numpy import sqrt, cosh, exp, dot
 from numpy import zeros, array, savetxt
 
+from src.eig_problem.DFT import DFT
 from src.eig_problem.FFTfromFile import FFTfromFile
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
-from src.eig_problem.DFT import DFT
+
 
 class MacierzDoZagadnienia(ParametryMaterialowe):
     """
@@ -15,20 +16,21 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     Współczynniki są dla niej tworzone poprzez FFT z pliku graficznego.
     """
 
-    def __init__(self, ilosc_wektorow, skad_wspolczynnik):
-        ParametryMaterialowe.__init__(self, ilosc_wektorow)
+    def __init__(self, ilosc_wektorow, skad_wspolczynnik, typ_pola_wymiany):
+        ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pola_wymiany)
         self.macierz_M = zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow), dtype=complex)
         self.ilosc_wektorow = ilosc_wektorow
+        self.typ_pola_wymiany = typ_pola_wymiany
         if skad_wspolczynnik == 'FFT':
-            self.slownik_wspolczynnik = FFTfromFile(ilosc_wektorow).fourier_coefficient()
-            self.slownik_dlugosc_wymiany = FFTfromFile(ilosc_wektorow).exchange_length()
-            self.lista_wektorow = FFTfromFile(ilosc_wektorow).vector_to_matrix()
+            self.slownik_wspolczynnik = FFTfromFile(ilosc_wektorow, typ_pola_wymiany).fourier_coefficient()
+            self.slownik_dlugosc_wymiany = FFTfromFile(ilosc_wektorow, typ_pola_wymiany).exchange_length()
+            self.lista_wektorow = FFTfromFile(ilosc_wektorow, typ_pola_wymiany).vector_to_matrix()
         else:
-            self.slownik_dlugosc_wymiany = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[1]
-            self.slownik_wspolczynnik = DFT(self.ilosc_wektorow).slownik_wspolczynnikow()[0]
+            self.slownik_dlugosc_wymiany = DFT(self.ilosc_wektorow, typ_pola_wymiany).slownik_wspolczynnikow()[1]
+            self.slownik_wspolczynnik = DFT(self.ilosc_wektorow, typ_pola_wymiany).slownik_wspolczynnikow()[0]
             self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
 
-    def wspolczynnik(self, wektor_1, wektor_2):
+    def magnetyzacja(self, wektor_1, wektor_2):
         """
         Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
         z nich różnica.
@@ -135,7 +137,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             self.macierz_M[i - self.ilosc_wektorow][i] += 1
             self.macierz_M[i][i - self.ilosc_wektorow] -= 1
 
-    def drugie_wyrazenie(self, wektor_1, wektor_2, wektor_q):
+    def pole_wymiany_I(self, wektor_1, wektor_2, wektor_q):
         """
         Metoda obliczająca człon elmentu macierzowego związana z polem wymiany.
         :type wektor_1: tuple
@@ -157,6 +159,23 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
                    self.suma_roznica_wektorow(wektor_q, wektor_1, "+"))
         tmp2 = self.dlugosc_wymiany(wektor_1, wektor_2)
         return tmp1 * tmp2 / self.H0
+
+    def pole_wymiany_II(self, wektor_1, wektor_2, wektor_q):
+        """
+        :type wektor_1: tuple
+        :type wektor_2: tuple
+        :type wektor_q: tuple
+        :param wektor_1: i-ty wektor.
+        :param wektor_2: j-ty wektor.
+        :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
+        :return:
+        """
+        tmp = 0.
+        for vec_l in self.lista_wektorow:
+            tmp += dot(self.suma_roznica_wektorow(wektor_q, wektor_2, '+'),
+                       self.suma_roznica_wektorow(wektor_q, vec_l, '+')) \
+                   * self.dlugosc_wymiany(vec_l, wektor_2) * self.magnetyzacja(wektor_1, vec_l) / self.H0
+        return tmp
 
     def trzecie_wyrazenie(self, wektor_1, wektor_2, wektor_q, typ_macierzy):
         """
@@ -182,7 +201,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
         assert tmp1 != 0, 'probably insert forbidden q vector e.g. q = 0, q = 1'
         tmp2 = self.funkcja_c(wektor_q, wektor_2, "+")
-        tmp3 = self.wspolczynnik(wektor_1, wektor_2)
+        tmp3 = self.magnetyzacja(wektor_1, wektor_2)
         if typ_macierzy == 'xy':
             return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1 ** 2) * (1 - tmp2) * tmp3
         elif typ_macierzy == 'yx':
@@ -201,12 +220,12 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_1 should have two arguments'
         assert len(wektor_2) == 2, \
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
-        # TODO Poprawwić mianownik
+
         if self.norma_wektorow(wektor_1, wektor_2, "-") == 0:
             return 0
         else:
             return ((wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2)) \
-                   * self.wspolczynnik(wektor_1, wektor_2) \
+                   * self.magnetyzacja(wektor_1, wektor_2) \
                    * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
 
     def macierz_xy(self, wektor_1, wektor_2, wektor_q):
@@ -227,9 +246,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-        # TODO Dokończyć dokumentację
         return \
-            self.drugie_wyrazenie(wektor_1, wektor_2, wektor_q) \
+            self.pole_wymiany_I(wektor_1, wektor_2, wektor_q) \
             + self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "xy") \
             - self.czwarte_wyrazenie(wektor_1, wektor_2)
 
@@ -252,7 +270,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         return \
-            - self.drugie_wyrazenie(wektor_1, wektor_2, wektor_q) \
+            - self.pole_wymiany_I(wektor_1, wektor_2, wektor_q) \
             - self.trzecie_wyrazenie(wektor_1, wektor_2, wektor_q, "yx") \
             + self.czwarte_wyrazenie(wektor_1, wektor_2)
 

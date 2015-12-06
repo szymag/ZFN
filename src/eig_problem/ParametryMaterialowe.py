@@ -16,10 +16,16 @@ class ParametryMaterialowe:
     MoPy = 0.658e6
     ACo = 2.88e-11
     APy = 1.1e-11
-    lCo = 2 * ACo / (mu0 * MoCo)
-    lPy = 2 * APy / (mu0 * MoPy)
+
     r = 14e-9
     x = 0
 
-    def __init__(self, ilosc_wektorow):
+    def __init__(self, ilosc_wektorow, typ_pola_wymiany):
         self.ilosc_wektorow = ilosc_wektorow
+        self.typ_pola_wymiany = typ_pola_wymiany
+        if typ_pola_wymiany == 'I':
+            self.lCo = 2 * self.ACo / (self.mu0 * self.MoCo)
+            self.lPy = 2 * self.APy / (self.mu0 * self.MoPy)
+        else:
+            self.lCo = 2 * self.ACo / (self.mu0 * self.MoCo)
+            self.lPy = 2 * self.APy / (self.mu0 * self.MoPy)

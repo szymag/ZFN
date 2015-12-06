@@ -1,24 +1,42 @@
-from numpy import linspace, pi, savetxt, identity
+import cProfile
+
+from numpy import linspace, pi, savetxt
 from scipy import linalg
 
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
+def do_cprofile(func):
+    def profiled_func(*args, **kwargs):
+        profile = cProfile.Profile()
+        try:
+            profile.enable()
+            result = func(*args, **kwargs)
+            profile.disable()
+            return result
+        finally:
+            profile.print_stats()
+
+    return profiled_func
+
+
+# @do_cprofile
 class ZagadnienieWlasne(ParametryMaterialowe):
     """
     Klasa, w której zdefiniowane jest uogólnione zagadnienie własne. Dziedziczy ona po 'Parametry materiałowe, gdyż
     potrzebne są w niej infoemacje o strukturze kryształu magnonicznego.
     """
-    def __init__(self, ilosc_wektorow, ilosc_wektorow_q, skad_wspolczynnik):
+
+    def __init__(self, ilosc_wektorow, ilosc_wektorow_q, skad_wspolczynnik, typ_pole_wymiany):
         """
         :param ilosc_wektorow: Ile wektorów wchodzi do zagadnienia własnego. Determinuje to wielkość macierzy blokowych.
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
-        ParametryMaterialowe.__init__(self, ilosc_wektorow)
+        ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
         self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.5, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
-
+        self.typ_pola_wymiany = typ_pole_wymiany
     def utworz_macierz_M(self, wektor_q):
         """
         :type wektor_q tuple
@@ -29,7 +47,8 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-        macierz = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik).wypelnienie_macierzy(wektor_q)
+        macierz = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
+                                       self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
         return macierz
 
     def zagadnienie_wlasne(self, wektor_q):
@@ -84,5 +103,5 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         savetxt('1.txt', plik)
 
 
-q = ZagadnienieWlasne(121, 30, 'FFT')
+q = ZagadnienieWlasne(25, 30, 'DFT', 'I')
 q.wypisz_do_pliku()

@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import special
+
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
@@ -9,8 +10,8 @@ class DFT(ParametryMaterialowe):
     Klasa obliczająca współczynniki Fouriera w sposób analityczny.
     """
 
-    def __init__(self, ilosc_wektorow):
-        ParametryMaterialowe.__init__(self, ilosc_wektorow)
+    def __init__(self, ilosc_wektorow, typ_pole_wymiany):
+        ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
 
     @staticmethod
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
