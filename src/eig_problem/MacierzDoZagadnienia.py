@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from math import exp, cosh, sqrt
 
-from numpy import sqrt, cosh, exp, dot
+from numpy import dot
 from numpy import zeros, array, savetxt
 
 from src.eig_problem.DFT import DFT
@@ -40,8 +41,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: współczynnik Fouriera dla różnicy wektorów sieci odwrotnej.
         """
-        wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-        return self.slownik_wspolczynnik[wekt_wypadkowy]
+        return self.slownik_wspolczynnik[(wektor_1[0] - wektor_2[0], wektor_1[1] - wektor_2[1])]
 
     def dlugosc_wymiany(self, wektor_1, wektor_2):
         """
@@ -53,8 +53,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: Długość wymiany w postaci odpowiadającego różnicy wektorów współczynnika Fouriera.
         """
-        wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, '-')
-        return self.slownik_dlugosc_wymiany[wekt_wypadkowy]
+        return self.slownik_dlugosc_wymiany[wektor_1[0] - wektor_2[0], wektor_1[1] - wektor_2[1]]
 
     @staticmethod
     def suma_roznica_wektorow(wektor_1, wektor_2, znak):
@@ -68,19 +67,15 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
         :return: suma lub rożnica wektorów
         """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(znak) == str, \
             'znak is sign between two vector. Should be string'
         assert znak == '+' or znak == '-', \
             'only - and + are permitted'
 
         if znak == "-":
-            return tuple([k[0] - k[1] for k in zip(wektor_1, wektor_2)])
+            return (wektor_1[0] - wektor_2[0], wektor_1[1] - wektor_2[1])
         elif znak == "+":
-            return tuple([k[0] + k[1] for k in zip(wektor_1, wektor_2)])
+            return (wektor_1[0] + wektor_2[0], wektor_1[1] + wektor_2[1])
 
     def funkcja_c(self, wektor_1, wektor_2, znak):
         """
@@ -94,17 +89,13 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param znak: określa czy obliczana ma być różnica, czy suma wektorów.
         :return: wartość funkcji C.
         """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(znak) == str, \
             'znak is sign between two vector. Should be string'
         assert znak == '+' or znak == '-', \
             'only - and + are permitted'
 
         wekt_wypadkowy = self.norma_wektorow(wektor_1, wektor_2, znak)
-        return cosh(wekt_wypadkowy * self.x) * exp(-wekt_wypadkowy * self.d / 2)
+        return cosh(wekt_wypadkowy * self.x) * exp(-wekt_wypadkowy * self.d / 2.)
 
     def norma_wektorow(self, wektor_1, wektor_2, znak):
         """
@@ -117,15 +108,10 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
         :return: W zlależności od znaku, zwraca normę z sumy, lub różnicy wektorów.
         """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
         assert type(znak) == str, \
             'znak is sign between two vector. Should be string'
         assert znak == '+' or znak == '-', \
             'only - and + are permitted'
-
         wekt_wypadkowy = self.suma_roznica_wektorow(wektor_1, wektor_2, znak)
         return sqrt(wekt_wypadkowy[0] ** 2 + wekt_wypadkowy[1] ** 2)
 
@@ -134,8 +120,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         Metoda dodająca do odpowienich elementów macierzowych pierwszy element z wyrażenia na M: 1 lub -1
         """
         for i in range(self.ilosc_wektorow, 2 * self.ilosc_wektorow):
-            self.macierz_M[i - self.ilosc_wektorow][i] += 1
-            self.macierz_M[i][i - self.ilosc_wektorow] -= 1
+            self.macierz_M[i - self.ilosc_wektorow][i] += 1.
+            self.macierz_M[i][i - self.ilosc_wektorow] -= 1.
 
     def pole_wymiany_I(self, wektor_1, wektor_2, wektor_q):
         """
@@ -146,17 +132,10 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_1: i-ty wektor
         :param wektor_2: j-ty wektor
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
-        :return: Wynikiem jest drugie wyraz sumy.
+        :return: Wynikiem jest drugi wyraz sumy.
         """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
-        assert len(wektor_q) == 2, \
-            'form of wektor_q is forbidden. wektor_q should have two arguments'
-
-        tmp1 = dot(self.suma_roznica_wektorow(wektor_q, wektor_2, "+"),
-                   self.suma_roznica_wektorow(wektor_q, wektor_1, "+"))
+        tmp1 = (wektor_q[0] + wektor_2[0]) * (wektor_q[0] + wektor_1[0]) \
+               + (wektor_q[1] + wektor_1[1]) * (wektor_q[1] + wektor_2[1])
         tmp2 = self.dlugosc_wymiany(wektor_1, wektor_2)
         return tmp1 * tmp2 / self.H0
 
@@ -170,11 +149,12 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return:
         """
+        # TODO: Usprawnić iloczyn skalarny
         tmp = 0.
         for vec_l in self.lista_wektorow:
-            tmp += dot(self.suma_roznica_wektorow(wektor_q, wektor_2, '+'),
-                       self.suma_roznica_wektorow(wektor_q, vec_l, '+')) \
-                   * self.dlugosc_wymiany(vec_l, wektor_2) * self.magnetyzacja(wektor_1, vec_l) / self.H0
+            tmp += dot((wektor_q[0] + wektor_2[0], wektor_q[1] + wektor_2[1]),
+                       (wektor_q[0] + vec_l[0], wektor_q[1] + vec_l[1])) * \
+                   self.dlugosc_wymiany(vec_l, wektor_2) * self.magnetyzacja(wektor_1, vec_l) / self.H0
         return tmp
 
     def trzecie_wyrazenie(self, wektor_1, wektor_2, wektor_q, typ_macierzy):
@@ -190,16 +170,10 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param typ_macierzy: Określa, do której z macierzy blokowych odnosi się wyrażenie.
         :return: Wynikiem jest drugi wyraz sumy.
         """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
-        assert len(wektor_q) == 2, \
-            'form of wektor_q is forbidden. wektor_q should have two arguments'
         assert typ_macierzy == 'xy' or typ_macierzy == 'yx', \
             'it is assumed that block matrixes are named xy or yx'
         tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
-        assert tmp1 != 0, 'probably insert forbidden q vector e.g. q = 0, q = 1'
+        assert tmp1 != 0., 'probably insert forbidden q vector e.g. q = 0, q = 1'
         tmp2 = self.funkcja_c(wektor_q, wektor_2, "+")
         tmp3 = self.magnetyzacja(wektor_1, wektor_2)
         if typ_macierzy == 'xy':
@@ -216,17 +190,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_2: j-ty wektor.
         :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
         """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
-
-        if self.norma_wektorow(wektor_1, wektor_2, "-") == 0:
-            return 0
-        else:
-            return ((wektor_1[1] - wektor_2[1]) ** 2 / (self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2)) \
-                   * self.magnetyzacja(wektor_1, wektor_2) \
-                   * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
+        return (wektor_1[1] - wektor_2[1]) ** 2 / (1e-36 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2) \
+               * self.magnetyzacja(wektor_1, wektor_2) * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
 
     def macierz_xy(self, wektor_1, wektor_2, wektor_q):
         """
@@ -292,10 +257,15 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         self.delta_kroneckera()
         for i in range(indeks, 2 * indeks):
             for j in range(0, indeks):
-                self.macierz_M[i][j] += \
-                    self.macierz_yx(lista_wektorow[i - indeks], lista_wektorow[j], wektor_q)
-                self.macierz_M[i - indeks][j + indeks] += \
-                    self.macierz_xy(lista_wektorow[i - indeks], lista_wektorow[j], wektor_q)
+                w1 = lista_wektorow[i - indeks]
+                w2 = lista_wektorow[j]
+                tmp1 = self.pole_wymiany_I(w1, w2, wektor_q)
+                tmp2 = self.trzecie_wyrazenie(w1, w2, wektor_q, "yx")
+                tmp3 = self.trzecie_wyrazenie(w1, w2, wektor_q, "xy")
+                tmp4 = self.czwarte_wyrazenie(w1, w2)
+
+                self.macierz_M[i][j] += -tmp1 - tmp3 + tmp4
+                self.macierz_M[i - indeks][j + indeks] += tmp1 + tmp2 - tmp4
         return self.macierz_M
 
     def wypisz_macierz(self):
@@ -304,6 +274,3 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
          Ważne! Przed wypisaniem, należy wypełnić macierz_M metodą 'wypełnienie_macierzy'
         """
         savetxt('macierz.txt', array(self.macierz_M))
-
-    if __name__ == 'main':
-        pass

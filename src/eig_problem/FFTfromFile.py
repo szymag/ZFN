@@ -14,44 +14,21 @@ class FFTfromFile(ParametryMaterialowe):
         self.table = np.loadtxt(filepath).view(complex)
         self.coeff_number = ilosc_wektorow
 
-    @staticmethod
-    def suma_roznica_wektorow(wektor_1, wektor_2, znak):
-        """
-        Metoda, która w zależności od znaku oblicza sumę, bądż różnicę wektorów.
-        :type wektor_1: tuple
-        :type wektor_2: tuple
-        :type znak: str
-        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
-        :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
-        :return: suma lub rożnica wektorów
-        """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
-        assert type(znak) == str, \
-            'znak is sign between two vector. Should be string'
-        assert znak == '+' or znak == '-', \
-            'only - and + are permitted'
-
-        if znak == "-":
-            return tuple([k[0] - k[1] for k in zip(wektor_1, wektor_2)])
-        elif znak == "+":
-            return tuple([k[0] + k[1] for k in zip(wektor_1, wektor_2)])
-
     def vector_from_piksel_position(self):
         """
         Dla każdego piksela, na podstawie jego położenia, wyznaczany jest wektor sieci odwrotnej.
         :return: Lista wektorów sieci odwrotnej.
         """
+        # TODO: usprawnić wybór wektorów
+        index = len(self.table)
+        index1 = len(self.table[0])
         reci_vector = list(np.zeros(len(self.table) * len(self.table[0])))
-        index = len(self.table[0])
-        for i in range(len(self.table)):
-            for j in range(len(self.table[0])):
-                reci_vector[i + j * index] = (2 * np.pi * (i - int(len(self.table) / 2)) / self.a,
-                                              2 * np.pi * (j - int(len(self.table[0]) / 2)) / self.b)
-        assert reci_vector[len(self.table) * len(self.table[0]) - 1] != 0
+
+        for i in range(index):
+            for j in range(index1):
+                reci_vector[i + j * index1] = (2 * np.pi * (i - int(index / 2)) / self.a,
+                                               2 * np.pi * (j - int(index1 / 2)) / self.b)
+        assert reci_vector[index * index1 - 1] != 0
         return reci_vector
 
     def coefficient(self):
@@ -59,19 +36,22 @@ class FFTfromFile(ParametryMaterialowe):
         Metoda tworząca listę współczynników. Na podstawie położenia w tablicy, określane jest położenie w liście
         :return: Lista współczynników.
         """
-        coefficient = list(np.zeros(len(self.table) * len(self.table[0])))
-        index = len(self.table[0])
-        for i in range(len(self.table)):
-            for j in range(len(self.table[0])):
+        index = len(self.table)
+        index1 = len(self.table[0])
+        coefficient = list(np.zeros(index * index1))
+        for i in range(index):
+            for j in range(index1):
                 coefficient[i + j * index] = self.table[i][j]
         return coefficient
 
     def vector_to_matrix(self):
         """
         Zwracana jest lista wektorów, służąca dalej do zagadnienia własnego. Metoda jest tak zdefiniowana, by wybierać
-        wektory z kwadratu, wokół zerowego wsółczynnika Fouriera. Ilość jest tak dobrana, by pasowała do rozmiaru tablicy.
+        wektory z kwadratu, wokół zerowego wsółczynnika Fouriera. Ilość jest tak dobrana, by pasowała do rozmiaru
+        tablicy.
         :return: Lista wektorów, o zadanej z zewnątrz liczbie elementów.
         """
+        # TODO: dodać odpowiedni assert. Przy małej bimapie, brakuje zwyczajnie wektorów.
         list_vector = self.vector_from_piksel_position()
         list_vector = [i for i in list_vector if abs(i[0]) <= 2 * int(np.sqrt(self.coeff_number) / 2) * np.pi / self.a
                        and abs(i[1]) <= 2 * int(np.sqrt(self.coeff_number) / 2) * np.pi / self.b]

@@ -27,7 +27,6 @@ class ZagadnienieWlasne(ParametryMaterialowe):
     Klasa, w której zdefiniowane jest uogólnione zagadnienie własne. Dziedziczy ona po 'Parametry materiałowe, gdyż
     potrzebne są w niej infoemacje o strukturze kryształu magnonicznego.
     """
-
     def __init__(self, ilosc_wektorow, ilosc_wektorow_q, skad_wspolczynnik, typ_pole_wymiany):
         """
         :param ilosc_wektorow: Ile wektorów wchodzi do zagadnienia własnego. Determinuje to wielkość macierzy blokowych.
@@ -37,6 +36,8 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.5, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
+
+    #@do_cprofile
     def utworz_macierz_M(self, wektor_q):
         """
         :type wektor_q tuple
@@ -65,6 +66,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
+        #TODO: słówko yield!
         macierz_M = self.utworz_macierz_M(wektor_q)
         return linalg.eig(macierz_M, right=False)
 
@@ -103,5 +105,8 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         savetxt('1.txt', plik)
 
 
-q = ZagadnienieWlasne(25, 30, 'DFT', 'I')
-q.wypisz_do_pliku()
+def start():
+    return ZagadnienieWlasne(49, 21, 'DFT', 'I').wypisz_do_pliku()
+
+
+result = start()

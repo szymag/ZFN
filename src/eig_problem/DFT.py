@@ -13,29 +13,6 @@ class DFT(ParametryMaterialowe):
     def __init__(self, ilosc_wektorow, typ_pole_wymiany):
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
 
-    @staticmethod
-    def suma_roznica_wektorow(wektor_1, wektor_2, znak):
-        """
-        Metoda, która w zależności od znaku oblicza sumę, bądż różnicę wektorów.
-        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
-        :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
-        :return: Suma lub rożnica wektorów.
-        """
-        assert len(wektor_1) == 2, \
-            'form of wektor_q is forbidden. wektor_1 should have two arguments'
-        assert len(wektor_2) == 2, \
-            'form of wektor_q is forbidden. wektor_2 should have two arguments'
-        assert type(znak) == str, \
-            'znak is sign between two vector. Should be string'
-        assert znak == '+' or znak == '-', \
-            'only - and + are permitted'
-
-        if znak == "-":
-            return tuple([k[0] - k[1] for k in zip(wektor_1, wektor_2)])
-        elif znak == "+":
-            return tuple([k[0] + k[1] for k in zip(wektor_1, wektor_2)])
-
     def lista_wektorow(self):
         """
         Metoda, której zadaniem jest zwrócenie listy wektorów dla obliczanych współczynników. Zwracane wektory są

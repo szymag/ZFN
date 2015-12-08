@@ -16,7 +16,6 @@ class ParametryMaterialowe:
     MoPy = 0.658e6
     ACo = 2.88e-11
     APy = 1.1e-11
-
     r = 14e-9
     x = 0
 
@@ -27,5 +26,5 @@ class ParametryMaterialowe:
             self.lCo = 2 * self.ACo / (self.mu0 * self.MoCo)
             self.lPy = 2 * self.APy / (self.mu0 * self.MoPy)
         else:
-            self.lCo = 2 * self.ACo / (self.mu0 * self.MoCo)
-            self.lPy = 2 * self.APy / (self.mu0 * self.MoPy)
+            self.lCo = 2 * self.ACo / (self.mu0 * self.MoCo ** 2)
+            self.lPy = 2 * self.APy / (self.mu0 * self.MoPy ** 2)
