@@ -12,16 +12,7 @@ class DFT(ParametryMaterialowe):
 
     def __init__(self, ilosc_wektorow, typ_pole_wymiany):
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-
-    def lista_wektorow(self):
-        """
-        Metoda, której zadaniem jest zwrócenie listy wektorów dla obliczanych współczynników. Zwracane wektory są
-        z dwukrotnie większego zakresu.
-        :return: Lista wektorów.
-        """
-        indeks = self.ilosc_wektorow
-        lista = WektorySieciOdwrotnej(self.a, self.a, indeks)
-        return lista.lista_wektorow('max')
+        self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.a, self.ilosc_wektorow).lista_wektorow('max')
 
     def wspolczynnik(self, wektor):
         """
@@ -66,7 +57,7 @@ class DFT(ParametryMaterialowe):
         :return: Zwraca dwa słowniki. Odpowiednio wektory sieci odwrotnej ze współczynnikami oraz wektory sieci
         odwrotnej z długościami wymiany.
         """
-        lista_wektorow = self.lista_wektorow()
+        lista_wektorow = self.lista_wektorow
         dlugosc_wymiany = np.zeros(len(lista_wektorow), dtype=complex)
         wspolczynnik = np.zeros(len(lista_wektorow), dtype=complex)
         for i, j in list(enumerate(lista_wektorow)):

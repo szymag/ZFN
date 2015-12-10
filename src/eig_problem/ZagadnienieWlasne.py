@@ -37,7 +37,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
 
-    #@do_cprofile
+    @do_cprofile
     def utworz_macierz_M(self, wektor_q):
         """
         :type wektor_q tuple
@@ -66,7 +66,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-        #TODO: słówko yield!
+        # TODO: słówko yield!
         macierz_M = self.utworz_macierz_M(wektor_q)
         return linalg.eig(macierz_M, right=False)
 
@@ -106,7 +106,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 
 def start():
-    return ZagadnienieWlasne(49, 21, 'DFT', 'I').wypisz_do_pliku()
+    return ZagadnienieWlasne(121, 21, 'DFT', 'II').wypisz_do_pliku()
 
 
-result = start()
+start()

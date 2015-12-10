@@ -1,6 +1,9 @@
+from math import sqrt
+
 import numpy as np
 
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
+from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 
 class FFTfromFile(ParametryMaterialowe):
@@ -13,35 +16,22 @@ class FFTfromFile(ParametryMaterialowe):
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
         self.table = np.loadtxt(filepath).view(complex)
         self.coeff_number = ilosc_wektorow
-
-    def vector_from_piksel_position(self):
-        """
-        Dla każdego piksela, na podstawie jego położenia, wyznaczany jest wektor sieci odwrotnej.
-        :return: Lista wektorów sieci odwrotnej.
-        """
-        # TODO: usprawnić wybór wektorów
-        index = len(self.table)
-        index1 = len(self.table[0])
-        reci_vector = list(np.zeros(len(self.table) * len(self.table[0])))
-
-        for i in range(index):
-            for j in range(index1):
-                reci_vector[i + j * index1] = (2 * np.pi * (i - int(index / 2)) / self.a,
-                                               2 * np.pi * (j - int(index1 / 2)) / self.b)
-        assert reci_vector[index * index1 - 1] != 0
-        return reci_vector
+        self.vector_max = WektorySieciOdwrotnej(self.a, self.b, self.coeff_number).lista_wektorow('max')
+        self.vector_min = WektorySieciOdwrotnej(self.a, self.b, self.coeff_number).lista_wektorow('min')
 
     def coefficient(self):
+        # TODO: Poprawić wybieranie współczynników
         """
         Metoda tworząca listę współczynników. Na podstawie położenia w tablicy, określane jest położenie w liście
         :return: Lista współczynników.
         """
-        index = len(self.table)
-        index1 = len(self.table[0])
-        coefficient = list(np.zeros(index * index1))
-        for i in range(index):
-            for j in range(index1):
-                coefficient[i + j * index] = self.table[i][j]
+        index = (sqrt(len(self.vector_max)) - 1.) / 2.
+        index1 = int(len(self.table) / 2.) - index
+        index2 = int(sqrt(len(self.vector_max)))
+        coefficient = list(np.zeros(index2 * index2))
+        for i in range(index2):
+            for j in range(index2):
+                coefficient[j + i * index2] = self.table[i + index1][j + index1]
         return coefficient
 
     def vector_to_matrix(self):
@@ -51,22 +41,18 @@ class FFTfromFile(ParametryMaterialowe):
         tablicy.
         :return: Lista wektorów, o zadanej z zewnątrz liczbie elementów.
         """
-        # TODO: dodać odpowiedni assert. Przy małej bimapie, brakuje zwyczajnie wektorów.
-        list_vector = self.vector_from_piksel_position()
-        list_vector = [i for i in list_vector if abs(i[0]) <= 2 * int(np.sqrt(self.coeff_number) / 2) * np.pi / self.a
-                       and abs(i[1]) <= 2 * int(np.sqrt(self.coeff_number) / 2) * np.pi / self.b]
-        assert len(list_vector) == int(np.sqrt(len(list_vector))) ** 2, len(list_vector)
-        return list_vector
+        return self.vector_min
 
     def fourier_coefficient(self):
         """
         Metoda ta tworzy słownik, gdzi kluczem jest wektor sieci odwrotnej, a wartością współczynnik Fouriera.
         :return: Słownik
         """
-        k = self.vector_from_piksel_position()
+        k = self.vector_max
         v = [(self.MoCo - self.MoPy) * i for i in self.coefficient()]
         d = dict(zip(k, v))
         d[(0, 0)] = d[(0, 0)] + self.MoPy
+        assert d[(0, 0)].imag == 0.
         return d
 
     def exchange_length(self):
@@ -74,7 +60,7 @@ class FFTfromFile(ParametryMaterialowe):
         Metoda ta tworzy słownik, gdzi kluczem jest wektor sieci odwrotnej, a wartością współczynnik Fouriera.
         :return: Słownik
         """
-        k = self.vector_from_piksel_position()
+        k = self.vector_max
         v = [(self.lCo - self.lPy) * i for i in self.coefficient()]
         d = dict(zip(k, v))
         d[(0, 0)] = d[(0, 0)] + self.lPy
@@ -82,4 +68,5 @@ class FFTfromFile(ParametryMaterialowe):
 
 
 if __name__ == "__main__":
-    pass
+    q = FFTfromFile(121, 'I')
+    print(q.fourier_coefficient()[(0, 0)])

@@ -1,5 +1,3 @@
-from itertools import product
-
 from numpy import array, pi, sqrt
 
 
@@ -43,5 +41,11 @@ class WektorySieciOdwrotnej:
         Metoda obliczająca iloczyn kartezjański dla dwóch wygenerowanych list metodą 'wspolrzedna_wektora'.
         :return: Lista wektorów sieci odwrotnej.
         """
-        lista = list(product(*(self.wspolrzedna_wektora(1, typ), self.wspolrzedna_wektora(2, typ))))
+        lista = []
+        lista1 = self.wspolrzedna_wektora(1, typ)
+        lista2 = self.wspolrzedna_wektora(2, typ)
+        for i in lista1:
+            for j in lista2:
+                lista.append((i, j))
+        # lista = list(product(*(self.wspolrzedna_wektora(1, typ), self.wspolrzedna_wektora(2, typ))))
         return lista

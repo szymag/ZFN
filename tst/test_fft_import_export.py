@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from src.eig_problem.FFTzPliku import FFTzPliku
+from src.eig_problem.FFTfromFile import FFTfromFile
 from src.fft_from_image.FFT import FFT
 
 logging.basicConfig(format='%(levelname)s:%(message)s',
@@ -16,7 +16,7 @@ logging.basicConfig(format='%(levelname)s:%(message)s',
 class TestFFTExportImport(unittest.TestCase):
 
     fft = FFT()
-    fft_from_file = FFTzPliku()
+    fft_from_file = FFTfromFile(9, 'I')
 
     def test_export_import(self):
         logging.info("### Running test_export_import...")
@@ -28,7 +28,7 @@ class TestFFTExportImport(unittest.TestCase):
             logging.info(" - %s" % filename)
 
         for i in range(len(files)):
-            imported_list = self.fft_from_file.load_table_from(files[i])
+            imported_list = self.fft_from_file.table(files[i])
             np.testing.assert_array_almost_equal(imported_list, lists_to_export[i])
         logging.info("### end of test_export_import")
 
