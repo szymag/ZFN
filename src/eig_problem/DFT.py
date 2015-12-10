@@ -64,3 +64,4 @@ class DFT(ParametryMaterialowe):
             dlugosc_wymiany[int(i)] = self.dlugosc_wymiany(j)
             wspolczynnik[int(i)] = self.wspolczynnik(j)
         return dict(list(zip(lista_wektorow, wspolczynnik))), dict(list(zip(lista_wektorow, dlugosc_wymiany)))
+

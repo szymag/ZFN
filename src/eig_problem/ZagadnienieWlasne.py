@@ -37,9 +37,10 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
 
-    @do_cprofile
-    def utworz_macierz_M(self, wektor_q):
+    # @do_cprofile
+    def utworz_macierz_m(self, wektor_q):
         """
+        :rtype: object
         :type wektor_q tuple
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Zwraca tablicę do zagadnienia wlasnego, która została utworzona w klasie "MacierzDoZagadnienia".
@@ -61,14 +62,14 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        #m_jednostkowa = identity(2 * self.ilosc_wektorow)
+        # m_jednostkowa = identity(2 * self.ilosc_wektorow)
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         # TODO: słówko yield!
-        macierz_M = self.utworz_macierz_M(wektor_q)
-        return linalg.eig(macierz_M, right=False)
+        macierz_m = self.utworz_macierz_m(wektor_q)
+        return linalg.eig(macierz_m, right=False)
 
     def czestosci_wlasne(self, wektor_q):
         """
@@ -106,7 +107,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 
 def start():
-    return ZagadnienieWlasne(121, 21, 'DFT', 'II').wypisz_do_pliku()
+    return ZagadnienieWlasne(49, 21, 'DFT', 'II').wypisz_do_pliku()
 
 
 start()

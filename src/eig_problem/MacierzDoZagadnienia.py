@@ -30,7 +30,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             self.slownik_dlugosc_wymiany = self.tmp1.slownik_wspolczynnikow()[1]
             self.slownik_magnetyzacja = self.tmp1.slownik_wspolczynnikow()[0]
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
-
     def magnetyzacja(self, wektor_1, wektor_2):
         """
         Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
@@ -120,8 +119,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wynikiem jest drugi wyraz sumy.
         """
-        tmp1 = (wektor_q[0] + wektor_2[0]) * (wektor_q[0] + wektor_1[0]) \
-               + (wektor_q[1] + wektor_1[1]) * (wektor_q[1] + wektor_2[1])
+        tmp1 = (wektor_q[0] + wektor_2[0]) * (wektor_q[0] + wektor_1[0]) + \
+               (wektor_q[1] + wektor_1[1]) * (wektor_q[1] + wektor_2[1])
         tmp2 = self.dlugosc_wymiany(wektor_1, wektor_2)
         return tmp1 * tmp2 / self.H0
 
@@ -137,11 +136,14 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         # TODO: Usprawnić iloczyn skalarny
         tmp = 0.
+        print(self.lista_wektorow)
+        print(47123889.803846896 - 31415926.535897933)
         for vec_l in self.lista_wektorow:
+            print(vec_l[1] - wektor_1[1])
             tmp += ((wektor_q[0] + wektor_2[0]) * (wektor_q[0] + vec_l[0]) +
                     (wektor_q[1] + wektor_2[1]) * (wektor_q[1] + vec_l[1])) * \
-                   self.slownik_dlugosc_wymiany[vec_l[0] - wektor_2[0], vec_l[1] - wektor_2[1]] * \
-                   self.slownik_magnetyzacja[vec_l[0] - wektor_1[0], vec_l[1] - wektor_1[1]] / self.H0
+                   self.slownik_dlugosc_wymiany[(vec_l[0] - wektor_2[0], vec_l[1] - wektor_2[1])] * \
+                   self.slownik_magnetyzacja[(vec_l[0] - wektor_1[0], vec_l[1] - wektor_1[1])] / self.H0
         return tmp
 
     def trzecie_wyrazenie(self, wektor_1, wektor_2, wektor_q, typ_macierzy):
@@ -177,8 +179,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_2: j-ty wektor.
         :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
         """
-        return (wektor_1[1] - wektor_2[1]) ** 2 / (1e-36 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2) \
-               * self.magnetyzacja(wektor_1, wektor_2) * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
+        return (wektor_1[1] - wektor_2[1]) ** 2 / \
+               (1e-36 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2) * \
+               self.magnetyzacja(wektor_1, wektor_2) * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
 
     def wypelnienie_macierzy(self, wektor_q):
         """

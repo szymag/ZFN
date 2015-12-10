@@ -1,4 +1,5 @@
 import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -10,6 +11,7 @@ class FFT:
     Klasa, której zadaniem jest przygotowanie plików '*.txt' zawierających wartości współczynników Fouriera dla zadanych
     plików graficznych.
     """
+
     def __init__(self):
         pass
 
@@ -20,7 +22,7 @@ class FFT:
         :param tablica: Tablica wartości. Standardowo, jest to tablica wartości pikseli.
         :return: Wspołczynniki Fouriera w postaci tablicy, o wymiarach takich jak zadana tablica.
         """
-        return np.fft.fftshift(np.fft.fft2(tablica, norm='ortho'))/len(tablica)
+        return np.fft.fftshift(np.fft.fft2(tablica, norm='ortho')) / len(tablica)
 
     def wywolaj_fft(self, path='.'):
         """
@@ -50,6 +52,8 @@ class FFT:
         """
         Metoda wypisująca do plików w postaci tablic, współczynniki Fouriera.
         Odpowiednio dla każdego pliku '*.png' w katalogu.
+        :param lista_fft:
+        :param path: Ścieżka
         :return: Pliki typu '*.txt' dla każdego obrazka '*.png'
         """
         if lista_fft is None:
@@ -63,5 +67,6 @@ class FFT:
             np.savetxt(filepath, tablica.view(float))
             indeks += 1
         return files
+
 
 FFT().wypisz_do_pliku()
