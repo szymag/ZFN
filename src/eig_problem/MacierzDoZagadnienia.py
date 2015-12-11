@@ -30,6 +30,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             self.slownik_dlugosc_wymiany = self.tmp1.slownik_wspolczynnikow()[1]
             self.slownik_magnetyzacja = self.tmp1.slownik_wspolczynnikow()[0]
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
+
     def magnetyzacja(self, wektor_1, wektor_2):
         """
         Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
@@ -136,14 +137,14 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         # TODO: Usprawnić iloczyn skalarny
         tmp = 0.
-        print(self.lista_wektorow)
-        print(47123889.803846896 - 31415926.535897933)
+        # print(self.slownik_magnetyzacja)
+        # print(self.slownik_dlugosc_wymiany[(0.0, 0.0)])
         for vec_l in self.lista_wektorow:
-            print(vec_l[1] - wektor_1[1])
+            #   print(vec_l[1] - wektor_2[1])
             tmp += ((wektor_q[0] + wektor_2[0]) * (wektor_q[0] + vec_l[0]) +
                     (wektor_q[1] + wektor_2[1]) * (wektor_q[1] + vec_l[1])) * \
-                   self.slownik_dlugosc_wymiany[(vec_l[0] - wektor_2[0], vec_l[1] - wektor_2[1])] * \
-                   self.slownik_magnetyzacja[(vec_l[0] - wektor_1[0], vec_l[1] - wektor_1[1])] / self.H0
+                   self.slownik_dlugosc_wymiany[vec_l[0] - wektor_2[0], vec_l[1] - wektor_2[1]] * \
+                   self.slownik_magnetyzacja[wektor_1[0] - vec_l[0], wektor_1[1] - vec_l[1]] / self.H0
         return tmp
 
     def trzecie_wyrazenie(self, wektor_1, wektor_2, wektor_q, typ_macierzy):
@@ -218,3 +219,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
          Ważne! Przed wypisaniem, należy wypełnić macierz_M metodą 'wypełnienie_macierzy'
         """
         savetxt('macierz.txt', array(self.macierz_M))
+
+
+"""
+print(MacierzDoZagadnienia(9, 'DFT', 'II').slownik_dlugosc_wymiany[(0, -15000000)])
+print(MacierzDoZagadnienia(9, 'FFT', 'II').slownik_dlugosc_wymiany[(0, -15000000)])
+"""

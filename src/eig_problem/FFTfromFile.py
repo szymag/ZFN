@@ -17,7 +17,6 @@ class FFTfromFile(ParametryMaterialowe):
         self.table = np.loadtxt(filepath).view(complex)
         self.coeff_number = ilosc_wektorow
         self.vector_max = WektorySieciOdwrotnej(self.a, self.b, self.coeff_number).lista_wektorow('max')
-        self.vector_min = WektorySieciOdwrotnej(self.a, self.b, self.coeff_number).lista_wektorow('min')
 
     def coefficient(self):
         # TODO: Poprawić wybieranie współczynników
@@ -33,15 +32,6 @@ class FFTfromFile(ParametryMaterialowe):
             for j in range(index2):
                 coefficient[j + i * index2] = self.table[i + index1][j + index1]
         return coefficient
-
-    def vector_to_matrix(self):
-        """
-        Zwracana jest lista wektorów, służąca dalej do zagadnienia własnego. Metoda jest tak zdefiniowana, by wybierać
-        wektory z kwadratu, wokół zerowego wsółczynnika Fouriera. Ilość jest tak dobrana, by pasowała do rozmiaru
-        tablicy.
-        :return: Lista wektorów, o zadanej z zewnątrz liczbie elementów.
-        """
-        return self.vector_min
 
     def fourier_coefficient(self):
         """

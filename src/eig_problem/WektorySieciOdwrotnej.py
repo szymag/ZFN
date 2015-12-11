@@ -38,9 +38,9 @@ class WektorySieciOdwrotnej:
             indeks = int(sqrt(self.ilosc_wektorow + 1) / 2)
         lista = array(range(-indeks, indeks + 1))
         if k == 1:
-            lista = [2. * pi * i / self.dlugosc_skladowej_y for i in lista]
+            lista = [int(2 * int(pi) * i / self.dlugosc_skladowej_y) for i in lista]
         elif k == 2:
-            lista = [2. * pi * i / self.dlugosc_skladowej_z for i in lista]
+            lista = [int(2 * int(pi) * i / self.dlugosc_skladowej_z) for i in lista]
         return lista
 
     def lista_wektorow(self, typ):
@@ -60,7 +60,6 @@ class WektorySieciOdwrotnej:
                 lista.append((i, j))
         # lista = list(product(*(self.wspolrzedna_wektora(1, typ), self.wspolrzedna_wektora(2, typ))))
         return lista
-
 
 """
 q = WektorySieciOdwrotnej(400e-9, 400e-9, 121)
