@@ -34,5 +34,9 @@ class Temperature(object):
         return 'Temperature(k=%r)' % self.k
 
 
-t = Temperature(f=70)
-print(t.f)
+from scipy.linalg import eig
+
+a = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+b, c = eig(a)
+print(b)
+print(c)

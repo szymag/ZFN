@@ -19,7 +19,6 @@ class FFTfromFile(ParametryMaterialowe):
         self.vector_max = WektorySieciOdwrotnej(self.a, self.b, self.coeff_number).lista_wektorow('max')
 
     def coefficient(self):
-        # TODO: Poprawić wybieranie współczynników
         """
         Metoda tworząca listę współczynników. Na podstawie położenia w tablicy, określane jest położenie w liście
         :return: Lista współczynników.
