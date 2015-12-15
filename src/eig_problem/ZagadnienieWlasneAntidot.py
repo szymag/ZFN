@@ -1,9 +1,7 @@
 # from src.eig_problem.cProfiler import do_cprofile
 from scipy.linalg import eig
-
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ZagadnienieWlasne import ZagadnienieWlasne
-# from math import *
 import numpy as np
 
 
@@ -37,7 +35,7 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         return np.concatenate((np.concatenate((macierz_przekatna, macierz_antyprzekatna), axis=1),
                                np.concatenate((macierz_antyprzekatna, macierz_przekatna), axis=1)), axis=0)
 
-    def zagadnienie_wlasne(self, wektor_q):
+    def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
         dla której następnie oblicza wartości i wektory własne. Jest ona także przystosowana dla
@@ -50,7 +48,6 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         macierz_m = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
                                          self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
         macierz_materialowa = self.macierz_material()
-        return eig(macierz_materialowa, macierz_m, right=False)
+        return eig(macierz_materialowa, macierz_m, right=param)
 
 
-print(ZagadnienieWlasneAntidot(25, 5).zagadnienie_wlasne((0.1, 0.)))

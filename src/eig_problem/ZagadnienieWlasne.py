@@ -1,10 +1,9 @@
 # from src.eig_problem.cProfiler import do_cprofile
-from numpy import linspace, pi, savetxt
+from numpy import linspace, pi, savetxt, array
 from scipy import linalg
-
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-
+from operator import itemgetter
 
 # @do_cprofile
 class ZagadnienieWlasne(ParametryMaterialowe):
@@ -24,7 +23,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         self.typ_pola_wymiany = typ_pole_wymiany
 
     # @do_cprofile
-    def zagadnienie_wlasne(self, wektor_q):
+    def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
         dla której następnie oblicza wartości i wektory własne. Jest ona także przystosowana dla
@@ -36,9 +35,9 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         # TODO: słówko yield!
         macierz_m = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
                                          self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
-        return linalg.eig(macierz_m, right=False)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
+        return linalg.eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
-    def czestosci_wektory_wlasne(self, wektor_q):
+    def czestosci_wlasne(self, wektor_q):
         """
         Metoda, w której przelicza się wartości własne w metodzie 'zagadnienie wlasne' na czestosci wlasne' wzbudzen
         w krysztale magnonicznym.
@@ -53,13 +52,14 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-        wartosci_wlasne = self.zagadnienie_wlasne(wektor_q)
+        wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
         # wartosci_wlasne, wektory_wlasny = self.zagadnienie_wlasne(wektor_q)
         # savetxt(str(wektor_q), wektory_wlasny.view(float))
-        czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / pi for i in wartosci_wlasne if i > 0]
+        czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / pi for i in wartosci_wlasne if i.imag > 0]
+
         return list(sorted(czestosci_wlasne))
 
-    def wypisz_do_pliku(self):
+    def wypisz_czestosci_do_pliku(self):
         """
         Metoda, która wypisuje w kolumnach wyniki. W pierwszej jest wektor blochowski, a w dalszych odpowiadające mu
         częstotliwości własne.
@@ -68,13 +68,25 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         plik = []
         for k in self.lista_wektorow_q:
             tmp = [k[0]]
-            tmp.extend(self.czestosci_wektory_wlasne(k))
+            tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
         savetxt('1.txt', plik)
 
+    def wektory_wlasne(self):
+        assert len(self.lista_wektorow_q) == 1
+        wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
+
+        czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / pi for i in wartosci_wlasne if i.imag > 0]
+        czestosci_wlasne = enumerate(czestosci_wlasne)
+        czestosci_wlasne = list(sorted(czestosci_wlasne, key=itemgetter(1)))
+        wektory_wlasne = list(enumerate(wektory_wlasne))
+        tmp = []
+        for i in czestosci_wlasne:
+            tmp.append(wektory_wlasne[i[0]][1])
+        return savetxt(str(self.lista_wektorow_q[0]) + '.', array(tmp).view(float))
 
 def start():
-    return ZagadnienieWlasne(25, 20, 'FFT', 'II').wypisz_do_pliku()
+    return ZagadnienieWlasne(25, 1, 'FFT', 'II').wektory_wlasne()
 
 
 start()
