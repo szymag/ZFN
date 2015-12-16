@@ -1,4 +1,4 @@
-# from src.eig_problem.cProfiler import do_cprofile
+from src.eig_problem.cProfiler import do_cprofile
 from numpy import linspace, pi, savetxt, array
 from scipy import linalg
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
@@ -18,11 +18,11 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.0) for k in linspace(0.01, 0.02, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.0) for k in linspace(0.01, 0.99, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
 
-    # @do_cprofile
+    #@do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
@@ -85,8 +85,9 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             tmp.append(wektory_wlasne[i[0]][1])
         return savetxt(str(self.lista_wektorow_q[0]) + '.', array(tmp).view(float))
 
+"""
 def start():
-    return ZagadnienieWlasne(25, 1, 'FFT', 'II').wektory_wlasne()
+    return ZagadnienieWlasne(121, 1, 'FFT', 'II').wektory_wlasne()
+"""
 
 
-start()
