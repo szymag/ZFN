@@ -16,7 +16,7 @@ class DFT(ParametryMaterialowe):
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.a, self.ilosc_wektorow).lista_wektorow('max')
 
-    def wspolczynnik(self, wektor):
+    def magnetyzacja(self, wektor):
         """
         Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
         z nich różnica.
@@ -61,9 +61,9 @@ class DFT(ParametryMaterialowe):
         """
         lista_wektorow = self.lista_wektorow
         dlugosc_wymiany = zeros(len(lista_wektorow), dtype=complex)
-        wspolczynnik = zeros(len(lista_wektorow), dtype=complex)
+        magnetyzacja = zeros(len(lista_wektorow), dtype=complex)
         for i, j in list(enumerate(lista_wektorow)):
             dlugosc_wymiany[int(i)] = self.dlugosc_wymiany(j)
-            wspolczynnik[int(i)] = self.wspolczynnik(j)
-        return dict(list(zip(lista_wektorow, wspolczynnik))), dict(list(zip(lista_wektorow, dlugosc_wymiany)))
+            magnetyzacja[int(i)] = self.magnetyzacja(j)
+        return dict(list(zip(lista_wektorow, magnetyzacja))), dict(list(zip(lista_wektorow, dlugosc_wymiany)))
 

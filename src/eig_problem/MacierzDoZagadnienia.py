@@ -2,8 +2,8 @@
 
 from math import exp, cosh, sqrt
 
-from numpy import zeros, array, savetxt
-
+import numpy as np
+from src.eig_problem.cProfiler import do_cprofile
 from src.eig_problem.DFT import DFT
 from src.eig_problem.FFTfromFile import FFTfromFile
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
@@ -18,7 +18,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
     def __init__(self, ilosc_wektorow, skad_wspolczynnik, typ_pola_wymiany):
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pola_wymiany)
-        self.macierz_M = zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow), dtype=complex)
+        self.macierz_M = np.zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow), dtype=complex)
         self.ilosc_wektorow = ilosc_wektorow
         self.typ_pola_wymiany = typ_pola_wymiany
         if skad_wspolczynnik == 'FFT':
@@ -123,6 +123,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         tmp1 = (wektor_q[0] + wektor_2[0]) * (wektor_q[0] + wektor_1[0]) + \
                (wektor_q[1] + wektor_1[1]) * (wektor_q[1] + wektor_2[1])
         tmp2 = self.dlugosc_wymiany(wektor_1, wektor_2)
+
         return tmp1 * tmp2 / self.H0
 
     def pole_wymiany_II(self, wektor_1, wektor_2, wektor_q):
@@ -137,10 +138,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         # TODO: Usprawnić iloczyn skalarny
         tmp = 0.
-        # print(self.slownik_magnetyzacja)
-        # print(self.slownik_dlugosc_wymiany[(0.0, 0.0)])
         for vec_l in self.lista_wektorow:
-            #   print(vec_l[1] - wektor_2[1])
             tmp += ((wektor_q[0] + wektor_2[0]) * (wektor_q[0] + vec_l[0]) +
                     (wektor_q[1] + wektor_2[1]) * (wektor_q[1] + vec_l[1])) * \
                    self.slownik_dlugosc_wymiany[vec_l[0] - wektor_2[0], vec_l[1] - wektor_2[1]] * \
@@ -184,6 +182,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
                (1e-36 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2) * \
                self.magnetyzacja(wektor_1, wektor_2) * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
 
+    @do_cprofile
     def wypelnienie_macierzy(self, wektor_q):
         """
         Główna metoda tej klasy. Wywołuje ona dwie metody: 'macierz_xy' oraz 'macierz_yx. W pętli, dla każdego elementu
@@ -204,7 +203,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             for j in range(0, indeks):
                 w1 = lista_wektorow[i - indeks]
                 w2 = lista_wektorow[j]
-                tmp1 = self.pole_wymiany_II(w1, w2, wektor_q)
+                tmp1 = self.pole_wymiany_I(w1, w2, wektor_q)
                 tmp2 = self.trzecie_wyrazenie(w1, w2, wektor_q, "yx")
                 tmp3 = self.trzecie_wyrazenie(w1, w2, wektor_q, "xy")
                 tmp4 = self.czwarte_wyrazenie(w1, w2)
@@ -218,10 +217,5 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :return: Wypisuje tablice do pliku tekstowego.
          Ważne! Przed wypisaniem, należy wypełnić macierz_M metodą 'wypełnienie_macierzy'
         """
-        savetxt('macierz.txt', array(self.macierz_M))
+        np.savetxt('macierz.txt', np.array(self.macierz_M))
 
-
-"""
-print(MacierzDoZagadnienia(9, 'DFT', 'II').slownik_dlugosc_wymiany[(0, -15000000)])
-print(MacierzDoZagadnienia(9, 'FFT', 'II').slownik_dlugosc_wymiany[(0, -15000000)])
-"""
