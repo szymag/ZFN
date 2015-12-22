@@ -27,8 +27,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             self.slownik_dlugosc_wymiany = self.tmp.exchange_length()
         else:
             self.tmp1 = DFT(self.ilosc_wektorow, typ_pola_wymiany)
-            self.slownik_dlugosc_wymiany = self.tmp1.slownik_wspolczynnikow()[1]
-            self.slownik_magnetyzacja = self.tmp1.slownik_wspolczynnikow()[0]
+            wspolczynniki = self.tmp1.slownik_wspolczynnikow()
+            self.slownik_dlugosc_wymiany = wspolczynniki[1]
+            self.slownik_magnetyzacja = wspolczynniki[0]
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
 
     def magnetyzacja(self, wektor_1, wektor_2):
