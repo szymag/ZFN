@@ -22,12 +22,13 @@ class Profile(ParametryMaterialowe):
         assert len(wektor_r) == 2
         lista_wektorow = enumerate(self.lista_wektorow)
         tmp = 0.
+
         for wektor_odwr in lista_wektorow:
-            tmp += self.wektory_wlasne[numer_modu][wektor_odwr[0]]
+            tmp += self.wektory_wlasne[numer_modu][wektor_odwr[0]] * exp(1.j * ((wektor_odwr[1][0] +
+                    self.wektor_q[0]) * wektor_r[0] + (wektor_odwr[1][1] + self.wektor_q[1]) * wektor_r[1]))
         return abs(tmp)
 
     def mapa_profile(self, numer_modu):
-        print(len(self.wektory_wlasne[0]))
         lista_x = np.linspace(-self.a/2, self.a/2, 150)
         lista_y = np.linspace(-self.b/2, self.b/2, 150)
         lista_wartosci = np.zeros((len(lista_x), len(lista_y)))
@@ -37,12 +38,13 @@ class Profile(ParametryMaterialowe):
         return lista_x, lista_y, lista_wartosci
 
     def wykreslenie_profili(self, numer_modu):
+        print(self.wektory_wlasne[0])
         lista_x, lista_y, lista_wartosci = self.mapa_profile(numer_modu)
         x, y = np.meshgrid(np.array(lista_x), np.array(lista_y))
         plt.pcolor(x, y, np.array(lista_wartosci))
         plt.colorbar()
-        plt.show()
+        # plt.show()
 
 
 # print(Profile().magnetyzacja_w_punkcie((100e-9, 200e-9), 1))
-print(Profile().wykreslenie_profili(2))
+print(Profile().wykreslenie_profili(0))

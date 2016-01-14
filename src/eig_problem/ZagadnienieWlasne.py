@@ -18,8 +18,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.0) for k in linspace(0.01, 0.99, ilosc_wektorow_q)] + \
-                                [((2 * pi * k / self.a), 0.0) for k in linspace(1.01, 1.9, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.0) for k in linspace(0.01, 0.99, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
 
@@ -72,7 +71,11 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         savetxt('1.txt', plik)
 
     def wektory_wlasne(self):
-        assert len(self.lista_wektorow_q) == 1
+        """
+        Metoda, której zadaniem jest wygenrowanie wektorów własnych, służących do wykreślenia profili wzbudzeń.
+        :return: Plik txt zawierający
+        """
+        assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
         wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
         wartosci_wlasne = list(enumerate(wartosci_wlasne))
         wektory_wlasne = list(enumerate(wektory_wlasne))
@@ -85,6 +88,6 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 
 def start():
-    return ZagadnienieWlasne(121, 1, 'DFT', 'II').wektory_wlasne()
+    return ZagadnienieWlasne(121, 1, 'FFT', 'II').wektory_wlasne()
 
-
+start()
