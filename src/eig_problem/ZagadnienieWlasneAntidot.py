@@ -32,9 +32,8 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         macierz_przekatna = np.zeros((len(macierz_antyprzekatna), len(macierz_antyprzekatna)))
         return np.concatenate((np.concatenate((macierz_antyprzekatna, macierz_przekatna), axis=1),
                                np.concatenate((macierz_przekatna, macierz_antyprzekatna), axis=1)), axis=0)
-    @do_cprofile
+
     def zagadnienie_wlasne(self, wektor_q, param):
-        # TODO: słówko yield!
         macierz_m = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
                                          self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
         macierz_materialowa = self.macierz_material()

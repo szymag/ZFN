@@ -136,7 +136,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return:
         """
-        # TODO: Usprawnić iloczyn skalarny
         tmp = 0.
         for vec_l in self.lista_wektorow:
             tmp += ((wektor_q[0] + wektor_2[0]) * (wektor_q[0] + vec_l[0]) +
@@ -182,7 +181,6 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
                (1e-36 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2) * \
                self.magnetyzacja(wektor_1, wektor_2) * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
 
-    @do_cprofile
     def wypelnienie_macierzy(self, wektor_q):
         """
         Główna metoda tej klasy. Wywołuje ona dwie metody: 'macierz_xy' oraz 'macierz_yx. W pętli, dla każdego elementu
@@ -190,6 +188,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Tablica do zagadnienia własnego.
         """
+        # TODO: Zaktualizować opis metody
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2, \
@@ -200,10 +199,10 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         assert len(lista_wektorow) == indeks, 'number of vector do not fit to matrix'
         self.delta_kroneckera()
         for i in range(indeks, 2 * indeks):
+            w1 = lista_wektorow[i - indeks]
             for j in range(0, indeks):
-                w1 = lista_wektorow[i - indeks]
                 w2 = lista_wektorow[j]
-                tmp1 = self.pole_wymiany_I(w1, w2, wektor_q)
+                tmp1 = self.pole_wymiany_II(w1, w2, wektor_q)
                 tmp2 = self.trzecie_wyrazenie(w1, w2, wektor_q, "yx")
                 tmp3 = self.trzecie_wyrazenie(w1, w2, wektor_q, "xy")
                 tmp4 = self.czwarte_wyrazenie(w1, w2)
@@ -218,4 +217,3 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
          Ważne! Przed wypisaniem, należy wypełnić macierz_M metodą 'wypełnienie_macierzy'
         """
         np.savetxt('macierz.txt', np.array(self.macierz_M))
-

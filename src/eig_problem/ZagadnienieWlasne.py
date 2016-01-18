@@ -18,11 +18,11 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.0) for k in linspace(0.01, 0.99, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.0) for k in linspace(0.01, 0.03, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
 
-    @do_cprofile
+   # @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
@@ -32,7 +32,6 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        # TODO: słówko yield!
         macierz_m = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
                                          self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
         return linalg.eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
@@ -78,9 +77,12 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
         wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
         wartosci_wlasne = list(enumerate(wartosci_wlasne))
+        print(wartosci_wlasne)
         wektory_wlasne = list(enumerate(wektory_wlasne))
+        print(wektory_wlasne)
         czestosci_wlasne = [(i[0], i[1].imag * self.gamma * self.mu0H0 / 2.0 / pi) for i in wartosci_wlasne if i[1].imag > 0]
         czestosci_wlasne = list(sorted(czestosci_wlasne, key=itemgetter(1)))
+        print(czestosci_wlasne[0])
         tmp = []
         for i in czestosci_wlasne:
             tmp.append(wektory_wlasne[i[0]][1])
@@ -88,6 +90,6 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 
 def start():
-    return ZagadnienieWlasne(121, 1, 'FFT', 'II').wektory_wlasne()
+    return ZagadnienieWlasne(49, 1, 'DFT', 'II').wektory_wlasne()
 
 start()
