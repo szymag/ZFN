@@ -54,7 +54,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
         czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / pi for i in wartosci_wlasne if i.imag > 0]
 
-        return list(sorted(czestosci_wlasne))
+        return list(sorted(czestosci_wlasne)[:18])
 
     def wypisz_czestosci_do_pliku(self):
         """
@@ -77,12 +77,9 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
         wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
         wartosci_wlasne = list(enumerate(wartosci_wlasne))
-        print(wartosci_wlasne)
         wektory_wlasne = list(enumerate(wektory_wlasne))
-        print(wektory_wlasne)
         czestosci_wlasne = [(i[0], i[1].imag * self.gamma * self.mu0H0 / 2.0 / pi) for i in wartosci_wlasne if i[1].imag > 0]
         czestosci_wlasne = list(sorted(czestosci_wlasne, key=itemgetter(1)))
-        print(czestosci_wlasne[0])
         tmp = []
         for i in czestosci_wlasne:
             tmp.append(wektory_wlasne[i[0]][1])
@@ -90,6 +87,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 
 def start():
-    return ZagadnienieWlasne(49, 1, 'DFT', 'II').wektory_wlasne()
+    return ZagadnienieWlasne(121, 1, 'DFT', 'II').wektory_wlasne()
+    #return ZagadnienieWlasne(49, 15, 'DFT', 'II').wypisz_czestosci_do_pliku()
 
 start()

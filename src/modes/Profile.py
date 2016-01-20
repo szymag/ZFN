@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 class Profile(ParametryMaterialowe):
-    def __init__(self, ilosc_wektorow=49, typ_pola_wymiany=None, start_path="."):
+    def __init__(self, ilosc_wektorow=121, typ_pola_wymiany=None, start_path="."):
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pola_wymiany)
         self.ilosc_wektorow = ilosc_wektorow
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
@@ -18,20 +18,24 @@ class Profile(ParametryMaterialowe):
         self.wektory_wlasne = np.loadtxt(self.sciezka[0]).view(complex)
         self.wektor_q = ast.literal_eval(self.sciezka[0].strip('.')[1:])
 
+
     def magnetyzacja_w_punkcie(self, wektor_r, numer_modu):
         assert len(wektor_r) == 2
         lista_wektorow = enumerate(self.lista_wektorow)
         tmp = 0.
         # TODO: Sprawdzić porządek wektorów sieci odwr poprzez odtworzenie parametrów materiałowych
+
+        wektor_wlasny = list(self.wektory_wlasne[0][60:121]) + list(self.wektory_wlasne[0][0:60])
+        print(len(wektor_wlasny))
         for wektor_odwr in lista_wektorow:
-            tmp += self.wektory_wlasne[numer_modu-1][wektor_odwr[0]] * exp(1.j * ((wektor_odwr[1][0] +
-                    self.wektor_q[0]) * wektor_r[0] + (wektor_odwr[1][1] + self.wektor_q[1]) * wektor_r[1]))
+            tmp += wektor_wlasny[wektor_odwr[0]] * exp(1.j * ((wektor_odwr[1][0]) *
+                    wektor_r[0] + (wektor_odwr[1][1]) * wektor_r[1]))
         return abs(tmp)
 
     def mapa_profile(self, numer_modu):
-        print(self.lista_wektorow)
-        lista_x = np.linspace(0, self.a*2, 200)
-        lista_y = np.linspace(0, self.b*2, 200)
+
+        lista_x = np.linspace(0, self.a, 75)
+        lista_y = np.linspace(0, self.b, 75)
         lista_wartosci = np.zeros((len(lista_x), len(lista_y)))
         for x in enumerate(lista_x):
             for y in enumerate(lista_y):

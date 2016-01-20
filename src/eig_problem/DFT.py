@@ -66,4 +66,3 @@ class DFT(ParametryMaterialowe):
             dlugosc_wymiany[int(i)] = self.dlugosc_wymiany(j)
             magnetyzacja[int(i)] = self.magnetyzacja(j)
         return dict(list(zip(lista_wektorow, magnetyzacja))), dict(list(zip(lista_wektorow, dlugosc_wymiany)))
-

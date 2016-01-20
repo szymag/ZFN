@@ -68,6 +68,5 @@ class FFT:
             indeks += 1
         return files
 
-    # TODO: Wypisać do pliku współczynniki z wektorami
 
-FFT().wypisz_do_pliku()
+FFT().wykres()

@@ -1,7 +1,5 @@
 from math import sqrt
-
 import numpy as np
-
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
@@ -55,7 +53,17 @@ class FFTfromFile(ParametryMaterialowe):
         d[(0, 0)] = d[(0, 0)] + self.lPy
         return d
 
+    def wypisz_wspolczynniki_do_pliku(self):
+        """
+        Metoda, której zadaniem jest wypisanie do pliku tekstowego współczynników fouriera.
+        :return: Wektory sieci odwrotnej wraz z odpowiadającymi im współczynnikami.
+        """
+        wspolczynniki = self.fourier_coefficient()
+        tmp = []
+        for i in wspolczynniki:
+            tmp.append([i[0], i[1], wspolczynniki[i]])
+        return np.savetxt('wspolczynniki.txt', np.array(tmp))
 
 if __name__ == "__main__":
-    q = FFTfromFile(121, 'I')
-    print(q.fourier_coefficient()[(0, 0)])
+    q = FFTfromFile(841, 'I')
+    q.wypisz_wspolczynniki_do_pliku()

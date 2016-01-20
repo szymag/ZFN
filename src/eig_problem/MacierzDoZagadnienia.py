@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from math import exp, cosh, sqrt
-
+from operator import itemgetter
 import numpy as np
 from src.eig_problem.cProfiler import do_cprofile
 from src.eig_problem.DFT import DFT
@@ -196,6 +196,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
         indeks = self.ilosc_wektorow
         lista_wektorow = self.lista_wektorow
+        #lista_wektorow = sorted(lista_wektorow, key=itemgetter(1))
         assert len(lista_wektorow) == indeks, 'number of vector do not fit to matrix'
         self.delta_kroneckera()
         for i in range(indeks, 2 * indeks):
