@@ -3,7 +3,7 @@ import numpy as np
 from scipy import linalg
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-from operator import itemgetter
+import sys
 
 # @do_cprofile
 class ZagadnienieWlasne(ParametryMaterialowe):
@@ -18,9 +18,10 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.03, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.5, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
+        self.ilosc_wektorow = ilosc_wektorow
 
     @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
@@ -67,7 +68,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             tmp = [k[0]]
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
-        np.savetxt('1.txt', plik)
+        np.savetxt(str(self.ilosc_wektorow) + '.txt', plik)
 
     def wektory_wlasne(self):
         """
@@ -81,8 +82,12 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         wektory_wlasne = wektory_wlasne[wartosci_wlasne_index[self.ilosc_wektorow:]]
         return np.savetxt(str(self.lista_wektorow_q[0]) + '.', wektory_wlasne.view(float))
 
-def start():
-    return ZagadnienieWlasne(361, 1, 'DFT', 'II').wektory_wlasne()
-    #return ZagadnienieWlasne(49, 15, 'DFT', 'II').wypisz_czestosci_do_pliku()
+def start(rozmiar_macierzy_blok):
+    return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne()
+    #return ZagadnienieWlasne(rozmiar_macierzy_blok, 3, 'DFT', 'II').wypisz_czestosci_do_pliku()
 
-start()
+if __name__ == "__main__":
+    try:
+        start(int(sys.argv[1]))
+    except:
+        print('Give size of blocks matrix')

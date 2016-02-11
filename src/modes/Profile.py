@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 class Profile(ParametryMaterialowe):
-    def __init__(self, ilosc_wektorow=225, typ_pola_wymiany=None, start_path="."):
+    def __init__(self, ilosc_wektorow=729, typ_pola_wymiany=None, start_path="."):
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pola_wymiany)
         self.ilosc_wektorow = ilosc_wektorow
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
@@ -40,4 +40,4 @@ class Profile(ParametryMaterialowe):
         plt.show()
 
 
-Profile().wykreslenie_profili(2, 100)
+Profile().wykreslenie_profili(1, 100)
