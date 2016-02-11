@@ -1,5 +1,5 @@
 from src.eig_problem.cProfiler import do_cprofile
-from numpy import linspace, pi, savetxt, array
+import numpy as np
 from scipy import linalg
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
@@ -18,11 +18,11 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.0) for k in linspace(0.01, 0.03, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.03, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
 
-   # @do_cprofile
+    @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
@@ -52,7 +52,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
-        czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / pi for i in wartosci_wlasne if i.imag > 0]
+        czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / np.pi for i in wartosci_wlasne if i.imag > 0]
 
         return list(sorted(czestosci_wlasne)[:18])
 
@@ -67,7 +67,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             tmp = [k[0]]
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
-        savetxt('1.txt', plik)
+        np.savetxt('1.txt', plik)
 
     def wektory_wlasne(self):
         """
@@ -76,18 +76,13 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         """
         assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
         wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
-        wartosci_wlasne = list(enumerate(wartosci_wlasne))
-        wektory_wlasne = list(enumerate(wektory_wlasne))
-        czestosci_wlasne = [(i[0], i[1].imag * self.gamma * self.mu0H0 / 2.0 / pi) for i in wartosci_wlasne if i[1].imag > 0]
-        czestosci_wlasne = list(sorted(czestosci_wlasne, key=itemgetter(1)))
-        tmp = []
-        for i in czestosci_wlasne:
-            tmp.append(wektory_wlasne[i[0]][1])
-        return savetxt(str(self.lista_wektorow_q[0]) + '.', array(tmp).view(float))
-
+        wartosci_wlasne_index = np.argsort(wartosci_wlasne.imag)
+        wektory_wlasne = np.transpose(wektory_wlasne)
+        wektory_wlasne = wektory_wlasne[wartosci_wlasne_index[self.ilosc_wektorow:]]
+        return np.savetxt(str(self.lista_wektorow_q[0]) + '.', wektory_wlasne.view(float))
 
 def start():
-    return ZagadnienieWlasne(121, 1, 'DFT', 'II').wektory_wlasne()
+    return ZagadnienieWlasne(361, 1, 'DFT', 'II').wektory_wlasne()
     #return ZagadnienieWlasne(49, 15, 'DFT', 'II').wypisz_czestosci_do_pliku()
 
 start()
