@@ -38,7 +38,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             self.slownik_dlugosc_wymiany = wspolczynniki[1]
             self.slownik_magnetyzacja = wspolczynniki[0]
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
-        self.pole_wymiany_dll = CDLL('./pole_wymiany_c/pole_wymiany_ii.so')
+        self.pole_wymiany_dll = CDLL('src/eig_problem/pole_wymiany_c/pole_wymiany_ii.so')
         for k in self.slownik_dlugosc_wymiany.keys():
             v = self.slownik_dlugosc_wymiany[k]
             self.pole_wymiany_dll.add_dlugosc_wymiany_value(c_longlong(k[0]),
