@@ -1,9 +1,25 @@
-from src.eig_problem.cProfiler import do_cprofile
-import numpy as np
+import cProfile
+
+from numpy import linspace, pi, savetxt
 from scipy import linalg
+
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-import sys
+
+
+def do_cprofile(func):
+    def profiled_func(*args, **kwargs):
+        profile = cProfile.Profile()
+        try:
+            profile.enable()
+            result = func(*args, **kwargs)
+            profile.disable()
+            return result
+        finally:
+            profile.print_stats()
+
+    return profiled_func
+
 
 # @do_cprofile
 class ZagadnienieWlasne(ParametryMaterialowe):
@@ -11,30 +27,48 @@ class ZagadnienieWlasne(ParametryMaterialowe):
     Klasa, w której zdefiniowane jest uogólnione zagadnienie własne. Dziedziczy ona po 'Parametry materiałowe, gdyż
     potrzebne są w niej infoemacje o strukturze kryształu magnonicznego.
     """
-
     def __init__(self, ilosc_wektorow, ilosc_wektorow_q, skad_wspolczynnik, typ_pole_wymiany):
         """
         :param ilosc_wektorow: Ile wektorów wchodzi do zagadnienia własnego. Determinuje to wielkość macierzy blokowych.
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.5, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * pi * k / self.a), 0.) for k in linspace(0.01, 0.5, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
-        self.ilosc_wektorow = ilosc_wektorow
 
-    def zagadnienie_wlasne(self, wektor_q, param):
+    @do_cprofile
+    def utworz_macierz_M(self, wektor_q):
         """
-        Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
-        dla której następnie oblicza wartości i wektory własne. Jest ona także przystosowana dla
+        :type wektor_q tuple
+        :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
+        :return: Zwraca tablicę do zagadnienia wlasnego, która została utworzona w klasie "MacierzDoZagadnienia".
+        """
+        assert type(wektor_q) == tuple, \
+            'form of wektor_q is forbidden. wektor_q should be touple'
+        assert len(wektor_q) == 2,\
+            'form of wektor_q is forbidden. wektor_q should have two arguments'
+        macierz = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
+                                       self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
+        return macierz
+
+    def zagadnienie_wlasne(self, wektor_q):
+        """
+        Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Poprzez metodę 'utworz_macierz_M' tworzy
+        sobie tablicę, dla której następnie oblicza wartości i wektory własne. Jest ona także przystosowana dla
         uogólnionego zagadnienia własnego.
         :type wektor_q tuple
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        macierz_m = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
-                                         self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
-        return linalg.eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
+        #m_jednostkowa = identity(2 * self.ilosc_wektorow)
+        assert type(wektor_q) == tuple, \
+            'form of wektor_q is forbidden. wektor_q should be touple'
+        assert len(wektor_q) == 2,\
+            'form of wektor_q is forbidden. wektor_q should have two arguments'
+        # TODO: słówko yield!
+        macierz_M = self.utworz_macierz_M(wektor_q)
+        return linalg.eig(macierz_M, right=False)
 
     def czestosci_wlasne(self, wektor_q):
         """
@@ -49,14 +83,15 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         """
         assert type(wektor_q) == tuple, \
             'form of wektor_q is forbidden. wektor_q should be touple'
-        assert len(wektor_q) == 2, \
+        assert len(wektor_q) == 2,\
             'form of wektor_q is forbidden. wektor_q should have two arguments'
-        wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
-        czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / np.pi for i in wartosci_wlasne if i.imag > 0]
+        wartosci_wlasne = self.zagadnienie_wlasne(wektor_q)
+        czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2 / pi for i in wartosci_wlasne]
+        czestosci_wlasne = [i for i in czestosci_wlasne if i > 0]
+        czestosci_wlasne = list(sorted(czestosci_wlasne))
+        return czestosci_wlasne
 
-        return list(sorted(czestosci_wlasne)[:18])
-
-    def wypisz_czestosci_do_pliku(self):
+    def wypisz_do_pliku(self):
         """
         Metoda, która wypisuje w kolumnach wyniki. W pierwszej jest wektor blochowski, a w dalszych odpowiadające mu
         częstotliwości własne.
@@ -67,26 +102,11 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             tmp = [k[0]]
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
-        np.savetxt(str(self.ilosc_wektorow) + '.txt', plik)
+        savetxt('1.txt', plik)
 
-    def wektory_wlasne(self):
-        """
-        Metoda, której zadaniem jest wygenrowanie wektorów własnych, służących do wykreślenia profili wzbudzeń.
-        :return: Plik txt zawierający
-        """
-        assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
-        wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
-        wartosci_wlasne_index = np.argsort(wartosci_wlasne.imag)
-        wektory_wlasne = np.transpose(wektory_wlasne)
-        wektory_wlasne = wektory_wlasne[wartosci_wlasne_index[self.ilosc_wektorow:]]
-        return np.savetxt(str(self.lista_wektorow_q[0]) + '.', wektory_wlasne.view(float))
 
-def start(rozmiar_macierzy_blok):
-    #return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne()
-    return ZagadnienieWlasne(rozmiar_macierzy_blok, 3000, 'DFT', 'II').wypisz_czestosci_do_pliku()
+def start():
+    return ZagadnienieWlasne(121, 21, 'DFT', 'II').wypisz_do_pliku()
 
-if __name__ == "__main__":
-    try:
-        start(int(441))
-    except:
-        print('Give size of blocks matrix')
+
+start()
