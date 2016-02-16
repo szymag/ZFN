@@ -23,7 +23,6 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         self.typ_pola_wymiany = typ_pole_wymiany
         self.ilosc_wektorow = ilosc_wektorow
 
-    @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
@@ -83,11 +82,11 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         return np.savetxt(str(self.lista_wektorow_q[0]) + '.', wektory_wlasne.view(float))
 
 def start(rozmiar_macierzy_blok):
-    return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne()
-    #return ZagadnienieWlasne(rozmiar_macierzy_blok, 3, 'DFT', 'II').wypisz_czestosci_do_pliku()
+    #return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne()
+    return ZagadnienieWlasne(rozmiar_macierzy_blok, 3000, 'DFT', 'II').wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     try:
-        start(int(sys.argv[1]))
+        start(int(441))
     except:
         print('Give size of blocks matrix')

@@ -30,6 +30,8 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
     def macierz_material(self):
         macierz_antyprzekatna = self.wspolczynniki_do_macierzy_material()
         macierz_przekatna = np.zeros((len(macierz_antyprzekatna), len(macierz_antyprzekatna)))
+        print(np.concatenate((np.concatenate((macierz_antyprzekatna, macierz_przekatna), axis=1),
+                               np.concatenate((macierz_przekatna, macierz_antyprzekatna), axis=1)), axis=0))
         return np.concatenate((np.concatenate((macierz_antyprzekatna, macierz_przekatna), axis=1),
                                np.concatenate((macierz_przekatna, macierz_antyprzekatna), axis=1)), axis=0)
 
@@ -59,5 +61,5 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
             plik.append(tmp)
         np.savetxt('A1.txt', plik)
 
-q = ZagadnienieWlasneAntidot(49, 25)
-q.wypisz_czestosci_do_pliku()
+q = ZagadnienieWlasneAntidot(25, 1)
+q.macierz_material()

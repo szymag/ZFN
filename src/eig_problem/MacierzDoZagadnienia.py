@@ -18,6 +18,7 @@ class vec2d_float(Structure):
                 ("y_", c_double)]
 
 
+
 class MacierzDoZagadnienia(ParametryMaterialowe):
     """
     Klasa, w której tworzona jest macierz zagadnienia własnego. Pobiera ona współczynniki Fouriera z klasy FFTfromFile.
@@ -38,6 +39,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             self.slownik_dlugosc_wymiany = wspolczynniki[1]
             self.slownik_magnetyzacja = wspolczynniki[0]
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
+
         self.pole_wymiany_dll = CDLL('./pole_wymiany_c/pole_wymiany_ii.so')
         for k in self.slownik_dlugosc_wymiany.keys():
             v = self.slownik_dlugosc_wymiany[k]
@@ -210,7 +212,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         return (wektor_1[1] - wektor_2[1]) ** 2 / \
                (1e-36 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2) * \
                self.magnetyzacja(wektor_1, wektor_2) * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
-
+    @do_cprofile
     def wypelnienie_macierzy(self, wektor_q):
         """
         Główna metoda tej klasy. Wywołuje ona dwie metody: 'macierz_xy' oraz 'macierz_yx. W pętli, dla każdego elementu
