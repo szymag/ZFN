@@ -1,5 +1,7 @@
 from math import sqrt
+
 import numpy as np
+
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
@@ -15,8 +17,10 @@ class FFTfromFile(ParametryMaterialowe):
         self.table = np.loadtxt(filepath).view(complex)
         self.coeff_number = ilosc_wektorow
         self.vector_max = WektorySieciOdwrotnej(self.a, self.b, self.coeff_number).lista_wektorow('max')
+        self.vector_min = WektorySieciOdwrotnej(self.a, self.b, self.coeff_number).lista_wektorow('min')
 
     def coefficient(self):
+        # TODO: Poprawić wybieranie współczynników
         """
         Metoda tworząca listę współczynników. Na podstawie położenia w tablicy, określane jest położenie w liście
         :return: Lista współczynników.
@@ -29,6 +33,15 @@ class FFTfromFile(ParametryMaterialowe):
             for j in range(index2):
                 coefficient[j + i * index2] = self.table[i + index1][j + index1]
         return coefficient
+
+    def vector_to_matrix(self):
+        """
+        Zwracana jest lista wektorów, służąca dalej do zagadnienia własnego. Metoda jest tak zdefiniowana, by wybierać
+        wektory z kwadratu, wokół zerowego wsółczynnika Fouriera. Ilość jest tak dobrana, by pasowała do rozmiaru
+        tablicy.
+        :return: Lista wektorów, o zadanej z zewnątrz liczbie elementów.
+        """
+        return self.vector_min
 
     def fourier_coefficient(self):
         """
@@ -53,17 +66,7 @@ class FFTfromFile(ParametryMaterialowe):
         d[(0, 0)] = d[(0, 0)] + self.lPy
         return d
 
-    def wypisz_wspolczynniki_do_pliku(self):
-        """
-        Metoda, której zadaniem jest wypisanie do pliku tekstowego współczynników fouriera.
-        :return: Wektory sieci odwrotnej wraz z odpowiadającymi im współczynnikami.
-        """
-        wspolczynniki = self.fourier_coefficient()
-        tmp = []
-        for i in wspolczynniki:
-            tmp.append([i[0], i[1], wspolczynniki[i]])
-        return np.savetxt('wspolczynniki.txt', np.array(tmp))
 
 if __name__ == "__main__":
-    q = FFTfromFile(841, 'I')
-    q.wypisz_wspolczynniki_do_pliku()
+    q = FFTfromFile(121, 'I')
+    print(q.fourier_coefficient()[(0, 0)])
