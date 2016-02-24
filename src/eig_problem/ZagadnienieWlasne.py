@@ -18,11 +18,12 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.5, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
-        self.ilosc_wektorow = ilosc_wektorow
 
+
+    @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
@@ -72,7 +73,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
     def wektory_wlasne(self):
         """
         Metoda, której zadaniem jest wygenrowanie wektorów własnych, służących do wykreślenia profili wzbudzeń.
-        :return: Plik txt zawierający
+        :return: Plik txt zawierający639e38ab877de8ba05a68937e881e5316b0dcf86
         """
         assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
         wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
@@ -83,10 +84,10 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 def start(rozmiar_macierzy_blok):
     #return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne()
-    return ZagadnienieWlasne(rozmiar_macierzy_blok, 3000, 'DFT', 'II').wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(rozmiar_macierzy_blok, 25, 'DFT', 'II').wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
-    try:
-        start(int(441))
-    except:
-        print('Give size of blocks matrix')
+
+    start(int(729))
+
+
