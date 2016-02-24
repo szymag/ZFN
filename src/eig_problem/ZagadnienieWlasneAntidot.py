@@ -58,7 +58,7 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
             tmp = [k[0]]
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
-        np.savetxt('A1_9xx_176.txt', plik)
+        np.savetxt('A1_'+ str(self.a) + '_' + str(self.ilosc_wektorow) +'.txt', plik)
 
 
 q = ZagadnienieWlasneAntidot(841, 50)

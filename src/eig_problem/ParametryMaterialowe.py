@@ -41,8 +41,8 @@ class ParametryMaterialowe:
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4.e-7 * pi
     d = 10e-9
-    a = 960e-9
-    b = 960e-9
+    a = 906e-9
+    b = 906e-9
     MoPy = 0.8e6
     MoCo = 0
     APy = 1.1e-11
