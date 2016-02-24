@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-name = 'A1_960_176.txt'
+name = 'A1_9xx_176.txt'
 file = np.transpose(np.loadtxt(name))
 
 def plot():
