@@ -69,4 +69,4 @@ class FFT:
         return files
 
 
-FFT().wykres()
+FFT().wypisz_do_pliku()
