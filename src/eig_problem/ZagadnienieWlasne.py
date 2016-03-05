@@ -19,6 +19,8 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
         self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
+
+
         self.skad_wspolczynnik = skad_wspolczynnik
         self.typ_pola_wymiany = typ_pole_wymiany
 
