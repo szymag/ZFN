@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 class Profile(ParametryMaterialowe):
-    def __init__(self, ilosc_wektorow=1849, typ_pola_wymiany=None, start_path="."):
+    def __init__(self, ilosc_wektorow=441, typ_pola_wymiany=None, start_path="."):
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pola_wymiany)
         self.ilosc_wektorow = ilosc_wektorow
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
@@ -25,8 +25,8 @@ class Profile(ParametryMaterialowe):
                           np.prod(np.exp(1j * wektory_odwrotne * (wektor_r + self.wektor_q)), axis=1)))
 
     def mapa_profile(self, numer_modu, dokladnosc):
-        x = np.linspace(-self.a, self.a, dokladnosc)
-        y = np.linspace(-self.a, self.a, dokladnosc)
+        x = np.linspace(0, self.a, dokladnosc)
+        y = np.linspace(0, self.a, dokladnosc)
         m = np.zeros(dokladnosc * dokladnosc)
         for i in enumerate(np.dstack(np.meshgrid(x, y)).reshape(-1, 2)):
             m[i[0]] = self.magnetyzacja_w_punkcie(i[1], numer_modu)
@@ -39,5 +39,4 @@ class Profile(ParametryMaterialowe):
         plt.colorbar()
         plt.show()
 
-
-Profile().wykreslenie_profili(10, 250)
+Profile().wykreslenie_profili(1, 150)
