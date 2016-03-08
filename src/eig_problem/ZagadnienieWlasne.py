@@ -18,7 +18,8 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]+ \
+                                [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(1.01, 1.99, ilosc_wektorow_q)]
 
 
         self.skad_wspolczynnik = skad_wspolczynnik
@@ -86,10 +87,10 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 def start(rozmiar_macierzy_blok):
     #return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne()
-    return ZagadnienieWlasne(rozmiar_macierzy_blok, 25, 'DFT', 'II').wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(rozmiar_macierzy_blok, 7, 'FFT', 'II').wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
 
-    start(int(729))
+    start(int(121))
 
 

@@ -28,7 +28,7 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         return wspolczynniki
 
     def macierz_wspolczynnikow(self):
-        macierz_antyprzekatna = 1 / self.wspolczynniki_do_macierzy_material()
+        macierz_antyprzekatna = self.wspolczynniki_do_macierzy_material()
         macierz_przekatna = np.zeros((len(macierz_antyprzekatna), len(macierz_antyprzekatna)))
 
         return np.concatenate((np.concatenate((macierz_antyprzekatna, macierz_przekatna), axis=0),
@@ -37,9 +37,9 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
     def zagadnienie_wlasne(self, wektor_q, param):
         macierz_m = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
                                          self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
-        macierz_materialowa = self.macierz_wspolczynnikow()
-        #macierz_materialowa = np.identity(len(macierz_m)) # macierz identyczności - sprawdzenie poprawności metody
-        return eig(macierz_materialowa, macierz_m, right=False, left=param)
+        #macierz_materialowa = self.macierz_wspolczynnikow()
+        macierz_materialowa = np.identity(len(macierz_m)) # macierz identyczności - sprawdzenie poprawności metody
+        return eig(macierz_m, right=False, left=param)
 
     def czestosci_wlasne(self, wektor_q):
         assert type(wektor_q) == tuple, \
@@ -47,9 +47,9 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
-        wartosci_wlasne = wartosci_wlasne** -1
+        #wartosci_wlasne = wartosci_wlasne** -1
         czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / pi for i in wartosci_wlasne if i.imag > 0]
-        return list(sorted(czestosci_wlasne))[0:40]
+        return list(sorted(czestosci_wlasne))[0:300]
 
     def wypisz_czestosci_do_pliku(self):
         plik = []
@@ -71,6 +71,6 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         wektory_wlasne = wektory_wlasne[wartosci_wlasne_index[self.ilosc_wektorow:]]
         return np.savetxt(str(self.lista_wektorow_q[0]) + '.', wektory_wlasne.view(float))
 
-q = ZagadnienieWlasneAntidot(441, 1)
-q.wektory_wlasne()
-#q.wypisz_czestosci_do_pliku()
+q = ZagadnienieWlasneAntidot(121, 7)
+#q.wektory_wlasne()
+q.wypisz_czestosci_do_pliku()

@@ -1,6 +1,6 @@
-*.png
+
 *.pdf
 /src/eig_problem/ZagadnienieWlasneAntidot.py
-*.txt
+
 __pycache__
 .idea
