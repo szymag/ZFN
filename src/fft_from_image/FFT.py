@@ -22,6 +22,7 @@ class FFT:
         :param tablica: Tablica wartości. Standardowo, jest to tablica wartości pikseli.
         :return: Wspołczynniki Fouriera w postaci tablicy, o wymiarach takich jak zadana tablica.
         """
+
         return np.fft.fftshift(np.fft.fft2(tablica, norm='ortho')) / len(tablica)
 
     def wywolaj_fft(self, path='.'):
@@ -31,8 +32,10 @@ class FFT:
         :return: Lista tablic, które pochodzą z wywołania metody fft.
         """
         lista_plikow = TablicaWartosciPikseli(path).tablica_dla_plikow()
+
         lista_fft = [self.fft(k) for k in lista_plikow]
         return lista_fft
+
 
     def wykres(self):
         """
