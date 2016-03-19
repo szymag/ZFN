@@ -10,9 +10,9 @@ class TablicaWartosciPikseli(ParametryMaterialowe):
     Klasa konwertująca pliki graficzne '*.png' na tablice. Klasa przygotowana jest na obrazki dwukolorowe. Biały kolor
     oznacza wypełnienie, a czarny rdzeń.
     """
-    def __init__(self,ilosc_wektorow='', typ_pola_wymiany='', start_path="."):
+    def __init__(self, start_path="."):
         self.lista_plikow = list((glob.glob(os.path.join(start_path, "*.png"))))
-        ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pola_wymiany)
+        ParametryMaterialowe.__init__(self)
 
     def stworz_tablice(self, wczytany_plik):
         """

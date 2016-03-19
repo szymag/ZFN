@@ -59,7 +59,6 @@ class WektorySieciOdwrotnej:
             for j in lista2:
                 lista.append((i, j))
         # lista = list(product(*(self.wspolrzedna_wektora(1, typ), self.wspolrzedna_wektora(2, typ))))
-
         return lista
 
 """

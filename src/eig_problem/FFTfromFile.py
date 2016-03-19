@@ -1,7 +1,7 @@
 from math import sqrt
 
 import numpy as np
-
+import pandas as pd
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
@@ -12,10 +12,13 @@ class FFTfromFile(ParametryMaterialowe):
     sieci odrwotnej wraz z odpowiadającymi im współczynnikami Fouriera.
     """
 
-    def __init__(self, ilosc_wektorow, typ_pole_wymiany, filepath='TM5.txt'):
-        ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.table = np.loadtxt(filepath).view(complex)
-        self.coeff_number = ilosc_wektorow
+    def __init__(self):
+        ParametryMaterialowe.__init__(self)
+        self.tmp_table = pd.read_csv(self.input_fft, delimiter=' ', dtype=float, header=None).values
+        re = self.tmp_table[:, 0::2]
+        im = self.tmp_table[:, 1::2] * 1j
+        self.table = re + im
+        self.coeff_number = self.ilosc_wektorow
         self.vector_max = WektorySieciOdwrotnej(self.a, self.b, self.coeff_number).lista_wektorow('max')
 
     def coefficient(self):
@@ -25,6 +28,7 @@ class FFTfromFile(ParametryMaterialowe):
         :return: Lista współczynników.
         """
         index = (sqrt(len(self.vector_max)) - 1.) / 2.
+        # noinspection PyTypeChecker
         index1 = int(len(self.table) / 2.) - index
         index2 = int(sqrt(len(self.vector_max)))
         coefficient = list(np.zeros(index2 * index2))
@@ -58,5 +62,5 @@ class FFTfromFile(ParametryMaterialowe):
 
 
 if __name__ == "__main__":
-    q = FFTfromFile(121, 'I')
+    q = FFTfromFile()
     print(q.fourier_coefficient()[(0, 0)])

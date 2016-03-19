@@ -4,20 +4,21 @@ from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ZagadnienieWlasne import ZagadnienieWlasne
 import numpy as np
 from math import *
-
+import pandas as pd
 
 class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
-    def __init__(self, ilosc_wektorow, ilosc_wektorow_q, skad_wspolczynnik='FFT', typ_pole_wymiany='II',
-                 filepath='dim1024.txt'):
+    def __init__(self, ilosc_wektorow_q, skad_wspolczynnik='FFT'):
 
-        ZagadnienieWlasne.__init__(self, ilosc_wektorow, ilosc_wektorow_q, skad_wspolczynnik='FFT',
-                                   typ_pole_wymiany='II')
-        self.typ_pole_wymiany = typ_pole_wymiany
+        ZagadnienieWlasne.__init__(self, ilosc_wektorow_q, skad_wspolczynnik='FFT')
         self.skad_wspolczynnik = skad_wspolczynnik
-        self.wspolczynniki_fft = np.loadtxt(filepath).view(complex)
-        self.ilosc_wektorow = ilosc_wektorow
+
+        self.tmp_table = pd.read_csv(self.input_fft, delimiter=' ', dtype=float, header=None).values
+        re = self.tmp_table[:, 0::2]
+        im = self.tmp_table[:, 1::2] * 1j
+        self.wspolczynniki_fft = re + im
 
     def wspolczynniki_do_macierzy_material(self):
+        # noinspection PyTypeChecker
         index1 = int(len(self.wspolczynniki_fft) / 2.) - int((self.ilosc_wektorow - 1) / 2)
         wspolczynniki = np.zeros((self.ilosc_wektorow, self.ilosc_wektorow), dtype=complex)
         for i in range(self.ilosc_wektorow):
@@ -28,15 +29,15 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         return wspolczynniki
 
     def macierz_wspolczynnikow(self):
-        macierz_antyprzekatna = self.wspolczynniki_do_macierzy_material()
+        macierz_antyprzekatna = self.wspolczynniki_do_macierzy_material
+        # noinspection PyTypeChecker
         macierz_przekatna = np.zeros((len(macierz_antyprzekatna), len(macierz_antyprzekatna)))
 
         return np.concatenate((np.concatenate((macierz_antyprzekatna, macierz_przekatna), axis=0),
                     np.concatenate((macierz_przekatna, macierz_antyprzekatna), axis=0)), axis=1)
 
     def zagadnienie_wlasne(self, wektor_q, param):
-        macierz_m = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
-                                         self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
+        macierz_m = MacierzDoZagadnienia(self.skad_wspolczynnik).wypelnienie_macierzy(wektor_q)
         #macierz_materialowa = self.macierz_wspolczynnikow()
         macierz_materialowa = np.identity(len(macierz_m)) # macierz identyczności - sprawdzenie poprawności metody
         return eig(macierz_m, macierz_materialowa, right=False, left=param)
@@ -66,11 +67,12 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         """
         assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
         wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
+        # noinspection PyTypeChecker
         wartosci_wlasne_index = np.argsort(wartosci_wlasne.imag**-1)
         wektory_wlasne = np.transpose(wektory_wlasne)
         wektory_wlasne = wektory_wlasne[wartosci_wlasne_index[self.ilosc_wektorow:]]
         return np.savetxt(str(self.lista_wektorow_q[0]) + '.', wektory_wlasne.view(float))
 
-q = ZagadnienieWlasneAntidot(841, 1)
+q = ZagadnienieWlasneAntidot(1)
 #q.wektory_wlasne()
 q.wypisz_czestosci_do_pliku()

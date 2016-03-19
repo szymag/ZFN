@@ -37,7 +37,6 @@ class FFT:
         lista_fft = [self.fft(k) for k in lista_plikow]
         return lista_fft
 
-
     def wykres(self):
         """
         W celu sprawdzenia poprawności, wykreślane są wykresie typu 'density plot' amplitudy współczynników Fouriera.
@@ -47,7 +46,7 @@ class FFT:
         for tablica in lista_fft():
             rozmiar = (len(tablica[0]), len(tablica))
             x, y = np.mgrid[slice(0, rozmiar[1], 1), slice(0, rozmiar[0], 1)]
-            z = tablica
+            z = abs(tablica)
             plt.pcolor(x, y, z, cmap='gray')
             plt.colorbar()
             plt.show()
@@ -70,6 +69,7 @@ class FFT:
                                     re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks-1]))[0] + '.txt')
             files.append(filepath)
             np.savetxt(filepath, tablica.view(float))
+            print(tablica.view(float).dtype)
             indeks += 1
         return files
 
