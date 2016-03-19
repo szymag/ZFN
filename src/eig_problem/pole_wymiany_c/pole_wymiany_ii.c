@@ -40,6 +40,7 @@ m* magnetyzacja = NULL;
 int liczba_wektorow = 0;
 vec2d* lista_wektorow = NULL;
 double H0 = 0.0;
+double size = 0.0;
 
 void add_dlugosc_wymiany_value(long long x, long long y, double rz, double iz)
 {
@@ -50,7 +51,7 @@ void add_dlugosc_wymiany_value(long long x, long long y, double rz, double iz)
 		dw* new_dw = malloc(sizeof(dw));
 		new_dw->key_.x_ = x;
 		new_dw->key_.y_ = y;
-		new_dw->z_ = rz + iz * I;
+		new_dw->z_ = rz + iz;
 #ifdef DEBUG
 		fprintf(stderr, "[c] dlugosc_wymiany (%lld, %lld) = (%e, %e)\n", x, y, rz, iz);
 #endif
@@ -67,7 +68,7 @@ void add_magnetyzacja_value(long long x, long long y, double rz, double iz)
 		m* new_m = malloc(sizeof(m));
 		new_m->key_.x_ = x;
 		new_m->key_.y_ = y;
-		new_m->z_ = rz + iz * I;
+		new_m->z_ = rz + iz;
 #ifdef DEBUG
 		fprintf(stderr, "[c] magnetyzacja (%lld, %lld) = (%e, %e)\n", x, y, rz, iz);
 #endif
@@ -75,11 +76,12 @@ void add_magnetyzacja_value(long long x, long long y, double rz, double iz)
 	}
 }
 
-void init_lista_wektorow(vec2d* lw, int n, double h0)
+void init_lista_wektorow(vec2d* lw, int n, double h0, double a)
 {
 	liczba_wektorow = n;
 	lista_wektorow = malloc(sizeof(vec2d) * n);
 	H0 = h0;
+    size = a;
 	for (int i = 0; i < n; ++i) {
 		lista_wektorow[i].x_ = lw[i].x_;
 		lista_wektorow[i].y_ = lw[i].y_;
@@ -96,7 +98,7 @@ void init_lista_wektorow(vec2d* lw, int n, double h0)
 
 void tmp_value(vec2d* w1, vec2d* w2, vec2d_float* wq, vec2d_float* result_tmp)
 {
-	double complex tmp = 0.0 + 0.0 * I;
+	double complex tmp = 0.0 + 0.0;
 #ifdef BTMPV
 	fprintf(stderr, "[c] w1 = (%lld, %lld)\n", w1->x_, w1->y_);
 	fprintf(stderr, "[c] w2 = (%lld, %lld)\n", w2->x_, w2->y_);
@@ -129,8 +131,8 @@ void tmp_value(vec2d* w1, vec2d* w2, vec2d_float* wq, vec2d_float* result_tmp)
 			cimag(mv->z_)
 			);
 #endif
-		tmp += ((wq->x_ + w2->x_) * (wq->x_ + lista_wektorow[i].x_)
-		      + (wq->y_ + w2->y_) * (wq->y_ + lista_wektorow[i].y_))
+		tmp += ((wq->x_ + w2->x_ / size) * (wq->x_ + lista_wektorow[i].x_ / size)
+		      + (wq->y_ + w2->y_ / size) * (wq->y_ + lista_wektorow[i].y_ / size))
 			* dwv->z_ * mv->z_ / H0;
 #ifdef TMPV
 		fprintf(stderr, "[c] inside tmp = (%f, %f)\n", creal(tmp), cimag(tmp));

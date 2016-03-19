@@ -1,5 +1,6 @@
 import os
-
+import glob
+import re
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -65,7 +66,8 @@ class FFT:
         files = []
         for tablica in lista_fft:
             # TODO: usprawnić nazywanie plików
-            filepath = os.path.join(os.path.abspath(path), 'fft' + str(indeks) + '.txt')
+            filepath = os.path.join(os.path.abspath(path),
+                                    re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks-1]))[0] + '.txt')
             files.append(filepath)
             np.savetxt(filepath, tablica.view(float))
             indeks += 1

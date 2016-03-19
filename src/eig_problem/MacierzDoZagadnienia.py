@@ -7,15 +7,15 @@ from src.eig_problem.DFT import DFT
 from src.eig_problem.FFTfromFile import FFTfromFile
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
-import multiprocessing as mp
+
 class vec2d(Structure):
     _fields_ = [("x_", c_longlong),
                 ("y_", c_longlong)]
 
+
 class vec2d_float(Structure):
     _fields_ = [("x_", c_double),
                 ("y_", c_double)]
-
 
 
 class MacierzDoZagadnienia(ParametryMaterialowe):
@@ -51,7 +51,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
         vec2d_array_type = vec2d * len(self.lista_wektorow)
         arr = vec2d_array_type(*self.lista_wektorow)
-        self.pole_wymiany_dll.init_lista_wektorow(arr, len(self.lista_wektorow), c_double(self.H0))
+        self.pole_wymiany_dll.init_lista_wektorow(arr, len(self.lista_wektorow), c_double(self.H0), c_double(self.a))
         self.pole_wymiany_dll.tmp_value.argtypes = [POINTER(vec2d),
                                                     POINTER(vec2d),
                                                     POINTER(vec2d_float),
@@ -132,6 +132,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wynikiem jest drugi wyraz sumy.
         """
+        wektor_1 = (wektor_1[0], wektor_1[1])
+        wektor_2 = (wektor_2[0], wektor_2[1])
         tmp1 = (wektor_q[0] + wektor_2[0]) * (wektor_q[0] + wektor_1[0]) + \
                (wektor_q[1] + wektor_1[1]) * (wektor_q[1] + wektor_2[1])
         tmp2 = self.dlugosc_wymiany(wektor_1, wektor_2)
@@ -159,10 +161,12 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param typ_macierzy: Określa, do której z macierzy blokowych odnosi się wyrażenie.
         :return: Wynikiem jest drugi wyraz sumy.
         """
+        tmp3 = self.magnetyzacja(wektor_1, wektor_2)
+        wektor_2 = (wektor_2[0]/self.a, wektor_2[1]/self.a)
         tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
         assert tmp1 != 0., 'probably insert forbidden q vector e.g. q = 0, q = 1'
         tmp2 = self.funkcja_c(wektor_q, wektor_2, "+")
-        tmp3 = self.magnetyzacja(wektor_1, wektor_2)
+
         return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1 ** 2) * (1 - tmp2) * tmp3, tmp2 * tmp3 / self.H0
 
     def czwarte_wyrazenie(self, wektor_1, wektor_2):
@@ -174,10 +178,12 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_2: j-ty wektor.
         :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
         """
+        tmp = self.magnetyzacja(wektor_1, wektor_2)
+        wektor_1 = (wektor_1[0]/self.a, wektor_1[1]/self.a)
+        wektor_2 = (wektor_2[0]/self.a, wektor_2[1]/self.a)
         return (wektor_1[1] - wektor_2[1]) ** 2 / \
-               (1e-36 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2) * \
-               self.magnetyzacja(wektor_1, wektor_2) * (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
-
+               (1e-36 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2) * tmp *\
+               (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
 
     def wypelnienie_macierzy(self, wektor_q):
         """

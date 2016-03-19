@@ -14,12 +14,6 @@ class TablicaWartosciPikseli(ParametryMaterialowe):
         self.lista_plikow = list((glob.glob(os.path.join(start_path, "*.png"))))
         ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pola_wymiany)
 
-    def ma(self, el):
-        if el == 0:
-            return 10
-        else:
-            return 1 / self.gamma
-
     def stworz_tablice(self, wczytany_plik):
         """
         Metoda tworzy tablice, odpowiadającą każdemu plikowi '*.png' w katalogu. Kolorowi czarnemu odpowiada wartość 1,
@@ -33,12 +27,7 @@ class TablicaWartosciPikseli(ParametryMaterialowe):
         tablica_pikseli = list(zeros(rozmiar[1]))
         for i in range(0, rozmiar[1]):
             tablica_pikseli[i] = piksele[rozmiar[0] * i:(i + 1) * rozmiar[0]]
-        for i in range(0, rozmiar[1]):
-            for j in range(0, rozmiar[1]):
-                if tablica_pikseli[i][j] == 0:
-                    tablica_pikseli[i][j] = 1e9
-                else:
-                    tablica_pikseli[i][j] = 1 / self.gamma
+
         return tablica_pikseli
 
     def tablica_dla_plikow(self):

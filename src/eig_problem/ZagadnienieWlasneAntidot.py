@@ -8,7 +8,7 @@ from math import *
 
 class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
     def __init__(self, ilosc_wektorow, ilosc_wektorow_q, skad_wspolczynnik='FFT', typ_pole_wymiany='II',
-                 filepath='fft1.txt'):
+                 filepath='dim1024.txt'):
 
         ZagadnienieWlasne.__init__(self, ilosc_wektorow, ilosc_wektorow_q, skad_wspolczynnik='FFT',
                                    typ_pole_wymiany='II')
@@ -39,7 +39,7 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
                                          self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
         #macierz_materialowa = self.macierz_wspolczynnikow()
         macierz_materialowa = np.identity(len(macierz_m)) # macierz identyczności - sprawdzenie poprawności metody
-        return eig(macierz_m, right=False, left=param)
+        return eig(macierz_m, macierz_materialowa, right=False, left=param)
 
     def czestosci_wlasne(self, wektor_q):
         assert type(wektor_q) == tuple, \
@@ -47,7 +47,7 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
-        #wartosci_wlasne = wartosci_wlasne** -1
+        #wartosci_wlasne **= -1
         czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / pi for i in wartosci_wlasne if i.imag > 0]
         return list(sorted(czestosci_wlasne))[0:300]
 
@@ -57,7 +57,7 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
             tmp = [k[0]]
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
-        np.savetxt(str(self.a) + 'nm_' + str(self.ilosc_wektorow) + '_' + str(self.gamma/1e9) +'GHz.txt', plik)
+        np.savetxt(str(self.a) + 'nm_' + str(self.ilosc_wektorow) + '_' + str(self.gamma/1e9) +'GHzid.txt', plik)
 
     def wektory_wlasne(self):
         """
@@ -71,6 +71,6 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
         wektory_wlasne = wektory_wlasne[wartosci_wlasne_index[self.ilosc_wektorow:]]
         return np.savetxt(str(self.lista_wektorow_q[0]) + '.', wektory_wlasne.view(float))
 
-q = ZagadnienieWlasneAntidot(121, 7)
+q = ZagadnienieWlasneAntidot(841, 1)
 #q.wektory_wlasne()
 q.wypisz_czestosci_do_pliku()

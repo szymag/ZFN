@@ -1,4 +1,4 @@
-
+*.txt
 *.pdf
 /src/eig_problem/ZagadnienieWlasneAntidot.py
 
