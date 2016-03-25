@@ -154,11 +154,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :type wektor_1: tuple
         :type wektor_2: tuple
         :type wektor_q: tuple
-        :type typ_macierzy: str
         :param wektor_1: i-ty wektor.
         :param wektor_2: j-ty wektor.
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
-        :param typ_macierzy: Określa, do której z macierzy blokowych odnosi się wyrażenie.
         :return: Wynikiem jest drugi wyraz sumy.
         """
         tmp3 = self.magnetyzacja(wektor_1, wektor_2)
