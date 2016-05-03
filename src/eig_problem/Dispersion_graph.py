@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-name = 'test.txt'
+name = 'F7_2809.txt'
 """
 m = np.transpose(np.loadtxt(name))[1:]
 
@@ -12,7 +12,7 @@ file = np.transpose(np.loadtxt(name))
 
 
 def plot_dispersion():
-    for i in range(6):
+    for i in range(150):
         plt.plot(file[0], file[1 + i], color='r')
     plt.xlabel('wektor falowy q [m^-1]')
     plt.ylabel('f [Hz]')
