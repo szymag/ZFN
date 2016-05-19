@@ -4,7 +4,6 @@ from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ZagadnienieWlasne import ZagadnienieWlasne
 import numpy as np
 from math import *
-import pandas as pd
 
 class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
     def __init__(self, ilosc_wektorow_q, skad_wspolczynnik='FFT'):
