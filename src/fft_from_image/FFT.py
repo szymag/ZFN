@@ -74,4 +74,5 @@ class FFT:
         return files
 
 
+
 FFT().wypisz_do_pliku()

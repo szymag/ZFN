@@ -2,6 +2,7 @@ from src.eig_problem.cProfiler import do_cprofile
 from scipy.linalg import eig
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ZagadnienieWlasne import ZagadnienieWlasne
+import pandas as pd
 import numpy as np
 from math import *
 
