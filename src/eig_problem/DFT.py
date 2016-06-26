@@ -10,8 +10,8 @@ class DFT(ParametryMaterialowe):
     Klasa obliczająca współczynniki Fouriera w sposób analityczny.
     """
 
-    def __init__(self, ilosc_wektorow, typ_pole_wymiany):
-        ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
+    def __init__(self):
+        ParametryMaterialowe.__init__(self)
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.a, self.ilosc_wektorow).lista_wektorow('max')
 
     def wspolczynnik(self, wektor):

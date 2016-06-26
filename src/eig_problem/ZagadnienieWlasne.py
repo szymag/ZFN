@@ -1,28 +1,26 @@
-#   from src.eig_problem.cProfiler import do_cprofile
+from src.eig_problem.cProfiler import do_cprofile
 import numpy as np
-from scipy import linalg
+from scipy.linalg import eig
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
-# @do_cprofile
 class ZagadnienieWlasne(ParametryMaterialowe):
     """
     Klasa, w której zdefiniowane jest uogólnione zagadnienie własne. Dziedziczy ona po 'Parametry materiałowe, gdyż
     potrzebne są w niej infoemacje o strukturze kryształu magnonicznego.
     """
 
-    def __init__(self, ilosc_wektorow, ilosc_wektorow_q, skad_wspolczynnik, typ_pole_wymiany):
+    def __init__(self, ilosc_wektorow_q, skad_wspolczynnik):
         """
         :param ilosc_wektorow: Ile wektorów wchodzi do zagadnienia własnego. Determinuje to wielkość macierzy blokowych.
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
-        ParametryMaterialowe.__init__(self, ilosc_wektorow, typ_pole_wymiany)
-        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.001, 0.002, ilosc_wektorow_q)]
+        ParametryMaterialowe.__init__(self)
+        self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
-        self.typ_pola_wymiany = typ_pole_wymiany
 
-    # @do_cprofile
+    @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
@@ -33,9 +31,8 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        macierz_m = MacierzDoZagadnienia(self.ilosc_wektorow, self.skad_wspolczynnik,
-                                         self.typ_pola_wymiany).wypelnienie_macierzy(wektor_q)
-        return linalg.eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
+        macierz_m = MacierzDoZagadnienia(self.skad_wspolczynnik).wypelnienie_macierzy(wektor_q)
+        return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def czestosci_wlasne(self, wektor_q):
         """
@@ -55,7 +52,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
         czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / np.pi for i in wartosci_wlasne if i.imag > 0]
 
-        return list(sorted(czestosci_wlasne)[:1700])
+        return list(sorted(czestosci_wlasne)[:150])
 
     def wypisz_czestosci_do_pliku(self):
         """
@@ -68,12 +65,12 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             tmp = [k[0]]
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
-        np.savetxt('TM5_' + str(self.ilosc_wektorow) + '.txt', plik)
+        np.savetxt(self.outpu_file, plik)
 
     def wektory_wlasne(self):
         """
         Metoda, której zadaniem jest wygenrowanie wektorów własnych, służących do wykreślenia profili wzbudzeń.
-        :return: Plik txt zawierający639e38ab877de8ba05a68937e881e5316b0dcf86
+        :return: Plik txt zawierający
         """
         assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
         wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
@@ -83,10 +80,9 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         return np.savetxt(str(self.lista_wektorow_q[0]) + '.', wektory_wlasne.view(float))
 
 
-def start(rozmiar_macierzy_blok):
-    # return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne()
-    return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'FFT', 'II').wypisz_czestosci_do_pliku()
+def start():
+    # return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne ()
+    return ZagadnienieWlasne(4000, 'FFT').wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
-
-    start(int(3481))
+    start()
