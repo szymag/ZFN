@@ -1,14 +1,15 @@
 import numpy as np
 import multiprocessing as mp
-
+import matplotlib.pyplot as plt
 
 class Chain_Generation:
 
-    def __init__(self, num_blocks, fib_num):
+    def __init__(self, num_blocks, repeat):
         self.num_blocks = num_blocks
-        self.fib_num = fib_num
+        self.repeat = repeat
 
-    def fib_matrix(self, n):
+    def fib_number(self):
+        n = self.num_blocks
         i = h = 1
         j = k = 0
         while (n > 0):
@@ -22,16 +23,17 @@ class Chain_Generation:
             n = int(n / 2)
         return j
 
-    def Fibonacci(self):
-        pool = mp.Pool()
-        assert len != 0 or len != 1, 'The sequence is too short'
-        seq = pool.map(self.fib_matrix, np.arange(self.num_blocks))
-        return seq
-
     def fibonacci_seq(self):
-        seq = np.zeros(self.fib_matrix(self.fib_num))
-        seq[1] = 1
-        for i in list(range(2,self.fib_num)):
-            pass
+        seq1 = [1]
+        seq2 = [0]
+        seq = seq2 + seq1
+        for i in range(self.num_blocks - 2):
+            seq = seq2 + seq1
+            seq1 = seq2
+            seq2 = seq
+        return np.repeat(seq, self.repeat)
 
-
+    def periodic_seq(self):
+        seq = np.zeros(self.fib_number())
+        seq[::2] += 1
+        return np.repeat(seq, self.repeat)

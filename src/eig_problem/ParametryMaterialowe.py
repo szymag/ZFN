@@ -39,9 +39,9 @@ class ParametryMaterialowe:
     # input FFT coefficient
     input_fft = 'TM6.txt'
     # amount of reciprocal vectors
-    ilosc_wektorow = 2809
+    ilosc_wektorow = 729
     # name of output file
-    outpu_file = 'TM6_2809_perp.txt'
+    outpu_file = 'test.txt'
 
     def __init__(self):
         pass
