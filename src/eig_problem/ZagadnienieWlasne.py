@@ -13,8 +13,9 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
     def __init__(self, ilosc_wektorow_q, skad_wspolczynnik):
         """
-        :param ilosc_wektorow: Ile wektorów wchodzi do zagadnienia własnego. Determinuje to wielkość macierzy blokowych.
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
+        :skad_wspolczynnik: Argument, który odpowiada z źródło pochodzenia wspoółczynników Fouriera. Możliwe wartości
+        to DFT oraz FFT.
         """
         ParametryMaterialowe.__init__(self)
         self.lista_wektorow_q = [((2 * np.pi * k / self.a), 0.0) for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]

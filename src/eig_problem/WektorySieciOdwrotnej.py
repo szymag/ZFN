@@ -1,4 +1,4 @@
-from math import pi, sqrt
+from math import sqrt
 
 from numpy import array
 
@@ -24,8 +24,8 @@ class WektorySieciOdwrotnej:
         :param k: Określa, którą współrzędną metoda ma obliczyć. Dla k=1 igrekową, dla k=2 zetową.
         :param typ: Określa, z jakiego zakresu mają być wybierane wektory sieci odwrotnej. Wartość min oznacza, że
         z podstawowego tzn. dla tych wektorów generuje się zagadnienie własne. Wartość max określa zakres dwa razy
-         większy, by obliczone wartości pewnych parametrów także zostały obliczone. Np. różnica dwóch wektórów
-         maksymalnych z zakresu min daje wartość 2*mi
+        większy, by obliczone wartości pewnych parametrów także zostały obliczone. Np. różnica dwóch wektórów
+        maksymalnych z zakresu min daje wartość 2*mi
         :return: Zwraca odpowiednią listę współrzędnych wektorów sieci odwrotnej.
         """
         assert k == 1 or k == 2, 'k should bo 1 or 2'
@@ -48,8 +48,8 @@ class WektorySieciOdwrotnej:
         Metoda obliczająca iloczyn kartezjański dla dwóch wygenerowanych list metodą 'wspolrzedna_wektora'.
         :param typ: Określa, z jakiego zakresu mają być wybierane wektory sieci odwrotnej. Wartość min oznacza, że
         z podstawowego tzn. dla tych wektorów generuje się zagadnienie własne. Wartość max określa zakres dwa razy
-         większy, by obliczone wartości pewnych parametrów także zostały obliczone. Np. różnica dwóch wektórów
-         maksymalnych z zakresu min daje wartość 2*min.
+        większy, by obliczone wartości pewnych parametrów także zostały obliczone. Np. różnica dwóch wektórów
+        maksymalnych z zakresu min daje wartość 2*min.
         :return: Lista wektorów sieci odwrotnej.
         """
         lista = []

@@ -1,9 +1,7 @@
-import os
-import glob
-import re
+import os, glob, re
 import matplotlib.pyplot as plt
 import numpy as np
-
+from src.fft_from_image.Sequences import ThueMorse, Fibbonacci, Periodic
 from src.fft_from_image.TablicaWartosciPikseli import TablicaWartosciPikseli
 
 
@@ -17,13 +15,12 @@ class FFT:
         pass
 
     @staticmethod
-    def fft(tablica):
+    def fft2d(tablica):
         """
         Wywołanie FFT jako metody obliczającej współczynniki Fouriera dla zadanej tablicy.
         :param tablica: Tablica wartości. Standardowo, jest to tablica wartości pikseli.
         :return: Wspołczynniki Fouriera w postaci tablicy, o wymiarach takich jak zadana tablica.
         """
-
         return np.fft.fftshift(np.fft.fft2(tablica, norm='ortho')) / len(tablica)
 
     def wywolaj_fft(self, path='.'):
@@ -33,8 +30,7 @@ class FFT:
         :return: Lista tablic, które pochodzą z wywołania metody fft.
         """
         lista_plikow = TablicaWartosciPikseli(path).tablica_dla_plikow()
-
-        lista_fft = [self.fft(k) for k in lista_plikow]
+        lista_fft = [self.fft2d(k) for k in lista_plikow]
         return lista_fft
 
     def wykres(self):
@@ -64,15 +60,27 @@ class FFT:
         indeks = 1
         files = []
         for tablica in lista_fft:
-            # TODO: usprawnić nazywanie plików
             filepath = os.path.join(os.path.abspath(path),
-                                    re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks-1]))[0] + '.txt')
+                                    re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks - 1]))[0] + '.txt')
             files.append(filepath)
             np.savetxt(filepath, tablica.view(float))
-            print(tablica.view(float).dtype)
             indeks += 1
-        return files
 
-
-
-FFT().wypisz_do_pliku()
+    def fft1d(self, typ_struktury, repeat, len_num):
+        """
+        Metoda obliczająca wspoółczynniki Fouriera dla struktur jednowymiarowych.
+        :param repeat: Ilukrotnie powtórzyć kazdy element łańcucha. Potrzebne przy zwiększaniu ilości wekotorów sieci
+        odwrotnej.
+        :param len_num: Parametr, który decyduje z ilu segmentów składa się struktura. Pdaje się argument.
+        :return: Współczynniki Fouriera w pliku tekstowym
+        """
+        # TODO: Sprawdzić normowanie
+        if typ_struktury == 'TM':
+            tab = ThueMorse(repeat, len_num).sequence()
+            np.savetxt('tm_coef' + str(len_num) + '.txt', np.fft.fftshift(np.fft.fft(tab, norm='ortho')) / len(tab))
+        elif typ_struktury == 'F':
+            tab = Fibbonacci(repeat, len_num).sequence()
+            np.savetxt('f_coef' + str(len_num) + '.txt', np.fft.fftshift(np.fft.fft(tab, norm='ortho')) / len(tab))
+        elif typ_struktury == 'P':
+            tab = Periodic(repeat, len_num).sequence()
+            np.savetxt('p_coef' + str(len_num) + '.txt', np.fft.fftshift(np.fft.fft(tab, norm='ortho')) / len(tab))
