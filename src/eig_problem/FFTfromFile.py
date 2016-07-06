@@ -28,7 +28,6 @@ class FFTfromFile(ParametryMaterialowe):
         :return: Lista współczynników.
         """
         index = (sqrt(len(self.vector_max)) - 1.) / 2.
-        # noinspection PyTypeChecker
         index1 = int(len(self.table) / 2.) - index
         index2 = int(sqrt(len(self.vector_max)))
         coefficient = list(np.zeros(index2 * index2))

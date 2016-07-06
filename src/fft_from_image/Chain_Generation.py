@@ -40,7 +40,7 @@ class Chain_Generation:
         return np.repeat(seq, self.repeat)
 
     def tm_construct(self, seq):
-        return [(i + 1)%2  for i in seq]
+        return [(i + 1) % 2  for i in seq]
 
     def thue_morse_seq(self):
         seq = [0]

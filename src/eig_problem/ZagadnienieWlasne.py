@@ -82,7 +82,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 def start():
     # return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne ()
-    return ZagadnienieWlasne(4000, 'FFT').wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(400000, 'FFT').wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     start()
