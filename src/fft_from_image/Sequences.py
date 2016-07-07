@@ -18,8 +18,8 @@ class ThueMorse(ChainGeneration):
         return np.repeat(seq, self.repeat)
 
 
-class Fibbonacci(ChainGeneration):
-    def __init__(self, fib_num, repeat):
+class Fibonacci(ChainGeneration):
+    def __init__(self, repeat, fib_num):
         ChainGeneration.__init__(self, repeat)
         self.fib_num = fib_num
 
@@ -38,7 +38,7 @@ class Fibbonacci(ChainGeneration):
             n = int(n / 2)
         return j
 
-    def seqence(self):
+    def sequence(self):
         seq1 = [1]
         seq2 = [0]
         seq = seq2 + seq1

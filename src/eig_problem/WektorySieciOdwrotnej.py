@@ -1,6 +1,6 @@
 from math import sqrt
 
-from numpy import array
+import numpy as np
 
 
 class WektorySieciOdwrotnej:
@@ -36,7 +36,7 @@ class WektorySieciOdwrotnej:
             indeks = int(2 * sqrt(self.ilosc_wektorow) / 2) - 1
         else:
             indeks = int(sqrt(self.ilosc_wektorow + 1) / 2)
-        lista = array(range(-indeks, indeks + 1))
+        lista = np.array(range(-indeks, indeks + 1))
         if k == 1:
             lista = [int(2 * 3 * i) for i in lista]
         elif k == 2:
@@ -61,9 +61,13 @@ class WektorySieciOdwrotnej:
         # lista = list(product(*(self.wspolrzedna_wektora(1, typ), self.wspolrzedna_wektora(2, typ))))
         return lista
 
-"""
-q = WektorySieciOdwrotnej(400e-9, 400e-9, 121)
-print(q.lista_wektorow('min'))
-q = WektorySieciOdwrotnej(400e-9, 400e-9, 121)
-print(q.lista_wektorow('max'))
-"""
+    def wspolrzedna_wektora1d(self, typ):
+        assert typ == 'max' or typ == 'min', 'typ should by max or min'
+        if typ == 'min':
+            return np.arange(- 6 * int((self.ilosc_wektorow - 1) / 2), 6 * int((self.ilosc_wektorow - 1) / 2 )+ 1, 6)
+        elif typ == 'max':
+            return np.arange(- 6 * int((self.ilosc_wektorow - 1)), 6 * int((self.ilosc_wektorow - 1))+ 1, 6)
+
+    def lista_wektorow1d(self, typ):
+        return self.wspolrzedna_wektora1d(typ)
+

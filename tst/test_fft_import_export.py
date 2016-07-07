@@ -20,7 +20,7 @@ class TestFFTExportImport(unittest.TestCase):
 
     def test_export_import(self):
         logging.info("### Running test_export_import...")
-        lists_to_export = self.fft.wywolaj_fft(os.path.abspath("./tst/"))
+        lists_to_export = self.fft.wywolaj_fft2d(os.path.abspath("./tst/"))
         logging.info("numer of lists to export = %d" % len(lists_to_export))
         files = self.fft.wypisz_do_pliku(os.path.abspath("./tst/tmp/"), lists_to_export)
         logging.info("Lists were exported to files:")

@@ -37,9 +37,9 @@ class ParametryMaterialowe:
 
 # Program parameters
     # input FFT coefficient
-    input_fft = 'TM6.txt'
+    input_fft = 'p_coef_5*10.txt'
     # amount of reciprocal vectors
-    ilosc_wektorow = 841
+    ilosc_wektorow = 25
     # name of output file
     outpu_file = 'test.txt'
 

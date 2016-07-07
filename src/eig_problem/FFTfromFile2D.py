@@ -6,7 +6,7 @@ from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 
-class FFTfromFile(ParametryMaterialowe):
+class FFTfromFile2D(ParametryMaterialowe):
     """
     Klasa, która wczytuje zadany plik tekstowy (domyślnie jest to 'fft1.txt' i wyciąga z niego informację o wektorach
     sieci odrwotnej wraz z odpowiadającymi im współczynnikami Fouriera.
@@ -61,5 +61,5 @@ class FFTfromFile(ParametryMaterialowe):
 
 
 if __name__ == "__main__":
-    q = FFTfromFile()
+    q = FFTfromFile2D()
     print(q.fourier_coefficient()[(0, 0)])

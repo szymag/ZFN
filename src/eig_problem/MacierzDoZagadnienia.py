@@ -3,7 +3,7 @@ from ctypes import *
 from math import exp, cosh, sqrt
 import numpy as np
 from src.eig_problem.DFT import DFT
-from src.eig_problem.FFTfromFile import FFTfromFile
+from src.eig_problem.FFTfromFile2D import FFTfromFile2D
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
@@ -28,7 +28,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         ParametryMaterialowe.__init__(self)
         self.macierz_M = np.zeros((2 * self.ilosc_wektorow, 2 * self.ilosc_wektorow), dtype=complex)
         if skad_wspolczynnik == 'FFT':
-            self.tmp = FFTfromFile()
+            self.tmp = FFTfromFile2D()
             self.slownik_magnetyzacja = self.tmp.fourier_coefficient()
             self.slownik_dlugosc_wymiany = self.tmp.exchange_length()
         else:
