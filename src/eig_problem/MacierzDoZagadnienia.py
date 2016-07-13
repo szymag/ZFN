@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from ctypes import *
-from math import exp, cosh, sqrt
+from math import exp, cosh
 import numpy as np
-from src.eig_problem.DFT import DFT
-from src.eig_problem.FFTfromFile2D import FFTfromFile2D
+from src.eig_problem.FFTfromFile1D import FFTfromFile1D
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
@@ -24,19 +23,14 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     Współczynniki są dla niej tworzone poprzez FFT z pliku graficznego.
     """
 
-    def __init__(self, skad_wspolczynnik):
+    def __init__(self):
         ParametryMaterialowe.__init__(self)
         self.macierz_M = np.zeros((2 * self.ilosc_wektorow, 2 * self.ilosc_wektorow), dtype=complex)
-        if skad_wspolczynnik == 'FFT':
-            self.tmp = FFTfromFile2D()
-            self.slownik_magnetyzacja = self.tmp.fourier_coefficient()
-            self.slownik_dlugosc_wymiany = self.tmp.exchange_length()
-        else:
-            wspolczynniki = DFT().slownik_wspolczynnikow()
-            self.slownik_dlugosc_wymiany = wspolczynniki[1]
-            self.slownik_magnetyzacja = wspolczynniki[0]
-        self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, self.ilosc_wektorow).lista_wektorow('min')
-
+        self.tmp = FFTfromFile1D()
+        self.slownik_magnetyzacja = self.tmp.fourier_coefficient()
+        self.slownik_dlugosc_wymiany = self.tmp.exchange_length()
+        self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, self.ilosc_wektorow).lista_wektorow1d('min')
+        """
         self.pole_wymiany_dll = CDLL('./pole_wymiany_c/pole_wymiany_ii.so')
         for k in self.slownik_dlugosc_wymiany.keys():
             v = self.slownik_dlugosc_wymiany[k]
@@ -55,62 +49,43 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
                                                     POINTER(vec2d_float),
                                                     POINTER(vec2d_float)]
         self.pole_wymiany_dll.tmp_value.restype = None
+        """
 
     def magnetyzacja(self, wektor_1, wektor_2):
         """
         Metoda wyliczająca współczynnik Fouriera. Jako argumenty podawne są dwa wektory i wyliczana jest
         z nich różnica.
-        :type wektor_1: tuple
-        :type wektor_2: tuple
+        :type wektor_1: Real
+        :type wektor_2: Real
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: współczynnik Fouriera dla różnicy wektorów sieci odwrotnej.
         """
-        return self.slownik_magnetyzacja[(wektor_1[0] - wektor_2[0], wektor_1[1] - wektor_2[1])]
+        return self.slownik_magnetyzacja[wektor_1 - wektor_2]
 
     def dlugosc_wymiany(self, wektor_1, wektor_2):
         """
         Metoda obliczająca długość wymiany, dla dwóch zadanych wektorów.
         z nich różnica.
-        :type wektor_1: tuple
-        :type wektor_2: tuple
+        :type wektor_1: Real
+        :type wektor_2: Real
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: Długość wymiany w postaci odpowiadającego różnicy wektorów współczynnika Fouriera.
         """
-        return self.slownik_dlugosc_wymiany[wektor_1[0] - wektor_2[0], wektor_1[1] - wektor_2[1]]
+        return self.slownik_dlugosc_wymiany[wektor_1 - wektor_2]
 
-    def funkcja_c(self, wektor_1, wektor_2, znak):
+    def funkcja_c(self, wektor_1, wektor_2):
         """
         Metoda obliczająca wartość funkcji C zdefinoweanej wzorem: f(g, x) = cosh(|g|x)*exp(-|g|d/2), gdzie g jest
         wektorem, a x współrzędną iksową, tzn. miejscem na warstwie, dla którego wykreśla się zależność dyspersyjną.
-        :type wektor_1: tuple
-        :type wektor_2: tuple
-        :type znak: str
+        :type wektor_1: Real
+        :type wektor_2: Real
         :param wektor_1: Pierwszy wektor do obliczenia różnicy.
         :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :param znak: określa czy obliczana ma być różnica, czy suma wektorów.
         :return: wartość funkcji C.
         """
-        wekt_wypadkowy = self.norma_wektorow(wektor_1, wektor_2, znak)
-        return cosh(wekt_wypadkowy * self.x) * exp(-wekt_wypadkowy * self.d / 2.)
-
-    @staticmethod
-    def norma_wektorow(wektor_1, wektor_2, znak):
-        """
-        Metoda wyliczająca wypadkową długość dwóch wektorów.
-        :type wektor_1: tuple
-        :type wektor_2: tuple
-        :type znak: str
-        :param wektor_1: Pierwszy wektor do obliczenia różnicy.
-        :param wektor_2: Drugi wektor do obliczenia różnicy.
-        :param znak: Określa czy obliczana ma być różnica, czy suma wektorów.
-        :return: W zlależności od znaku, zwraca normę z sumy, lub różnicy wektorów.
-        """
-        if znak == "-":
-            return sqrt((wektor_1[0] - wektor_2[0]) ** 2 + (wektor_1[1] - wektor_2[1]) ** 2)
-        elif znak == "+":
-            return sqrt((wektor_1[0] + wektor_2[0]) ** 2 + (wektor_1[1] + wektor_2[1]) ** 2)
+        return cosh((wektor_1 + wektor_2) * self.x) * exp(-(wektor_1 + wektor_2) * self.d / 2.)
 
     def delta_kroneckera(self):
         """
@@ -120,25 +95,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             self.macierz_M[i - self.ilosc_wektorow][i] += 1.
             self.macierz_M[i][i - self.ilosc_wektorow] -= 1.
 
-    def pole_wymiany_I(self, wektor_1, wektor_2, wektor_q):
-        """
-        Metoda obliczająca człon elmentu macierzowego związana z polem wymiany.
-        :type wektor_1: tuple
-        :type wektor_2: tuple
-        :type wektor_q: tuple
-        :param wektor_1: i-ty wektor
-        :param wektor_2: j-ty wektor
-        :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
-        :return: Wynikiem jest drugi wyraz sumy.
-        """
-        wektor_1 = (wektor_1[0], wektor_1[1])
-        wektor_2 = (wektor_2[0], wektor_2[1])
-        tmp1 = (wektor_q[0] + wektor_2[0]) * (wektor_q[0] + wektor_1[0]) + \
-               (wektor_q[1] + wektor_1[1]) * (wektor_q[1] + wektor_2[1])
-        tmp2 = self.dlugosc_wymiany(wektor_1, wektor_2)
-
-        return tmp1 * tmp2 / self.H0
-
+    """
     def pole_wymiany_II(self, wektor_1, wektor_2, wektor_q):
         res_tmp = vec2d_float()
         self.pole_wymiany_dll.tmp_value(byref(vec2d(*wektor_1)),
@@ -146,41 +103,40 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
                                         byref(vec2d_float(*wektor_q)),
                                         byref(res_tmp))
         return complex(res_tmp.x_, res_tmp.y_)
+    """
+
+    def pole_wymiany_II(self, wektor_1, wektor_2, wektor_q):
+        """
+        :type wektor_1: Real
+        :type wektor_2: Real
+        :type wektor_q: Real
+        :param wektor_1: i-ty wektor.
+        :param wektor_2: j-ty wektor.
+        :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
+        :return:
+        """
+        tmp = 0.
+        for vec_l in self.lista_wektorow:
+            tmp += ((wektor_q + wektor_2) * (wektor_q + vec_l) + (wektor_q + wektor_2) * (wektor_q + vec_l) *
+                    self.slownik_dlugosc_wymiany[vec_l - wektor_2] *
+                    self.slownik_magnetyzacja[wektor_1 - vec_l] / self.H0)
+        return tmp
 
     def trzecie_wyrazenie_xy_yx(self, wektor_1, wektor_2, wektor_q):
         """
         Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
-        :type wektor_1: tuple
-        :type wektor_2: tuple
-        :type wektor_q: tuple
+        :type wektor_1: Real
+        :type wektor_2: Real
+        :type wektor_q: Real
         :param wektor_1: i-ty wektor.
         :param wektor_2: j-ty wektor.
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wynikiem jest drugi wyraz sumy.
         """
         tmp3 = self.magnetyzacja(wektor_1, wektor_2)
-        wektor_2 = (wektor_2[0] / self.a, wektor_2[1] / self.a)
-        tmp1 = self.norma_wektorow(wektor_q, wektor_2, '+')
-        assert tmp1 != 0., 'probably insert forbidden q vector e.g. q = 0, q = 1'
-        tmp2 = self.funkcja_c(wektor_q, wektor_2, "+")
-
-        return (wektor_q[0] + wektor_2[0]) ** 2 / (self.H0 * tmp1 ** 2) * (1 - tmp2) * tmp3, tmp2 * tmp3 / self.H0
-
-    def czwarte_wyrazenie(self, wektor_1, wektor_2):
-        """
-        Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
-        :type wektor_1: tuple
-        :type wektor_2: tuple
-        :param wektor_1: i-ty wektor.
-        :param wektor_2: j-ty wektor.
-        :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
-        """
-        tmp = self.magnetyzacja(wektor_1, wektor_2)
-        wektor_1 = (wektor_1[0] / self.a, wektor_1[1] / self.a)
-        wektor_2 = (wektor_2[0] / self.a, wektor_2[1] / self.a)
-        return (wektor_1[1] - wektor_2[1]) ** 2 / \
-               (1e-36 + self.H0 * self.norma_wektorow(wektor_1, wektor_2, "-") ** 2) * tmp * \
-               (1 - self.funkcja_c(wektor_1, wektor_2, "-"))
+        wektor_2 = wektor_2 / self.a
+        tmp2 = self.funkcja_c(wektor_q, wektor_2)
+        return  (1 - tmp2) * tmp3 / self.H0, tmp2 * tmp3 / self.H0
 
     def wypelnienie_macierzy(self, wektor_q):
         """
@@ -190,26 +146,18 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :return: Tablica do zagadnienia własnego.
         """
         # TODO: Zaktualizować opis metody
-        assert type(wektor_q) == tuple, \
-            'form of wektor_q is forbidden. wektor_q should be touple'
-        assert len(wektor_q) == 2, \
-            'form of wektor_q is forbidden. wektor_q should have two arguments'
         indeks = self.ilosc_wektorow
         assert len(self.lista_wektorow) == indeks, 'number of vector do not fit to matrix'
         self.delta_kroneckera()
 
         for i in range(indeks, 2 * indeks):
-
             w1 = self.lista_wektorow[i - indeks]
-
             for j in range(0, indeks):
                 w2 = self.lista_wektorow[j]
                 tmp1 = self.pole_wymiany_II(w1, w2, wektor_q)
                 tmp2 = self.trzecie_wyrazenie_xy_yx(w1, w2, wektor_q)
-                tmp4 = self.czwarte_wyrazenie(w1, w2)
-
-                self.macierz_M[i][j] += -tmp1 - tmp2[1] + tmp4
-                self.macierz_M[i - indeks][j + indeks] += tmp1 + tmp2[0] - tmp4
+                self.macierz_M[i][j] += -tmp1 - tmp2[1]   # yx
+                self.macierz_M[i - indeks][j + indeks] += tmp1 + tmp2[0]  # xy
         return self.macierz_M
 
     def wypisz_macierz(self):
@@ -218,3 +166,4 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
          Ważne! Przed wypisaniem, należy wypełnić macierz_M metodą 'wypełnienie_macierzy'
         """
         np.savetxt('macierz.txt', np.array(self.macierz_M))
+

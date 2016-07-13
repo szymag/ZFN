@@ -3,8 +3,8 @@ import os
 import unittest
 
 import numpy as np
-
 from src.eig_problem.FFTfromFile import FFTfromFile
+
 from src.fft_from_image.FFT import FFT
 
 logging.basicConfig(format='%(levelname)s:%(message)s',

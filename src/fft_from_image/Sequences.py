@@ -57,4 +57,5 @@ class Periodic(ChainGeneration):
     def sequence(self):
         seq = np.zeros(self.num)
         seq[::2] += 1
+        #seq %= 2
         return np.repeat(seq, self.repeat)

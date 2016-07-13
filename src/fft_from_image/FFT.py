@@ -72,7 +72,7 @@ class FFT:
 
     @staticmethod
     def fft1d(tablica):
-        tab = np.fft.fft(tablica, norm='ortho') / len(tablica)
+        tab = np.fft.fftshift(np.fft.fft(tablica)) / len(tablica)
         return np.stack((tab.real, tab.imag), axis=-1)
 
     def wywolaj_fft1d(self, typ_struktury, repeat, len_num):
@@ -98,4 +98,5 @@ class FFT:
 
 
 if __name__ == "__main__":
-    FFT().wywolaj_fft1d('F', 1, 10)
+    #FFT().wywolaj_fft1d('P', 2000, 3)
+    FFT().wypisz_do_pliku()
