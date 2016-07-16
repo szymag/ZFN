@@ -1,9 +1,13 @@
 # from src.eig_problem.cProfiler import do_cprofile
-import ast, glob, os
-import numpy as np
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
+import ast
+import glob
+import os
+
 import matplotlib.pyplot as plt
+import numpy as np
+
+from src.drawing.ParametryMaterialowe import ParametryMaterialowe
+from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 
 class Profile(ParametryMaterialowe):

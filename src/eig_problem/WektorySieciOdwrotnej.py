@@ -64,9 +64,9 @@ class WektorySieciOdwrotnej:
     def wspolrzedna_wektora1d(self, typ):
         assert typ == 'max' or typ == 'min', 'typ should by max or min'
         if typ == 'min':
-            return np.arange(- 6 * int((self.ilosc_wektorow - 1) / 2), 6 * int((self.ilosc_wektorow - 1) / 2 )+ 1, 6)
+            return np.arange(-(self.ilosc_wektorow - 1) // 2, (self.ilosc_wektorow - 1) // 2 + 1)
         elif typ == 'max':
-            return np.arange(- 6 * int((self.ilosc_wektorow - 1)), 6 * int((self.ilosc_wektorow - 1))+ 1, 6)
+            return np.arange(- (self.ilosc_wektorow - 1), (self.ilosc_wektorow - 1) + 1)
 
     def lista_wektorow1d(self, typ):
         return self.wspolrzedna_wektora1d(typ)

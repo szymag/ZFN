@@ -2,7 +2,8 @@ from math import sqrt
 
 import numpy as np
 import pandas as pd
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
+
+from src.drawing.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 

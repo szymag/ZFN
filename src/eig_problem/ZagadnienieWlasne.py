@@ -1,8 +1,8 @@
-from src.eig_problem.cProfiler import do_cprofile
 import numpy as np
 from scipy.linalg import eig
+from src.eig_problem.cProfiler import do_cprofile
+from src.drawing.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
 class ZagadnienieWlasne(ParametryMaterialowe):
@@ -18,7 +18,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         to DFT oraz FFT.
         """
         ParametryMaterialowe.__init__(self)
-        self.lista_wektorow_q = [(2 * np.pi * k / self.a) for k in np.linspace(0.01, 0.49, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [2 * np.pi * k / self.a for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
         self.skad_wspolczynnik = skad_wspolczynnik
 
     @do_cprofile
@@ -48,7 +48,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
         czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / np.pi for i in wartosci_wlasne if i.imag > 0]
 
-        return list(sorted(czestosci_wlasne)[:7])
+        return list(sorted(czestosci_wlasne)[:17])
 
     def wypisz_czestosci_do_pliku(self):
         """
@@ -78,7 +78,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 def start():
     # return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne ()
-    return ZagadnienieWlasne(15, 'FFT').wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(20, 'FFT').wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     start()

@@ -98,5 +98,5 @@ class FFT:
 
 
 if __name__ == "__main__":
-    #FFT().wywolaj_fft1d('P', 2000, 3)
-    FFT().wypisz_do_pliku()
+    FFT().wywolaj_fft1d('P', 2000, 2)
+    #FFT().wypisz_do_pliku()

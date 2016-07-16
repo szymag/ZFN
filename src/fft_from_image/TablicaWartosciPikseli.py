@@ -1,8 +1,10 @@
 import glob
 import os
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
+
 from PIL import Image
 from numpy import zeros
+
+from src.drawing.ParametryMaterialowe import ParametryMaterialowe
 
 
 class TablicaWartosciPikseli(ParametryMaterialowe):

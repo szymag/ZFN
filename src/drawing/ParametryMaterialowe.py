@@ -22,8 +22,8 @@ class ParametryMaterialowe:
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
     d = 30e-9 # thickness of material
-    a = 250e-9 # size of lattice in x-direction
-    b = 250e-9 # size of lattice in y-direction
+    a = 500e-9 # size of lattice in x-direction
+    b = 500e-9 # size of lattice in y-direction
     x = 0 # position of calculation of dispersion in z-direction
     #r = 14e-9 # radius of inclusion, only for DFT coefficient
 
@@ -37,9 +37,9 @@ class ParametryMaterialowe:
 
 # Program parameters
     # input FFT coefficient
-    input_fft = 'p_coef_200*2.txt'
+    input_fft = 'p_coef_2000*2.txt'
     # amount of reciprocal vectors
-    ilosc_wektorow = 25
+    ilosc_wektorow = 861
     # name of output file
     outpu_file = 'test.txt'
 
