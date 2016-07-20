@@ -90,13 +90,16 @@ class FFT:
             np.savetxt('tm_coef_' + str(repeat) + '*' + str(len_num) + '.txt', self.fft1d(tab))
         elif typ_struktury == 'F':
             tab = Fibonacci(repeat, len_num).sequence()
-            np.savetxt('f1_coef_' + str(repeat) + '*' + str(len_num) + '.txt', self.fft1d(tab))
-
+            np.savetxt('f_coef_' + str(repeat) + '*' + str(len_num) + '.txt', self.fft1d(tab))
         elif typ_struktury == 'P':
             tab = Periodic(repeat, len_num).sequence()
             np.savetxt('p_coef_' + str(repeat) + '*' + str(len_num) + '.txt', self.fft1d(tab))
+        return np.fft.fftshift(np.fft.fft(tab))
 
 
 if __name__ == "__main__":
-    FFT().wywolaj_fft1d('P', 2000, 2)
+    a = FFT().wywolaj_fft1d('TM', 1, 9)
     #FFT().wypisz_do_pliku()
+    b = np.arange(len(a))
+    plt.plot(b, abs(a) )
+    plt.show()

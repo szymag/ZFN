@@ -1,15 +1,14 @@
 import numpy as np
 
-from src.drawing.ParametryMaterialowe import ParametryMaterialowe
-from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
+from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
 class FFTfromFile1D(ParametryMaterialowe):
-    def __init__(self):
+    def __init__(self, input_fft):
         ParametryMaterialowe.__init__(self)
-        self.file = np.transpose(np.loadtxt(self.input_fft))
+        self.file = np.transpose(np.loadtxt(input_fft))
         self.coeff = self.file[0] + self.file[1] * 1j
-        #self.vector_max = WektorySieciOdwrotnej(self.a, self.b, self.ilosc_wektorow).lista_wektorow1d('max')
+        self.ilosc_wektorow = len(self.file[0]) // 2
 
     def coefficient1d(self):
         index = len(self.file[0]) // 2
@@ -25,3 +24,4 @@ class FFTfromFile1D(ParametryMaterialowe):
         tab[index0] += paramB
         assert tab[index0].imag == 0.
         return tab
+

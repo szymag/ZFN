@@ -1,6 +1,8 @@
 *.txt
 *.pdf
 /src/eig_problem/ZagadnienieWlasneAntidot.py
-
+src/eig_problem/nieuzywane
+src/fft_from_image/nieuzywane
 __pycache__
 .idea
+/test_speed.sh

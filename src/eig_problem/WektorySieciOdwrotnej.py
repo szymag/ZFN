@@ -9,9 +9,7 @@ class WektorySieciOdwrotnej:
     macierzy zagadnienia własnego. W tym przypadku wykorzystwyane są wzory analityczne na współczynniki Fouriera.
     """
 
-    def __init__(self, dlugosc_skladowej_y, dlugosc_skladowej_z, rozmiar_macierzy_blok):
-        self.dlugosc_skladowej_y = dlugosc_skladowej_y
-        self.dlugosc_skladowej_z = dlugosc_skladowej_z
+    def __init__(self, rozmiar_macierzy_blok):
         self.ilosc_wektorow = rozmiar_macierzy_blok
 
     def wspolrzedna_wektora(self, k, typ):

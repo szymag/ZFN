@@ -1,9 +1,12 @@
 import numpy as np
 from scipy.linalg import eig
-from src.eig_problem.cProfiler import do_cprofile
-from src.drawing.ParametryMaterialowe import ParametryMaterialowe
+import sys
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
+from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
+from src.eig_problem.cProfiler import do_cprofile
+import os.path
 
+scriptpath = os.path.dirname(__file__)
 
 class ZagadnienieWlasne(ParametryMaterialowe):
     """
@@ -11,17 +14,20 @@ class ZagadnienieWlasne(ParametryMaterialowe):
     potrzebne są w niej infoemacje o strukturze kryształu magnonicznego.
     """
 
-    def __init__(self, ilosc_wektorow_q, skad_wspolczynnik):
+    def __init__(self, ilosc_wektorow_q, input_fft, output_file, a):
         """
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         :skad_wspolczynnik: Argument, który odpowiada z źródło pochodzenia wspoółczynników Fouriera. Możliwe wartości
         to DFT oraz FFT.
         """
         ParametryMaterialowe.__init__(self)
-        self.lista_wektorow_q = [2 * np.pi * k / self.a for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
-        self.skad_wspolczynnik = skad_wspolczynnik
+        self.a = float(sys.argv[4]) * 90e-9
+        self.lista_wektorow_q = [2 * np.pi * 1e-9 / self.a ]
+        self.lista_wektorow_q = 2 * np.pi / self.a * float(ilosc_wektorow_q)
+        self.input_fft = os.path.join(scriptpath, input_fft)
+        self.output_file = output_file
 
-    @do_cprofile
+    #@do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
@@ -32,7 +38,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        macierz_m = MacierzDoZagadnienia().wypelnienie_macierzy(wektor_q)
+        macierz_m = MacierzDoZagadnienia(self.input_fft, self.a).wypelnienie_macierzy(wektor_q)
         return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def czestosci_wlasne(self, wektor_q):
@@ -48,7 +54,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
         czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / np.pi for i in wartosci_wlasne if i.imag > 0]
 
-        return list(sorted(czestosci_wlasne)[:17])
+        return list(sorted(czestosci_wlasne)[:500])
 
     def wypisz_czestosci_do_pliku(self):
         """
@@ -56,19 +62,15 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         częstotliwości własne.
         :return: Plik tekstowy.
         """
-        plik = []
-        for k in self.lista_wektorow_q:
-            tmp = [k]
-            tmp.extend(self.czestosci_wlasne(k))
-            plik.append(tmp)
-        np.savetxt(self.outpu_file, plik)
+
+        np.savetxt(self.output_file, self.czestosci_wlasne(self.lista_wektorow_q))
 
     def wektory_wlasne(self):
         """
         Metoda, której zadaniem jest wygenrowanie wektorów własnych, służących do wykreślenia profili wzbudzeń.
         :return: Plik txt zawierający
         """
-        assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
+        # assert len(self.lista_wektorow_q) == 1, 'Eigenvector should be calculated for only one position vector'
         wartosci_wlasne, wektory_wlasne = self.zagadnienie_wlasne(self.lista_wektorow_q[0], param=True)
         wartosci_wlasne_index = np.argsort(wartosci_wlasne.imag)
         wektory_wlasne = np.transpose(wektory_wlasne)
@@ -78,7 +80,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 def start():
     # return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne ()
-    return ZagadnienieWlasne(20, 'FFT').wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]).wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     start()

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-import multiprocessing as mp
-from src.drawing.ParametryMaterialowe import ParametryMaterialowe
+
 from src.eig_problem.FFTfromFile1D import FFTfromFile1D
+from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 
@@ -12,13 +12,15 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
     Współczynniki są dla niej tworzone poprzez FFT z pliku graficznego.
     """
 
-    def __init__(self):
+    def __init__(self, input_fft, a):
+        self.a = a
         ParametryMaterialowe.__init__(self)
+        self.tmp = FFTfromFile1D(input_fft)
+        self.ilosc_wektorow = self.tmp.ilosc_wektorow
         self.macierz_M = np.zeros((2 * self.ilosc_wektorow, 2 * self.ilosc_wektorow), dtype=complex)
-        self.tmp = FFTfromFile1D()
         self.magnetyzacja = self.tmp.fourier_coefficient(self.MoA, self.MoB)
         self.dlugosc_wymiany = self.tmp.fourier_coefficient(self.lA, self.lB)
-        self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, self.ilosc_wektorow).lista_wektorow1d('min')
+        self.lista_wektorow = WektorySieciOdwrotnej(self.ilosc_wektorow).lista_wektorow1d('min')
         self.shift = len(self.lista_wektorow) - 1
 
     def funkcja_c(self, wektor_1, wektor_2):
@@ -52,7 +54,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
         vec_l = np.array(self.lista_wektorow)
         wektor_2 = self.dlugosc_wymiany[vec_l - wektor_2 + self.shift] * \
-                   (wektor_q + 6 *wektor_2 / self.a) * (6 * vec_l / self.a + wektor_q) *\
+                   (wektor_q + 2 * np.pi * wektor_2 / self.a) * (2 * np.pi* vec_l / self.a + wektor_q) *\
                    self.magnetyzacja[wektor_1 - vec_l + self.shift]
         return wektor_2 / self.H0
 
@@ -66,7 +68,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
 
         tmp3 = self.magnetyzacja[wektor_1 - wektor_2 + self.shift]
-        tmp2 = self.funkcja_c(wektor_q, (6 * wektor_2 / self.a))
+        tmp2 = self.funkcja_c(wektor_q, (2 * np.pi * wektor_2 / self.a))
         return  tmp3 * (1 - tmp2) / self.H0
 
     def trzecie_wyrazenie_yx(self, wektor_1, wektor_2, wektor_q):
@@ -79,7 +81,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
 
         tmp3 = self.magnetyzacja[wektor_1 - wektor_2 + self.shift]
-        tmp2 = self.funkcja_c(wektor_q, (6 * wektor_2 / self.a))
+        tmp2 = self.funkcja_c(wektor_q, (2 * np.pi * wektor_2 / self.a))
         return  tmp2 * tmp3 / self.H0
 
     def wypelnienie_macierzy(self, wektor_q):
@@ -111,4 +113,3 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         self.wypelnienie_macierzy(1e-9)
         np.savetxt('macierz.txt', np.array(self.macierz_M))
 
-#MacierzDoZagadnienia().wypisz_macierz()
