@@ -23,14 +23,14 @@ class ParametryMaterialowe:
     d = 30e-9 # thickness of material
 
     x = 0 # position of calculation of dispersion in z-direction
-    #r = 14e-9 # radius of inclusion, only for DFT coefficient
+    r = 14e-9 # radius of inclusion, only for DFT coefficient
 
 # Material parameters
     # inclusion
     MoA = MoPy
     lA = lPy
     # matrix
-    MoB =  MoCo
+    MoB = MoCo
     lB = lCo
 
 # Program parameters

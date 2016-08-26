@@ -6,24 +6,24 @@ from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 
-class MacierzDoZagadnienia(ParametryMaterialowe):
+class MacierzDoZagadnienia:
     """
     Klasa, w której tworzona jest macierz zagadnienia własnego. Pobiera ona współczynniki Fouriera z klasy FFTfromFile.
     Współczynniki są dla niej tworzone poprzez FFT z pliku graficznego.
     """
 
-    def __init__(self, input_fft, a):
+    def __init__(self, input_fft, a, MoA=ParametryMaterialowe.MoA, MoB=ParametryMaterialowe.MoB,
+                 lA=ParametryMaterialowe.lA, lB=ParametryMaterialowe.lB):
         self.a = a
-        ParametryMaterialowe.__init__(self)
         self.tmp = FFTfromFile1D(input_fft)
         self.ilosc_wektorow = self.tmp.ilosc_wektorow
         self.macierz_M = np.zeros((2 * self.ilosc_wektorow, 2 * self.ilosc_wektorow), dtype=complex)
-        self.magnetyzacja = self.tmp.fourier_coefficient(self.MoA, self.MoB)
-        self.dlugosc_wymiany = self.tmp.fourier_coefficient(self.lA, self.lB)
+        self.magnetyzacja = self.tmp.fourier_coefficient(MoA, MoB)
+        self.dlugosc_wymiany = self.tmp.fourier_coefficient(lA, lB)
         self.lista_wektorow = WektorySieciOdwrotnej(self.ilosc_wektorow).lista_wektorow1d('min')
         self.shift = len(self.lista_wektorow) - 1
 
-    def funkcja_c(self, wektor_1, wektor_2):
+    def funkcja_c(self, wektor_1, wektor_2, d=ParametryMaterialowe.d):
         """
         Metoda obliczająca wartość funkcji C zdefinoweanej wzorem: f(g, x) = cosh(|g|x)*exp(-|g|d/2), gdzie g jest
         wektorem, a x współrzędną iksową, tzn. miejscem na warstwie, dla którego wykreśla się zależność dyspersyjną.
@@ -33,7 +33,8 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: wartość funkcji C.
         """
-        return np.exp(-abs((wektor_1 + wektor_2)) * self.d)
+        var = ParametryMaterialowe.d
+        return np.exp(-abs((wektor_1 + wektor_2)) * d)
 
 
     def delta_kroneckera(self):
@@ -44,7 +45,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
             self.macierz_M[i - self.ilosc_wektorow][i] += 1.
             self.macierz_M[i][i - self.ilosc_wektorow] -= 1.
 
-    def pole_wymiany_II(self, wektor_1, wektor_2, wektor_q):
+    def pole_wymiany_II(self, wektor_1, wektor_2, wektor_q, H0=ParametryMaterialowe.H0):
         """
         :param wektor_1: i-ty wektor.
         :param wektor_2: j-ty wektor.
@@ -56,9 +57,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         wektor_2 = self.dlugosc_wymiany[vec_l - wektor_2 + self.shift] * \
                    (wektor_q + 2 * np.pi * wektor_2 / self.a) * (2 * np.pi* vec_l / self.a + wektor_q) *\
                    self.magnetyzacja[wektor_1 - vec_l + self.shift]
-        return wektor_2 / self.H0
+        return wektor_2 / H0
 
-    def trzecie_wyrazenie_xy(self, wektor_1, wektor_2, wektor_q):
+    def trzecie_wyrazenie_xy(self, wektor_1, wektor_2, wektor_q, H0=ParametryMaterialowe.H0):
         """
         Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
         :param wektor_1: i-ty wektor.
@@ -69,9 +70,9 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
         tmp3 = self.magnetyzacja[wektor_1 - wektor_2 + self.shift]
         tmp2 = self.funkcja_c(wektor_q, (2 * np.pi * wektor_2 / self.a))
-        return  tmp3 * (1 - tmp2) / self.H0
+        return tmp3 * (1 - tmp2) / H0
 
-    def trzecie_wyrazenie_yx(self, wektor_1, wektor_2, wektor_q):
+    def trzecie_wyrazenie_yx(self, wektor_1, wektor_2, wektor_q, H0=ParametryMaterialowe.H0):
         """
         Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
         :param wektor_1: i-ty wektor.
@@ -82,7 +83,7 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
 
         tmp3 = self.magnetyzacja[wektor_1 - wektor_2 + self.shift]
         tmp2 = self.funkcja_c(wektor_q, (2 * np.pi * wektor_2 / self.a))
-        return  tmp2 * tmp3 / self.H0
+        return tmp2 * tmp3 / H0
 
     def wypelnienie_macierzy(self, wektor_q):
         """
@@ -112,4 +113,5 @@ class MacierzDoZagadnienia(ParametryMaterialowe):
         """
         self.wypelnienie_macierzy(1e-9)
         np.savetxt('macierz.txt', np.array(self.macierz_M))
+
 

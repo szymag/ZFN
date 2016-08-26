@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.linalg import eig
-import sys
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.cProfiler import do_cprofile
@@ -8,7 +7,7 @@ import os.path
 
 scriptpath = os.path.dirname(__file__)
 
-class ZagadnienieWlasne(ParametryMaterialowe):
+class ZagadnienieWlasne:
     """
     Klasa, w której zdefiniowane jest uogólnione zagadnienie własne. Dziedziczy ona po 'Parametry materiałowe, gdyż
     potrzebne są w niej infoemacje o strukturze kryształu magnonicznego.
@@ -20,12 +19,13 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :skad_wspolczynnik: Argument, który odpowiada z źródło pochodzenia wspoółczynników Fouriera. Możliwe wartości
         to DFT oraz FFT.
         """
-        ParametryMaterialowe.__init__(self)
-        self.a = float(sys.argv[4]) * 90e-9
+        self.a = float(a) * 90e-9
         self.lista_wektorow_q = [2 * np.pi * 1e-9 / self.a ]
-        self.lista_wektorow_q = 2 * np.pi / self.a * float(ilosc_wektorow_q)
+        #self.lista_wektorow_q = 2 * np.pi / self.a * float(ilosc_wektorow_q)
         self.input_fft = os.path.join(scriptpath, input_fft)
         self.output_file = output_file
+        self.gamma = ParametryMaterialowe.gamma
+        self.mu0H0 = ParametryMaterialowe.mu0H0
 
     #@do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
@@ -63,7 +63,15 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :return: Plik tekstowy.
         """
 
-        np.savetxt(self.output_file, self.czestosci_wlasne(self.lista_wektorow_q))
+        plik = []
+        for k in self.lista_wektorow_q:
+            tmp = [k]
+            tmp.extend(self.czestosci_wlasne(k))
+            plik.append(tmp)
+            print(1)
+        np.savetxt(self.output_file, plik)
+
+        #np.savetxt(self.output_file, self.czestosci_wlasne(self.lista_wektorow_q))
 
     def wektory_wlasne(self):
         """
@@ -79,8 +87,8 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 
 def start():
-    # return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne ()
-    return ZagadnienieWlasne(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]).wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(30, 'tm_coef_1*9.txt', 'dystm6.txt', 34).wypisz_czestosci_do_pliku()
+    #return ZagadnienieWlasne(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]).wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     start()
