@@ -1,14 +1,13 @@
 from numpy import pi
 
-
 class ParametryMaterialowe:
 # Materials
     # Cobalt
-    MoCo = 1.14435e6
-    lCo = 2.3e-17
+    MoCo = 1.445e6
+    lCo = 2.287e-17
     # Permalloy
-    MoPy = 0.86e6
-    lPy = 4.044e-17
+    MoPy = 0.886e6
+    lPy = 2.8e-17
     # Iron
     MoFe = 1.752e6
     lFe = 1.09e-17
@@ -22,26 +21,24 @@ class ParametryMaterialowe:
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
     d = 30e-9 # thickness of material
-    a = 32 * 90e-9 # size of lattice in x-direction
-    b = 32 * 90e-9 # size of lattice in y-direction
+    a = 30e-9
     x = 0 # position of calculation of dispersion in z-direction
     r = 14e-9 # radius of inclusion, only for DFT coefficient
 
 # Material parameters
     # inclusion
-    MoA = MoCo
-    lA = lCo
+    MoA = MoPy
+    lA = lPy
     # matrix
-    MoB = MoPy
-    lB = lPy
+    MoB = MoCo
+    lB = lCo
 
 # Program parameters
     # input FFT coefficient
-    input_fft = 'TM6.txt'
+
     # amount of reciprocal vectors
-    ilosc_wektorow = 2809
+
     # name of output file
-    outpu_file = 'TM6_2809_perp.txt'
 
     def __init__(self):
         pass

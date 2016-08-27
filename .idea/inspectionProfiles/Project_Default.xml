@@ -21,6 +21,7 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="_collections_abc.Iterable.__getitem__" />
+          <option value="complex.*" />
         </list>
       </option>
     </inspection_tool>

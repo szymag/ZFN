@@ -5,20 +5,22 @@ from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
-class ZagadnienieWlasne(ParametryMaterialowe):
+class ZagadnienieWlasne:
     """
     Klasa, w której zdefiniowane jest uogólnione zagadnienie własne. Dziedziczy ona po 'Parametry materiałowe, gdyż
     potrzebne są w niej infoemacje o strukturze kryształu magnonicznego.
     """
 
-    def __init__(self, ilosc_wektorow_q, skad_wspolczynnik):
+    def __init__(self, ilosc_wektorow_q, a=ParametryMaterialowe.a, gamma=ParametryMaterialowe.gamma,
+                 mu0H0=ParametryMaterialowe.mu0H0):
         """
         :param ilosc_wektorow: Ile wektorów wchodzi do zagadnienia własnego. Determinuje to wielkość macierzy blokowych.
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         """
-        ParametryMaterialowe.__init__(self)
-        self.lista_wektorow_q = [(0.0, (2 * np.pi * k / self.a)) for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
-        self.skad_wspolczynnik = skad_wspolczynnik
+        self.gamma = gamma
+        self.mu0H0 = mu0H0
+        self.lista_wektorow_q = [[(2 * np.pi * k / a), 0.0] for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
+
 
     @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
@@ -31,7 +33,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        macierz_m = MacierzDoZagadnienia(self.skad_wspolczynnik).wypelnienie_macierzy(wektor_q)
+        macierz_m = MacierzDoZagadnienia("radius100.txt", 441).wypelnienie_macierzy(wektor_q)
         return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def czestosci_wlasne(self, wektor_q):
@@ -45,8 +47,6 @@ class ZagadnienieWlasne(ParametryMaterialowe):
         zespoloną, by uzysać częstotliwość rzeczywistą. Część zespolona w częstotliwośći odpowiada za tłumienie
         w układzie, a takiego się nie zakłada, więc powinny one być stosunkowo niewielkie - pomijalne.
         """
-        assert type(wektor_q) == tuple, \
-            'form of wektor_q is forbidden. wektor_q should be touple'
         assert len(wektor_q) == 2, \
             'form of wektor_q is forbidden. wektor_q should have two arguments'
         wartosci_wlasne = self.zagadnienie_wlasne(wektor_q, param=False)
@@ -65,7 +65,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
             tmp = [k[0]]
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
-        np.savetxt(self.outpu_file, plik)
+        np.savetxt('test.txt', plik)
 
     def wektory_wlasne(self):
         """
@@ -82,7 +82,7 @@ class ZagadnienieWlasne(ParametryMaterialowe):
 
 def start():
     # return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne ()
-    return ZagadnienieWlasne(50, 'FFT').wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(50).wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     start()

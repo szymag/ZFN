@@ -12,7 +12,7 @@ class DFT(ParametryMaterialowe):
 
     def __init__(self):
         ParametryMaterialowe.__init__(self)
-        self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.a, self.ilosc_wektorow).lista_wektorow('max')
+        self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.a, self.ilosc_wektorow).lista_wektorow2d('max')
 
     def wspolczynnik(self, wektor):
         """
