@@ -13,7 +13,7 @@ class FFTfromFile:
         re = self.tmp_table[:, 0::2]
         im = self.tmp_table[:, 1::2] * 1j
         self.table = re + im
-        self.tab_size = 2 * int(sqrt(tab_size))
+        self.tab_size = 2 * int(sqrt(tab_size)) - 1
         self.size = len(self.table[0])
 
     def coefficient(self):

@@ -25,6 +25,7 @@ class MacierzDoZagadnienia:
         self.tmp = FFTfromFile(input_fft, ilosc_wektorow)
         self.macierz_M = np.zeros((2 * ilosc_wektorow, 2 * ilosc_wektorow), dtype=complex)
         self.magnetyzacja = self.tmp.fourier_coefficient(MoA, MoB)
+
         self.dlugosc_wymiany = self.tmp.fourier_coefficient(lA, lB)
         self.lista_wektorow = WektorySieciOdwrotnej(ilosc_wektorow).lista_wektorow2d('min')
         tmp = int(sqrt(len(self.lista_wektorow)))
@@ -76,18 +77,18 @@ class MacierzDoZagadnienia:
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyzn aczaniu dyspersji.
         :return: Wynikiem jest drugi wyraz sumy.
         """
-        tmp1 = np.transpose(wektor_q + 2 * np.pi * wektor_2 / self.a)[0] ** 2 / self.H0 / \
-               self.norma_wektorow(wektor_q, 2 * np.pi * wektor_2 / self.a, "+")
+        tmp1 = np.transpose(wektor_q + 2 * np.pi * wektor_2 / self.a)[1] ** 2/ \
+               self.norma_wektorow(wektor_q, 2 * np.pi * wektor_2 / self.a, "+") ** 2
         tmp2 = 1 - self.funkcja_c(wektor_q, 2 * np.pi * wektor_2 / self.a, "+")
         tmp3 = self.magnetyzacja[list(np.transpose(wektor_1 - wektor_2 + self.shift))]
-        return tmp1 * tmp2 * tmp3
+        return tmp1 * tmp2 * tmp3 / self.H0
 
     def trzecie_wyrazenie_yx(self, wektor_1, wektor_2, wektor_q):
-
         tmp1 = 1 - self.funkcja_c(wektor_q, 2 * np.pi * wektor_2 / self.a, "+")
         tmp2 = self.magnetyzacja[list(np.transpose(wektor_1 - wektor_2 + self.shift))]
         return tmp1 * tmp2 / self.H0
 
+    # noinspection PyTypeChecker
     def czwarte_wyrazenie(self, wektor_1, wektor_2):
         """
         Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
@@ -96,10 +97,10 @@ class MacierzDoZagadnienia:
         :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
         """
         tmp = self.magnetyzacja[list(np.transpose(wektor_1 - wektor_2 + self.shift))]
-        tmp1 = self.funkcja_c(wektor_1, wektor_2, "-")
-        tmp2 = (2 * np.pi * np.transpose(wektor_1 - wektor_2) / self.a)[1] ** 2 / self.H0 / \
-               self.norma_wektorow(2 * np.pi * wektor_1 / self.a, 2 * np.pi * wektor_2 / self.a, "-")
-        return tmp * tmp1 * tmp2
+        tmp1 = 1 - self.funkcja_c(wektor_1, wektor_2, "-")
+        tmp2 = np.transpose(2 * np.pi * wektor_1 / self.a + 2 * np.pi * wektor_2 / self.a)[0] ** 2 / \
+               self.norma_wektorow(2 * np.pi * wektor_1 / self.a, 2 * np.pi * wektor_2 / self.a, "-") ** 2
+        return tmp * tmp1 * tmp2 / self.H0
 
     def wypelnienie_macierzy(self, wektor_q):
         """
@@ -112,10 +113,9 @@ class MacierzDoZagadnienia:
         w1 = self.lista_wektorow
         for i in range(self.ilosc_wektorow):
             tmp1 = self.pole_wymiany_II(w1, w1[i], wektor_q)
-            # tmp2 = self.trzecie_wyrazenie_xy(w1, w2, wektor_q)
-            # tmp3 = self.trzecie_wyrazenie_yx(w1, w2, wektor_q)
-            # tmp4 = self.czwarte_wyrazenie(w1, w2)
-            tmp2, tmp3, tmp4 = 0, 0, 0
+            tmp2 = self.trzecie_wyrazenie_xy(w1, w1[i], wektor_q)
+            tmp3 = self.trzecie_wyrazenie_yx(w1, w1[i], wektor_q)
+            tmp4 = self.czwarte_wyrazenie(w1, w1[i])
             self.macierz_M[i + self.ilosc_wektorow][np.arange(self.ilosc_wektorow)] += -tmp1 - tmp3 + tmp4
             self.macierz_M[i][np.arange(self.ilosc_wektorow, 2 * self.ilosc_wektorow)] += tmp1 + tmp2 - tmp4
         return self.macierz_M
@@ -131,3 +131,4 @@ class MacierzDoZagadnienia:
 
 if __name__ == "__main__":
     q = MacierzDoZagadnienia('radius100.txt', 9)
+    q.wypelnienie_macierzy([1e-9, 0])
