@@ -22,7 +22,7 @@ class ZagadnienieWlasne:
         self.lista_wektorow_q = [[(2 * np.pi * k / a), 0.0] for k in np.linspace(0.01, 0.49, ilosc_wektorow_q)]
 
 
-    #@do_cprofile
+    @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
