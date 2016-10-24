@@ -19,7 +19,7 @@ class ZagadnienieWlasne:
         """
         self.gamma = gamma
         self.mu0H0 = mu0H0
-        self.lista_wektorow_q = [[(2 * np.pi * k / a), 0.0] for k in np.linspace(0.01, 0.49, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [[(2 * np.pi * k / a), 0.0] for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
 
 
     @do_cprofile
@@ -33,7 +33,7 @@ class ZagadnienieWlasne:
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        macierz_m = MacierzDoZagadnienia("radius100.txt", 121).wypelnienie_macierzy(wektor_q)
+        macierz_m = MacierzDoZagadnienia("radius100.txt", 1681, wektor_q).wypelnienie_macierzy()
         return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def czestosci_wlasne(self, wektor_q):
@@ -82,7 +82,7 @@ class ZagadnienieWlasne:
 
 def start():
     # return ZagadnienieWlasne(rozmiar_macierzy_blok, 1, 'DFT', 'II').wektory_wlasne ()
-    return ZagadnienieWlasne(15).wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(40).wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     start()

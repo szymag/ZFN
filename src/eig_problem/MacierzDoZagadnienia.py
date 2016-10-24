@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-
+from src.eig_problem.cProfiler import do_cprofile
 from math import exp, cosh, sqrt
 import numpy as np
 from src.eig_problem.FFTfromFile import FFTfromFile
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
+from multiprocessing import Pool
 
 
 class MacierzDoZagadnienia:
@@ -13,7 +14,7 @@ class MacierzDoZagadnienia:
     Współczynniki są dla niej tworzone poprzez FFT z pliku graficznego.
     """
 
-    def __init__(self, input_fft, ilosc_wektorow, a=ParametryMaterialowe.a, MoA=ParametryMaterialowe.MoA,
+    def __init__(self, input_fft, ilosc_wektorow, wektor_q, a=ParametryMaterialowe.a, MoA=ParametryMaterialowe.MoA,
                  MoB=ParametryMaterialowe.MoB, lA=ParametryMaterialowe.lA,
                  lB=ParametryMaterialowe.lB, d=ParametryMaterialowe.d,
                  x=ParametryMaterialowe.x, H0=ParametryMaterialowe.H0):
@@ -29,8 +30,10 @@ class MacierzDoZagadnienia:
         self.lista_wektorow = WektorySieciOdwrotnej(ilosc_wektorow).lista_wektorow2d('min')
         tmp = int(sqrt(len(self.lista_wektorow)))
         self.shift = np.array([tmp - 1, tmp - 1])
+        self.wektor_q = wektor_q
 
-    def norma_wektorow(self, wektor_1, wektor_2, znak):
+    @staticmethod
+    def norma_wektorow(wektor_1, wektor_2, znak):
         if znak == "+":
             return np.linalg.norm(wektor_1 + wektor_2)
         else:
@@ -58,18 +61,19 @@ class MacierzDoZagadnienia:
             self.macierz_M[i][i - self.ilosc_wektorow] -= 1.
 
     # noinspection PyTypeChecker
-    def pole_wymiany_II(self, wektor_1, wektor_2, wektor_q):
-        vec_l = self.lista_wektorow
-        #TODO: Zwryfikować dl_wym
-        dl_wym = np.sum(self.dlugosc_wymiany[vec_l - np.transpose(wektor_2) + np.transpose(self.shift)])
-        skalarny = np.dot(wektor_q + 2 * np.pi * vec_l / self.a, wektor_q + 2 * np.pi * wektor_2 / self.a)
-        vec_l = np.repeat(vec_l, self.ilosc_wektorow, axis=0).reshape((self.ilosc_wektorow, self.ilosc_wektorow, 2))
-        wektor_1 = np.repeat(wektor_1[np.newaxis, :], self.ilosc_wektorow, 0)
-        mag = np.sum(self.magnetyzacja[list(np.transpose(wektor_1 - vec_l + self.shift, axes=[2, 0, 1]))], axis=0)
-        return skalarny * mag * dl_wym / self.H0
+    def pole_wymiany_II(self, wektor_2):
+        tab_from_wektor_1 = np.broadcast_to(self.lista_wektorow, (self.ilosc_wektorow, self.ilosc_wektorow, 2))
+        tab_from_vec_l = np.transpose(tab_from_wektor_1, (1, 0, 2))
+        tmp = tab_from_vec_l - tab_from_wektor_1 + self.shift
+        tmp1 = self.magnetyzacja[tmp[:, :, 0], tmp[:, :, 1]]
+        tmp2 = tab_from_vec_l - wektor_2 + self.shift
+        tmp3 = self.dlugosc_wymiany[tmp2[:, :, 0], tmp2[:, :, 1]]
+        tmp4 = np.dot(2 * np.pi * tab_from_vec_l / self.a + self.wektor_q,
+                      2 * np.pi * wektor_2 / self.a + self.wektor_q)
+        return np.sum(tmp1 * tmp3 * tmp4, axis=0) / self.H0
 
     # noinspection PyTypeChecker
-    def trzecie_wyrazenie_xy(self, wektor_1, wektor_2, wektor_q):
+    def trzecie_wyrazenie_xy(self, wektor_2):
         """
         Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
         :param wektor_1: i-ty wektor.
@@ -77,32 +81,39 @@ class MacierzDoZagadnienia:
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyzn aczaniu dyspersji.
         :return: Wynikiem jest drugi wyraz sumy.
         """
-        tmp1 = np.transpose(wektor_q + 2 * np.pi * wektor_2 / self.a)[1] ** 2/ \
-               np.linalg.norm(wektor_q + 2 * np.pi * wektor_2 / self.a) ** 2
-        tmp2 = 1 - self.funkcja_c(wektor_q, 2 * np.pi * wektor_2 / self.a, "+")
-        tmp3 = self.magnetyzacja[list(np.transpose(wektor_1 - wektor_2 + self.shift))]
-        return tmp1 * tmp2 * tmp3 / self.H0
+        wekt_2 = 2 * np.pi * wektor_2 / self.a
+        tmp1 = (self.wektor_q[1] + wekt_2[1]) ** 2 / \
+               ((self.wektor_q[0] + wekt_2[0]) ** 2 + (self.wektor_q[1] + wekt_2[1]) ** 2)
+        tmp2 = 1 - self.funkcja_c(self.wektor_q, wekt_2, "+")
+        tmp3 = self.lista_wektorow - wektor_2 + self.shift
+        tmp4 = self.magnetyzacja[tmp3[:, 0], tmp3[:, 1]]
+        return tmp1 * tmp2 * tmp4 / self.H0
 
-    def trzecie_wyrazenie_yx(self, wektor_1, wektor_2, wektor_q):
-        tmp1 = 1 - self.funkcja_c(wektor_q, 2 * np.pi * wektor_2 / self.a, "+")
-        tmp2 = self.magnetyzacja[list(np.transpose(wektor_1 - wektor_2 + self.shift))]
-        return tmp1 * tmp2 / self.H0
+    def trzecie_wyrazenie_yx(self, wektor_2):
+        wekt_2 = 2 * np.pi * wektor_2 / self.a
+        tmp1 = self.funkcja_c(self.wektor_q, wekt_2, "+")
+        tmp3 = self.lista_wektorow - wektor_2 + self.shift
+        tmp4 = self.magnetyzacja[tmp3[:, 0], tmp3[:, 1]]
+        return tmp1 * tmp4 / self.H0
 
     # noinspection PyTypeChecker
-    def czwarte_wyrazenie(self, wektor_1, wektor_2):
+    def czwarte_wyrazenie(self, wektor_2):
         """
         Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
         :param wektor_1: i-ty wektor.
         :param wektor_2: j-ty wektor.
         :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
         """
-        tmp = self.magnetyzacja[list(np.transpose(wektor_1 - wektor_2 + self.shift))]
-        tmp1 = 1 - self.funkcja_c(wektor_1, wektor_2, "-")
-        tmp2 = np.transpose(2 * np.pi * wektor_1 / self.a + 2 * np.pi * wektor_2 / self.a)[0] ** 2 / \
-               np.linalg.norm(2 * np.pi * wektor_1 / self.a - 2 * np.pi * wektor_2 / self.a) ** 2
-        return tmp * tmp1 * tmp2 / self.H0
+        wektor_1 = self.lista_wektorow
+        wekt_2 = 2 * np.pi * wektor_2 / self.a
+        wekt_1 = 2 * np.pi * wektor_1 / self.a
+        tmp1 = (wekt_1[:, 0] + wekt_2[0]) ** 2 / np.linalg.norm(wekt_1 - wekt_2) ** 2
+        tmp2 = 1 - self.funkcja_c(wektor_1, wekt_2, "-")
+        tmp3 = wektor_1 - wektor_2 + self.shift
+        tmp4 = self.magnetyzacja[tmp3[:, 0], tmp3[:, 1]]
+        return tmp1 * tmp2 * tmp4 / self.H0
 
-    def wypelnienie_macierzy(self, wektor_q):
+    def wypelnienie_macierzy(self):
         """
         Główna metoda tej klasy. Wywołuje ona dwie metody: 'macierz_xy' oraz 'macierz_yx. W pętli, dla każdego elementu
         z odpowiednich macierzy blokowych wypełnia je.
@@ -111,24 +122,28 @@ class MacierzDoZagadnienia:
         """
         self.delta_kroneckera()
         w1 = self.lista_wektorow
-        for i in range(self.ilosc_wektorow):
-            tmp1 = self.pole_wymiany_II(w1, w1[i], wektor_q)
-            tmp2 = self.trzecie_wyrazenie_xy(w1, w1[i], wektor_q)
-            tmp3 = self.trzecie_wyrazenie_yx(w1, w1[i], wektor_q)
-            tmp4 = self.czwarte_wyrazenie(w1, w1[i])
-            self.macierz_M[i + self.ilosc_wektorow][np.arange(self.ilosc_wektorow)] += -tmp1 - tmp3 + tmp4
-            self.macierz_M[i][np.arange(self.ilosc_wektorow, 2 * self.ilosc_wektorow)] += tmp1 + tmp2 - tmp4
+
+        pool = Pool()
+        # tmp1 = np.array(pool.map(self.pole_wymiany_II, w1))
+        tmp1 = np.apply_along_axis(self.pole_wymiany_II, 1, w1)
+        tmp4 = np.array(pool.map(self.czwarte_wyrazenie, w1))
+        tmp2 = np.array(pool.map(self.trzecie_wyrazenie_xy, w1))
+        tmp3 = np.array(pool.map(self.trzecie_wyrazenie_yx, w1))
+        self.macierz_M[self.ilosc_wektorow:, 0:self.ilosc_wektorow] += -tmp1 - tmp3 + tmp4
+        self.macierz_M[0:self.ilosc_wektorow, self.ilosc_wektorow:] += tmp1 + tmp2 - tmp4
+        pool.close()
         return self.macierz_M
 
+    @do_cprofile
     def wypisz_macierz(self):
         """
         :return: Wypisuje tablice do pliku tekstowego.
          Ważne! Przed wypisaniem, należy wypełnić macierz_M metodą 'wypełnienie_macierzy'
         """
-        self.wypelnienie_macierzy([1e-9, 0])
+        self.wypelnienie_macierzy()
         np.savetxt('macierz.txt', np.array(self.macierz_M))
 
 
 if __name__ == "__main__":
-    q = MacierzDoZagadnienia('radius100.txt', 9)
+    q = MacierzDoZagadnienia('radius100.txt', 441, np.array([1e-9, 0]))
     q.wypisz_macierz()

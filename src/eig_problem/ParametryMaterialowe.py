@@ -16,11 +16,11 @@ class ParametryMaterialowe:
     lNi = 5.84e-17
 
 # System parameters
-    mu0H0 = 0.1
-    gamma = 176e9
+    mu0H0 = 0.2
+    gamma = 194.6e9
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
-    d = 30e-9 # thickness of material
+    d = 4e-9 # thickness of material
     a = 30e-9
     x = 0 # position of calculation of dispersion in z-direction
     r = 14e-9 # radius of inclusion, only for DFT coefficient
