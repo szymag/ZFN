@@ -37,5 +37,5 @@ class FFTfromFile:
 
 
 if __name__ == "__main__":
-    q = FFTfromFile('radius100.txt', 9)
+    q = FFTfromFile('radius90.txt', 9)
     print(q.fourier_coefficient(1,2))
