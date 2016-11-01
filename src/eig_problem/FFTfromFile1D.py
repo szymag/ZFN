@@ -3,9 +3,8 @@ import numpy as np
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
-class FFTfromFile1D(ParametryMaterialowe):
+class FFTfromFile1D:
     def __init__(self, input_fft):
-        ParametryMaterialowe.__init__(self)
         self.file = np.transpose(np.loadtxt(input_fft))
         self.coeff = self.file[0] + self.file[1] * 1j
         self.ilosc_wektorow = len(self.file[0]) // 2

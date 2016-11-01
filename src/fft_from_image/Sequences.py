@@ -59,3 +59,10 @@ class Periodic(ChainGeneration):
         seq[::2] += 1
         #seq %= 2
         return np.repeat(seq, self.repeat)
+
+class Heated(ChainGeneration):
+    def __init__(self, repeat):
+        ChainGeneration.__init__(self, repeat)
+
+    def cos_sequence(self):
+        return (np.cos(np.linspace(0, 2 * np.pi, self.repeat)) + 1) / 2

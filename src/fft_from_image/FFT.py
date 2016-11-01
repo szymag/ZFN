@@ -5,7 +5,7 @@ import re
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.fft_from_image.Sequences import ThueMorse, Fibonacci, Periodic
+from src.fft_from_image.Sequences import ThueMorse, Fibonacci, Periodic, Heated
 from src.fft_from_image.TablicaWartosciPikseli import TablicaWartosciPikseli
 
 
@@ -94,11 +94,15 @@ class FFT:
         elif typ_struktury == 'P':
             tab = Periodic(repeat, len_num).sequence()
             np.savetxt('p_coef_' + str(repeat) + '*' + str(len_num) + '.txt', self.fft1d(tab))
+        elif typ_struktury == 'C':
+            tab = Heated(repeat).cos_sequence()
+            print(tab)
+            np.savetxt('c_coef_' + str(repeat) + '.txt', self.fft1d(tab))
         return np.fft.fftshift(np.fft.fft(tab))
 
 
 if __name__ == "__main__":
-    a = FFT().wywolaj_fft1d('TM', 1, 9)
+    a = FFT().wywolaj_fft1d('P', 10, 2)
     #FFT().wypisz_do_pliku()
     b = np.arange(len(a))
     plt.plot(b, abs(a) )

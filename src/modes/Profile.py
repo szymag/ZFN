@@ -10,9 +10,8 @@ from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 
 
-class Profile(ParametryMaterialowe):
+class Profile:
     def __init__(self, ilosc_wektorow=441, start_path="."):
-        ParametryMaterialowe.__init__(self)
         self.ilosc_wektorow = ilosc_wektorow
         self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow('min')
         self.sciezka = glob.glob(os.path.join(start_path, "*."))

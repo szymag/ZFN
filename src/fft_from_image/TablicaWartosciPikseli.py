@@ -7,14 +7,14 @@ from numpy import zeros
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
-class TablicaWartosciPikseli(ParametryMaterialowe):
+class TablicaWartosciPikseli:
     """
     Klasa konwertująca pliki graficzne '*.png' na tablice. Klasa przygotowana jest na obrazki dwukolorowe. Biały kolor
     oznacza wypełnienie, a czarny rdzeń.
     """
     def __init__(self, start_path="."):
         self.lista_plikow = list((glob.glob(os.path.join(start_path, "*.png"))))
-        ParametryMaterialowe.__init__(self)
+
 
     def stworz_tablice(self, wczytany_plik):
         """
