@@ -20,7 +20,7 @@ class ZagadnienieWlasne:
         self.lista_wektorow_q = [[(2 * np.pi * k / a), 0] for k in np.linspace(0.01, 0.5, ilosc_wektorow_q)]
 
 
-    # @do_cprofile
+    @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
@@ -31,7 +31,7 @@ class ZagadnienieWlasne:
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        macierz_m = MacierzDoZagadnienia("radius90.txt", 225, wektor_q).wypelnienie_macierzy()
+        macierz_m = MacierzDoZagadnienia("radius90.txt", 1681, wektor_q).wypelnienie_macierzy()
         return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def czestosci_wlasne(self, wektor_q):
@@ -79,7 +79,7 @@ class ZagadnienieWlasne:
 
 
 def start():
-    return ZagadnienieWlasne(20).wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(1).wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     start()
