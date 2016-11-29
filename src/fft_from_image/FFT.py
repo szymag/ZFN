@@ -102,7 +102,7 @@ class FFT:
 
 
 if __name__ == "__main__":
-    a = FFT().wywolaj_fft1d('P', 10, 2)
+    a = FFT().wywolaj_fft1d('P', 1000, 2)
     #FFT().wypisz_do_pliku()
     b = np.arange(len(a))
     plt.plot(b, abs(a) )

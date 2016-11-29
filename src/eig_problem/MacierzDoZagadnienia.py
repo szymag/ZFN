@@ -48,7 +48,7 @@ class MacierzDoZagadnienia:
             self.macierz_M[i - self.ilosc_wektorow][i] += 1.
             self.macierz_M[i][i - self.ilosc_wektorow] -= 1.
 
-    def pole_wymiany_II(self, wektor_1, wektor_2, wektor_q):
+    def demagnetizing_field(self, wektor_1, wektor_2, wektor_q):
         """
         :param wektor_1: i-ty wektor.
         :param wektor_2: j-ty wektor.
@@ -61,7 +61,7 @@ class MacierzDoZagadnienia:
         tmp3 = (wektor_q + 2 * np.pi * wektor_2 / self.a) * (2 * np.pi * vec_l / self.a + wektor_q)
         return np.sum(tmp1 * tmp2 * tmp3, axis=0) / self.H0
 
-    def trzecie_wyrazenie_xy(self, wektor_1, wektor_2, wektor_q):
+    def dynamic_demagnetizing_field_in_plane(self, wektor_1, wektor_2, wektor_q):
         """
         Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
         :param wektor_1: i-ty wektor.
@@ -69,12 +69,11 @@ class MacierzDoZagadnienia:
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wynikiem jest drugi wyraz sumy.
         """
-
         tmp3 = self.magnetyzacja[wektor_1 - wektor_2 + self.shift]
         tmp2 = 1 - self.funkcja_c(wektor_q, (2 * np.pi * wektor_2 / self.a))
         return tmp3 * tmp2 / self.H0
 
-    def trzecie_wyrazenie_yx(self, wektor_1, wektor_2, wektor_q):
+    def dynamic_demagnetizing_field_out_of_plane(self, wektor_1, wektor_2, wektor_q):
         """
         Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
         :param wektor_1: i-ty wektor.
@@ -87,7 +86,17 @@ class MacierzDoZagadnienia:
         tmp2 = self.funkcja_c(wektor_q, (2 * np.pi * wektor_2 / self.a))
         return tmp2 * tmp3 / self.H0
 
-    def wypelnienie_macierzy(self, wektor_q):
+    def static_demagnetizing_field(self, wektor_1, wektor_2):
+        """
+        Metoda obliczająca człon elmentu macierzowego pochodzenia dipolowego.
+        :param wektor_2: j-ty wektor.
+        :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
+        """
+        tmp1 = self.magnetyzacja[wektor_1 - wektor_2]
+        tmp2 = 1 - np.exp(-abs((2 * np.pi * wektor_1 / self.a - 2 * np.pi * wektor_2 / self.a)) * self.d / 2)
+        return tmp1 * tmp2 / self.H0
+
+    def matrix_gen_damon_eshbach(self, wektor_q):
         """
         Główna metoda tej klasy. Wywołuje ona dwie metody: 'macierz_xy' oraz 'macierz_yx. W pętli, dla każdego elementu
         z odpowiednich macierzy blokowych wypełnia je.
@@ -100,11 +109,24 @@ class MacierzDoZagadnienia:
         for i in range(indeks, 2 * indeks):
             w1 = self.lista_wektorow[i - indeks]
             w2 = self.lista_wektorow
-            tmp1 = self.pole_wymiany_II(w1, w2, wektor_q)
-            tmp2 = self.trzecie_wyrazenie_xy(w1, w2, wektor_q)
-            tmp3 = self.trzecie_wyrazenie_yx(w1, w2, wektor_q)
-            self.macierz_M[i][np.arange(indeks)] += -tmp1 - tmp2  # yx
-            self.macierz_M[i - indeks][np.arange(indeks, 2 * indeks)] += tmp1 + tmp3  # xy
+            ex = self.demagnetizing_field(w1, w2, wektor_q)
+            dyn_in_plane = self.dynamic_demagnetizing_field_in_plane(w1, w2, wektor_q)
+            dyn_out_plane = self.dynamic_demagnetizing_field_out_of_plane(w1, w2, wektor_q)
+            self.macierz_M[i][np.arange(indeks)] += -ex - dyn_in_plane  # yx
+            self.macierz_M[i - indeks][np.arange(indeks, 2 * indeks)] += ex + dyn_out_plane  # xy
+        return self.macierz_M
+
+    def matrix_gen_backward_volume(self, wektor_q):
+        indeks = self.ilosc_wektorow
+        self.delta_kroneckera()
+        for i in range(indeks, 2 * indeks):
+            w1 = self.lista_wektorow[i - indeks]
+            w2 = self.lista_wektorow
+            ex = self.demagnetizing_field(w1, w2, wektor_q)
+            static = self.static_demagnetizing_field(w1, w2)
+            dyn_out_plane = self.dynamic_demagnetizing_field_out_of_plane(w1, w2, wektor_q)
+            self.macierz_M[i][np.arange(indeks)] += - ex + static - dyn_out_plane  # yx
+            self.macierz_M[i - indeks][np.arange(indeks, 2 * indeks)] += ex - static  # xy
         return self.macierz_M
 
     def wypisz_macierz(self):
@@ -112,7 +134,7 @@ class MacierzDoZagadnienia:
         :return: Wypisuje tablice do pliku tekstowego.
          Ważne! Przed wypisaniem, należy wypełnić macierz_M metodą 'wypełnienie_macierzy'
         """
-        self.wypelnienie_macierzy(1e-9)
+        self.matrix_gen_damon_eshbach(1e-9)
         np.savetxt('macierz.txt', np.array(self.macierz_M))
 
 if __name__ == "__main__":
