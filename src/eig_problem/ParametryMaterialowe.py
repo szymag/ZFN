@@ -20,21 +20,22 @@ class ParametryMaterialowe:
     lY = 1.7e-16
 
     # System parameters
-    mu0H0 = 0.1
-    gamma = 176e9
+    mu0H0 = 0.2
+    gamma = 194.6e9
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
-    d = 20e-9  # thickness of material
-    a = 400e-9
+    d = 4e-9  # thickness of material
+    a = 17.63e-9 * 8 # size of unit cell in x direction
+    b = 15e-9 * 8 # size of unit cell in y direction
     x = 0  # position of calculation of dispersion in z-direction
 
     # Material parameters
     # inclusion
-    MoA = MoFe
-    lA = lFe
+    MoA = MoCo
+    lA = lCo
     # matrix
-    MoB = MoNi
-    lB = lNi
+    MoB = MoPy
+    lB = lPy
 
     # Program parameters
     # input FFT coefficient

@@ -33,5 +33,5 @@ class WektorySieciOdwrotnej:
         return self.wspolrzedna_wektora1d(typ)
 
 if __name__ == "__main__":
-    q = WektorySieciOdwrotnej(121).lista_wektorow2d('max')
-    print(q)
+    q = WektorySieciOdwrotnej(9).lista_wektorow2d('max')
+    print(q/[3,4])

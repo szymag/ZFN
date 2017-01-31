@@ -69,7 +69,6 @@ class FFT:
                                     re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks-1]))[0] + '.txt')
             files.append(filepath)
             np.savetxt(filepath, tablica.view(float))
-            print(tablica.view(float).dtype)
             indeks += 1
         return files
 
