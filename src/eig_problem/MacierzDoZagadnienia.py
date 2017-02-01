@@ -138,5 +138,5 @@ class MacierzDoZagadnienia:
         np.savetxt('macierz.txt', np.array(self.macierz_M))
 
 if __name__ == "__main__":
-    q = MacierzDoZagadnienia('p_coef_10*2.txt', 1e-9)
+    q = MacierzDoZagadnienia('p_coef_200*2.txt', 1e-9)
     q.wypisz_macierz()
