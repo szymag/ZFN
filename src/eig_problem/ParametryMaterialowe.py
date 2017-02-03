@@ -21,22 +21,22 @@ class ParametryMaterialowe:
     lY = 1.7e-16
 
 # System parameters
-    mu0H0 = 0.2
-    gamma = 194.6e9
+    mu0H0 = 0.105
+    gamma = 176e9
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
-    d = 30e-9 # thickness of material
-    a = 500e-9
+    d = 40e-9 # thickness of material
+    a = 1000e-9
     x = 0 # position of calculation of dispersion in z-direction
     #r = 14e-9 # radius of inclusion, only for DFT coefficient
 
 # Material parameters
     # inclusion
-    MoA = MoCo
-    lA = lCo
+    MoA = MoNi
+    lA = lNi
     # matrix
-    MoB = MoPy
-    lB = lPy
+    MoB = 0.3 * MoNi
+    lB = 0.3 * lNi
 
     def __init__(self):
         pass

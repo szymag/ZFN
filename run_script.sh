@@ -2,7 +2,7 @@
 
 export PYTHONPATH=`pwd`
 
-for i in {1..9}
+for i in {1..400}
     do
-        python ./src/eig_problem/ZagadnienieWlasne.py 1 p_coef_200*2.txt "dys_$i.txt" $i/100
+        python ./src/eig_problem/ZagadnienieWlasne.py 1 c_coef_500.txt 0.5cdys_${i}.dat ${i}/1000
     done

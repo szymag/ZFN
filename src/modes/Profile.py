@@ -43,14 +43,14 @@ class Profile2D:
 
 class Profile1D:
     def __init__(self, mode_number):
-        self.eig_vectors = np.loadtxt('eig_vectors.txt').view(complex)
+        self.eig_vectors = np.loadtxt('0.3pnimode_5_0.138.txt').view(complex)
         self.lattice_const = ParametryMaterialowe.a
-        self.reciprocal_vectors = np.array(2 * np.pi * WektorySieciOdwrotnej(200).lista_wektorow1d('min')
+        self.reciprocal_vectors = np.array(2 * np.pi * WektorySieciOdwrotnej(250).lista_wektorow1d('min')
                                            / self.lattice_const)
         self.mode_number = mode_number - 1
 
     def dynamic_magnetization_at_point(self, position):
-        mode = self.eig_vectors[self.mode_number, 0:200]
+        mode = self.eig_vectors[self.mode_number, 0:250]
         return abs(np.sum(mode * np.exp(1j * self.reciprocal_vectors * position)))
 
     def dynamic_magnetization_full(self, grid):
@@ -66,4 +66,4 @@ class Profile1D:
         plt.show()
 
 
-q = Profile1D(7).dynamic_magnetization_plot()
+q = Profile1D(5).dynamic_magnetization_plot()
