@@ -43,27 +43,39 @@ class Profile2D:
 
 class Profile1D:
     def __init__(self, mode_number):
-        self.eig_vectors = np.loadtxt('0.3pnimode_5_0.138.txt').view(complex)
+        self.eig_vectors = np.loadtxt('peig_test.dat').view(complex)
         self.lattice_const = ParametryMaterialowe.a
-        self.reciprocal_vectors = np.array(2 * np.pi * WektorySieciOdwrotnej(250).lista_wektorow1d('min')
-                                           / self.lattice_const)
         self.mode_number = mode_number - 1
 
-    def dynamic_magnetization_at_point(self, position):
-        mode = self.eig_vectors[self.mode_number, 0:250]
-        return abs(np.sum(mode * np.exp(1j * self.reciprocal_vectors * position)))
+    def plot(self):
+        tmp = self.spatial_distribution_dynamic_magnetization(500)
+        tmp1 = self.elementary_cell_reconstruction(500)
+        plt.plot(tmp[0], tmp[1])
+        plt.plot(tmp1[0], tmp1[1])
+        plt.ylim((0,3.5))
+        plt.savefig('pdem_esch_' + str(self.mode_number) + '.svg')
+        plt.clf()
 
-    def dynamic_magnetization_full(self, grid):
-        x = np.linspace(-self.lattice_const, self.lattice_const/2, grid)
+    def spatial_distribution_dynamic_magnetization(self, grid):
+        mode = self.eig_vectors[self.mode_number, 0:250]
+        x = np.linspace(-self.lattice_const, 0, grid)
         tmp = np.zeros(grid)
         for i in enumerate(x):
-            tmp[i[0]] = self.dynamic_magnetization_at_point(i[1])
+            tmp[i[0]] = self.inverse_discrete_foutier_transform(mode, i[1])
         return x, tmp
 
-    def dynamic_magnetization_plot(self):
-        tmp = self.dynamic_magnetization_full(500)
-        plt.plot(tmp[0], tmp[1])
-        plt.show()
+    def elementary_cell_reconstruction(self, grid):
+        coefficient = np.transpose(np.loadtxt('p_coef_200.txt').view(complex))
+        x = np.linspace(-self.lattice_const, 0, grid)
+        tmp = np.zeros(grid)
+        for i in enumerate(x):
+            tmp[i[0]] = self.inverse_discrete_foutier_transform(coefficient, i[1])
+        return x, (tmp+.3) /1.3
 
+    def inverse_discrete_foutier_transform(self, data, vector_position):
+        reciprocal_vectors = np.array(2 * np.pi * WektorySieciOdwrotnej(max(data.shape)).lista_wektorow1d('min')
+                                      / self.lattice_const)
+        return abs(np.sum(data * np.exp(1j * reciprocal_vectors * vector_position)))
 
-q = Profile1D(5).dynamic_magnetization_plot()
+for i in range(1, 11):
+    Profile1D(i).plot()

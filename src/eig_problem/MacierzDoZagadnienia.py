@@ -38,7 +38,7 @@ class MacierzDoZagadnienia:
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: wartość funkcji C.
         """
-        return np.exp(-abs((wektor_1 + wektor_2)) * self.d/2)
+        return np.exp(-abs((wektor_1 + wektor_2)) * self.d / 2)
 
     def delta_kroneckera(self):
         """
@@ -48,7 +48,7 @@ class MacierzDoZagadnienia:
             self.macierz_M[i - self.ilosc_wektorow][i] += 1.
             self.macierz_M[i][i - self.ilosc_wektorow] -= 1.
 
-    def demagnetizing_field(self, wektor_1, wektor_2, wektor_q):
+    def exchange_field(self, wektor_1, wektor_2, wektor_q):
         """
         :param wektor_1: i-ty wektor.
         :param wektor_2: j-ty wektor.
@@ -109,7 +109,7 @@ class MacierzDoZagadnienia:
         for i in range(indeks, 2 * indeks):
             w1 = self.lista_wektorow[i - indeks]
             w2 = self.lista_wektorow
-            ex = self.demagnetizing_field(w1, w2, wektor_q)
+            ex = self.exchange_field(w1, w2, wektor_q)
             dyn_in_plane = self.dynamic_demagnetizing_field_in_plane(w1, w2, wektor_q)
             dyn_out_plane = self.dynamic_demagnetizing_field_out_of_plane(w1, w2, wektor_q)
             self.macierz_M[i][np.arange(indeks)] += -ex - dyn_in_plane  # yx
@@ -122,7 +122,7 @@ class MacierzDoZagadnienia:
         for i in range(indeks, 2 * indeks):
             w1 = self.lista_wektorow[i - indeks]
             w2 = self.lista_wektorow
-            ex = self.demagnetizing_field(w1, w2, wektor_q)
+            ex = self.exchange_field(w1, w2, wektor_q)
             static = self.static_demagnetizing_field(w1, w2)
             dyn_out_plane = self.dynamic_demagnetizing_field_out_of_plane(w1, w2, wektor_q)
             self.macierz_M[i][np.arange(indeks)] += - ex + static - dyn_out_plane  # yx

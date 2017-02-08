@@ -21,7 +21,7 @@ class ParametryMaterialowe:
     lY = 1.7e-16
 
 # System parameters
-    mu0H0 = 0.105
+    mu0H0 = 0.1
     gamma = 176e9
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
