@@ -25,7 +25,7 @@ class ZagadnienieWlasne:
         self.a = a
         self.b = b
         self.start_vec_q = 0.01
-        self.end_vec_q = 0.002
+        self.end_vec_q = 0.5
 
     def list_vector_q(self):
         if self.direction == 'y':
@@ -51,7 +51,7 @@ class ZagadnienieWlasne:
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        macierz_m = MacierzDoZagadnienia("penrose.txt", 441, wektor_q).wypelnienie_macierzy()
+        macierz_m = MacierzDoZagadnienia("ff=0.5.txt", 11, 11, wektor_q).fill_matrix()
         return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def czestosci_wlasne(self, wektor_q):
@@ -109,7 +109,7 @@ class ZagadnienieWlasne:
 
 
 def start():
-    return ZagadnienieWlasne(1, 'y').wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(20, 'x').wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     start()

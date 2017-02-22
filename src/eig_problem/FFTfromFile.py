@@ -19,29 +19,24 @@ class FFTfromFile:
         self.table = re + im
         self.numbers_of_rec_vector = tab_size
 
+
+    def fourier_coefficient(self, paramA, paramB):
+        v = (paramA - paramB) * self.coefficient()
+        middle_of_array = self.middle_of_array(v)
+        v[middle_of_array[0]][middle_of_array[1]] += paramB
+        assert v[middle_of_array[0]][middle_of_array[1]].imag == 0.
+        return np.array(v)
+
     def coefficient(self):
-        """
-        Metoda tworząca listę współczynników. Na podstawie położenia w tablicy, określane jest położenie w liście
-        :return: Lista współczynników.
-        """
-        middle_of_array = np.unravel_index(self.table.argmax(), self.table.shape)
-        return self.table[ middle_of_array[0] - self.numbers_of_rec_vector[0] // 2:
+        middle_of_array = self.middle_of_array(np.array(self.table))
+        return self.table[middle_of_array[0] - self.numbers_of_rec_vector[0] // 2:
                middle_of_array[0] + self.numbers_of_rec_vector[0] // 2 + self.numbers_of_rec_vector[0] % 2,
                middle_of_array[1] - self.numbers_of_rec_vector[1] // 2:
                middle_of_array[1] + self.numbers_of_rec_vector[1] // 2 + self.numbers_of_rec_vector[1] % 2]
 
-    def fourier_coefficient(self, paramA, paramB):
-        """
-        Metoda ta tworzy słownik, gdzi kluczem jest wektor sieci odwrotnej, a wartością współczynnik Fouriera.
-        :return: Słownik
-        """
-        k = self.numbers_of_rec_vector // 2
-        v = [(paramA - paramB) * i for i in self.coefficient()]
-        v[k][k] += paramB
-        assert v[k][k].imag == 0.
-        return np.array(v)
+    def middle_of_array(self, array):
+        return np.unravel_index(abs(array).argmax(), array.shape)
 
 
 if __name__ == "__main__":
-    q = FFTfromFile('penrose.txt', (4,4))
-    print(q.coefficient())
+    pass
