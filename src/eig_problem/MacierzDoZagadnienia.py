@@ -52,9 +52,9 @@ class MacierzDoZagadnienia:
         return self.macierz_M
 
     def kroneker_delta(self):
-        for i in range(self.rec_vector_x, 2 * self.rec_vector_x):
-            self.macierz_M[i - self.rec_vector_x][i] += 1.
-            self.macierz_M[i][i - self.rec_vector_x] -= 1.
+        for i in range(self.ilosc_wektorow, 2 * self.ilosc_wektorow):
+            self.macierz_M[i - self.ilosc_wektorow][i] += 1.
+            self.macierz_M[i][i - self.ilosc_wektorow] -= 1.
 
     # noinspection PyTypeChecker
     def exchange_field(self, wektor_2):
@@ -81,7 +81,7 @@ class MacierzDoZagadnienia:
         H0 = self.H0
         wekt_2 = np.array(2 * np.pi * wektor_2 / [self.b, self.a])
         norm = sqrt((self.wektor_q[0] + wekt_2[0]) ** 2 + (self.wektor_q[1] + wekt_2[1]) ** 2)
-        tmp1 = (self.wektor_q[0] + wekt_2[0]) ** 2 / norm ** 2
+        tmp1 = (self.wektor_q[1] + wekt_2[1]) ** 2 / norm ** 2
         tmp2 = 1 - cosh(norm * self.x) * exp(-norm * self.d / 2.)
         tmp3 = self.lista_wektorow - wektor_2 + self.shift
         tmp4 = self.magnetyzacja[tmp3[:, 0], tmp3[:, 1]]
@@ -93,10 +93,8 @@ class MacierzDoZagadnienia:
         wekt_2 = np.array(2 * np.pi * wektor_2 / [self.b, self.a])
         norm = sqrt((self.wektor_q[0] + wekt_2[0]) ** 2 + (self.wektor_q[1] + wekt_2[1]) ** 2)
         tmp1 = cosh(norm * self.x) * exp(-norm * self.d / 2.)
-        #print(tmp1)
         tmp3 = self.lista_wektorow - wektor_2 + self.shift
         tmp4 = self.magnetyzacja[tmp3[:, 0], tmp3[:, 1]]
-        #print(tmp3)
         return ne.evaluate('tmp1 * tmp4 / H0')
 
     # noinspection PyTypeChecker
@@ -106,13 +104,12 @@ class MacierzDoZagadnienia:
         wektor_1 = self.lista_wektorow
         wekt_2 = np.array(2 * np.pi * wektor_2 / [self.b, self.a])
         wekt_1 = 2 * np.pi * wektor_1 / [self.b, self.a]
-        tmp1 = (wekt_1[:, 1] - wekt_2[1]) ** 2 / (np.linalg.norm(wekt_1 - wekt_2, axis=1) ** 2 + 1e-36)
+        tmp1 = (wekt_1[:, 0] - wekt_2[0]) ** 2 / (np.linalg.norm(wekt_1 - wekt_2, axis=1) ** 2 + 1e-36)
         tmp2 = 1 - np.cosh(np.linalg.norm(wekt_1 - wekt_2, axis=1) * self.x) * \
                    np.exp(-np.linalg.norm(wekt_1 - wekt_2, axis=1) * self.d / 2.)
         tmp3 = wektor_1 - wektor_2 + self.shift
         tmp4 = self.magnetyzacja[tmp3[:, 0], tmp3[:, 1]]
-        #return ne.evaluate('tmp1 * tmp2 * tmp4 / H0')
-        return tmp4 * tmp1 * tmp2 /self.H0
+        return ne.evaluate('tmp1 * tmp2 * tmp4 / H0')
 
 if __name__ == "__main__":
     q = MacierzDoZagadnienia('ff=0.5.txt', 3, 3, np.array([1e-9, 0]))

@@ -109,7 +109,7 @@ class ZagadnienieWlasne:
 
 
 def start():
-    return ZagadnienieWlasne(20, 'x').wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(20, 'y').wypisz_czestosci_do_pliku()
 
 if __name__ == "__main__":
     start()
