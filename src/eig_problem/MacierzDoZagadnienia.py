@@ -27,7 +27,6 @@ class MacierzDoZagadnienia:
         self.x = x
         self.H0 = H0
         self.tmp = FFTfromFile(input_fft, (2*self.rec_vector_x-1, 2*self.rec_vector_y-1))
-        self.macierz_M = np.zeros((2 * self.ilosc_wektorow, 2 * self.ilosc_wektorow), dtype=complex)
         self.magnetyzacja = self.tmp.fourier_coefficient(MoA, MoB)
         self.dlugosc_wymiany = self.tmp.fourier_coefficient(lA, lB)
         self.lista_wektorow = WektorySieciOdwrotnej(self.ilosc_wektorow).lista_wektorow2d('min')
@@ -35,11 +34,13 @@ class MacierzDoZagadnienia:
         self.wektor_q = wektor_q
 
     def save_to_file_matrix(self):
-        self.fill_matrix()
-        np.savetxt('macierz.txt', np.array(self.macierz_M))
+        tmp = self.fill_matrix()
+        np.savetxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].txt', tmp.view(float))
+        return tmp
 
     def fill_matrix(self):
-        self.kroneker_delta()
+        self.macierz_M = np.zeros((2 * self.ilosc_wektorow, 2 * self.ilosc_wektorow), dtype=complex)
+        self.kroneker_delta(self.macierz_M)
         w2 = self.lista_wektorow
         pool = Pool()
         tmp1 = np.array(pool.map(self.exchange_field, w2))
@@ -51,10 +52,10 @@ class MacierzDoZagadnienia:
         pool.close()
         return self.macierz_M
 
-    def kroneker_delta(self):
+    def kroneker_delta(self, matrix):
         for i in range(self.ilosc_wektorow, 2 * self.ilosc_wektorow):
-            self.macierz_M[i - self.ilosc_wektorow][i] += 1.
-            self.macierz_M[i][i - self.ilosc_wektorow] -= 1.
+            matrix[i - self.ilosc_wektorow][i] += 1.
+            matrix[i][i - self.ilosc_wektorow] -= 1.
 
     # noinspection PyTypeChecker
     def exchange_field(self, wektor_2):
@@ -112,5 +113,5 @@ class MacierzDoZagadnienia:
         return ne.evaluate('tmp1 * tmp2 * tmp4 / H0')
 
 if __name__ == "__main__":
-    q = MacierzDoZagadnienia('ff=0.5.txt', 3, 3, np.array([1e-9, 0]))
+    q = MacierzDoZagadnienia('ff=0.5.txt', 11, 11, np.array([1e-9, 0]))
     q.save_to_file_matrix()

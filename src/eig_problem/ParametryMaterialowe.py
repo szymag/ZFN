@@ -31,11 +31,11 @@ class ParametryMaterialowe:
 
     # Material parameters
     # inclusion
-    MoA = MoCo
-    lA = lCo
+    MoA = MoFe
+    lA = lFe
     # matrix
-    MoB = MoPy
-    lB = lPy
+    MoB = MoNi
+    lB = lNi
 
     # Program parameters
     # input FFT coefficient
