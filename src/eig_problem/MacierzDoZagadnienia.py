@@ -35,7 +35,8 @@ class MacierzDoZagadnienia:
 
     def save_to_file_matrix(self):
         tmp = self.fill_matrix()
-        np.savetxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].txt', tmp.view(float))
+        np.savetxt('matrix_to_eig_TheImpact_' + str(self.rec_vector_x) + ' ' + str(self.rec_vector_x) +
+                   '_q=[1e-9,0].txt', tmp.view(float))
         return tmp
 
     def fill_matrix(self):
