@@ -9,9 +9,6 @@ class WektorySieciOdwrotnej:
         self.ilosc_wektorow = rozmiar_macierzy_blok
 
     def lista_wektorow2d(self, typ):
-
-        assert sqrt(self.ilosc_wektorow) == int(sqrt(self.ilosc_wektorow)) and self.ilosc_wektorow % 2 != 0, \
-            'size of bolck matrix shuld gave natural number of sqrt and be odd'
         assert typ == 'max' or typ == 'min', 'typ should by max or min'
         if typ == 'max':
             indeks = int(sqrt(self.ilosc_wektorow)) - 1
@@ -33,5 +30,5 @@ class WektorySieciOdwrotnej:
         return self.wspolrzedna_wektora1d(typ)
 
 if __name__ == "__main__":
-    q = WektorySieciOdwrotnej(121).lista_wektorow2d('max')
+    q = WektorySieciOdwrotnej(9).lista_wektorow2d('min')
     print(q)

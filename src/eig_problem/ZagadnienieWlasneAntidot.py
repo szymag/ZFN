@@ -37,7 +37,7 @@ class ZagadnienieWlasneAntidot(ZagadnienieWlasne):
                     np.concatenate((macierz_przekatna, macierz_antyprzekatna), axis=0)), axis=1)
 
     def zagadnienie_wlasne(self, wektor_q, param):
-        macierz_m = MacierzDoZagadnienia(self.skad_wspolczynnik).wypelnienie_macierzy(wektor_q)
+        macierz_m = MacierzDoZagadnienia(self.skad_wspolczynnik).fill_matrix(wektor_q)
         #macierz_materialowa = self.macierz_wspolczynnikow()
         macierz_materialowa = np.identity(len(macierz_m)) # macierz identyczności - sprawdzenie poprawności metody
         return eig(macierz_m, macierz_materialowa, right=False, left=param)
