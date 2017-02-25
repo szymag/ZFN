@@ -1,5 +1,7 @@
 *.txt
 *.pdf
+*svg
+*.png
 /src/eig_problem/ZagadnienieWlasneAntidot.py
 
 __pycache__

@@ -12,12 +12,12 @@ file = np.transpose(np.loadtxt(name))
 
 
 def plot_dispersion():
-    for i in range(8):
+    for i in range(150):
         plt.plot(file[0], file[1 + i], color='r')
     plt.xlabel('wektor falowy q [m^-1]')
     plt.ylabel('f [Hz]')
     plt.title(name)
-    #plt.ylim([0e9, 120e9])
+    #plt.ylim([0.7e10, 1.2e10])
     plt.show()
 
 plot_dispersion()
@@ -27,7 +27,6 @@ def plot_num_freq():
     plt.xlabel('freq')
     plt.ylabel('num')
     plt.title(name)
-
     plt.show()
 
 
