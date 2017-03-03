@@ -66,8 +66,8 @@ class EigenMatrix:
             dtype=int)
         tab_from_vec_l = np.transpose(tab_from_wektor_1, (1, 0, 2))
 
-        expr1 = '{v1} - {v2} + {shift}'
-        e1 = lambda a, b, s: ne.evaluate(expr1.format(v1='a', v2='b', shift='s'))
+        e1 = lambda a, b, s: ne.evaluate(
+                '{v1} - {v2} + {s}'.format(v1='a', v2='b', s='s'))
 
         tmp = e1(tab_from_wektor_1, tab_from_vec_l, shift)
         tmp2 = e1(tab_from_vec_l, wektor_2, shift)
@@ -77,9 +77,9 @@ class EigenMatrix:
 
         tab_from_vec_l = tab_from_vec_l / [b, a]
         wektor_2 = wektor_2 / [b, a]
+        e2 = lambda a, b: ne.evaluate(
+                '2 * 3.14159265 * {v} + {q}'.format(v='a', q='b'))
 
-        expr2 = '2 * 3.14159265 * {v} + {q}'
-        e2 = lambda a, b: ne.evaluate(expr2.format(v='a', q='b'))
         tmp4 = np.dot(e2(tab_from_vec_l, wektor_q), e2(wektor_2, wektor_q))
 
         return ne.evaluate('sum(tmp1*tmp3*tmp4/H0, 0)')
