@@ -65,14 +65,23 @@ class EigenMatrix:
             np.broadcast_to(self.rec_vector_indexes, (self.amount_rec_vector , self.amount_rec_vector, 2)),
             dtype=int)
         tab_from_vec_l = np.transpose(tab_from_wektor_1, (1, 0, 2))
-        tmp = ne.evaluate('tab_from_wektor_1 - tab_from_vec_l + shift')
+
+        expr1 = '{v1} - {v2} + {shift}'
+        e1 = lambda a, b, s: ne.evaluate(expr1.format(v1='a', v2='b', shift='s'))
+
+        tmp = e1(tab_from_wektor_1, tab_from_vec_l, shift)
+        tmp2 = e1(tab_from_vec_l, wektor_2, shift)
+
         tmp1 = self.magnetization_sat[tmp[:, :, 0], tmp[:, :, 1]]
-        tmp2 = ne.evaluate('tab_from_vec_l - wektor_2 + shift')
         tmp3 = self.exchange_len[tmp2[:, :, 0], tmp2[:, :, 1]]
+
         tab_from_vec_l = tab_from_vec_l / [b, a]
         wektor_2 = wektor_2 / [b, a]
-        tmp4 = np.dot(ne.evaluate('2 * 3.14159265 * tab_from_vec_l + wektor_q'),
-                      ne.evaluate('2 * 3.14159265 * wektor_2 + wektor_q'))
+
+        expr2 = '2 * 3.14159265 * {v} + {q}'
+        e2 = lambda a, b: ne.evaluate(expr2.format(v='a', q='b'))
+        tmp4 = np.dot(e2(tab_from_vec_l, wektor_q), e2(wektor_2, wektor_q))
+
         return ne.evaluate('sum(tmp1*tmp3*tmp4/H0, 0)')
 
     # noinspection PyTypeChecker
