@@ -1,4 +1,4 @@
-from src.eig_problem.cProfiler import do_cprofile
+from src.utils.cProfiler import do_cprofile
 import numpy as np
 from scipy.linalg import eig
 from src.eig_problem.EigenMatrix import EigenMatrix
