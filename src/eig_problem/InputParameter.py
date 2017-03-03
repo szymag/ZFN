@@ -39,10 +39,11 @@ class InputParameter:
 
     # Program parameters
     # input FFT coefficient
-
+    fft_file = 'ff=0.5.txt'
     # amount of reciprocal vectors
-
+    rec_vector_x = 9
+    rec_vector_y = 9
     # name of output file
-
+    output_file = 'test.txt'
     def __init__(self):
         pass

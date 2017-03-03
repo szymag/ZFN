@@ -1,17 +1,15 @@
 from src.eig_problem.cProfiler import do_cprofile
 import numpy as np
-from math import sqrt
 from scipy.linalg import eig
 from src.eig_problem.EigenMatrix import EigenMatrix
 from src.eig_problem.InputParameter import InputParameter
 import sys
-
+from math import hypot
 
 class EigenValueProblem:
-
-    def __init__(self, ilosc_wektorow_q, direction, a=InputParameter.a, b=InputParameter.b,
+    def __init__(self, number_of_dispersion_point, direction, a=InputParameter.a, b=InputParameter.b,
                  gamma=InputParameter.gamma, mu0H0=InputParameter.mu0H0):
-        self.number_of_vec_q = ilosc_wektorow_q
+        self.number_of_dispersion_point = number_of_dispersion_point
         self.gamma = gamma
         self.mu0H0 = mu0H0
         self.direction = direction
@@ -20,24 +18,22 @@ class EigenValueProblem:
         self.start_vec_q = 0.01
         self.end_vec_q = 0.5
 
-    def save_frequency_to_file(self):
-        plik = []
         if self.direction == 'x':
-            for k in self.list_vector_q():
-                tmp = [k[1]]
-                tmp.extend(self.calculate_eigen_frequency(k))
-                plik.append(tmp)
+            self.coordinate = [0, 1]
         elif self.direction == 'y':
-            for k in self.list_vector_q():
-                tmp = [k[0]]
-                tmp.extend(self.calculate_eigen_frequency(k))
-                plik.append(tmp)
+            self.coordinate = [1, 0]
         elif self.direction == 'xy':
-            for k in self.list_vector_q():
-                tmp = [sqrt(k[0] ** 2 + k[1] ** 2)]
-                tmp.extend(self.calculate_eigen_frequency(k))
-                plik.append(tmp)
-        np.savetxt('test.txt', plik)
+            self.coordinate = [1, 1]
+        else:
+            sys.exit('Wrong argumnet for direction was set')
+
+    def save_frequency_to_file(self):
+        file = []
+        for k in self.list_vector_q():
+            tmp = [hypot(k[0], k[1])]
+            tmp.extend(self.calculate_eigen_frequency(k))
+            file.append(tmp)
+        np.savetxt('test.txt', file)
 
     def calculate_eigen_frequency(self, wektor_q):
         assert len(wektor_q) == 2, \
@@ -48,33 +44,24 @@ class EigenValueProblem:
 
     def calculate_eigen_vectors(self):
         assert len(self.list_vector_q()) == 1, 'Eigenvector should be calculated for only one position vector'
-        wartosci_wlasne, wektory_wlasne = self.solve_eigen_problem(self.list_vector_q()[0], param=True)
-        wartosci_wlasne_index = np.argsort(wartosci_wlasne.imag)
-        wektory_wlasne = np.transpose(wektory_wlasne)
-        wektory_wlasne = wektory_wlasne[wartosci_wlasne_index[self.ilosc_wektorow:]]
-        return np.savetxt(str(self.list_vector_q()[0]) + '.', wektory_wlasne.view(float))
+        eigen_value, eigen_vector = self.solve_eigen_problem(self.list_vector_q()[0], param=True)
+        eigen_value_index = np.argsort(eigen_value.imag)
+        eigen_vector = np.transpose(eigen_vector)
+        eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
+        return np.savetxt(str(self.list_vector_q()[0]) + '.', eigen_vector.view(float))
 
     @do_cprofile
     def solve_eigen_problem(self, wektor_q, param):
-        macierz_m = EigenMatrix("ff=0.5.txt", 11, 11, wektor_q).generate_and_fill_matrix()
-        return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
+        macierz_m = EigenMatrix("ff=0.5.txt", 9, 9, wektor_q).generate_and_fill_matrix()
+        return eig(macierz_m, right=param)
 
     def list_vector_q(self):
-        if self.direction == 'y':
-            return [[(2 * np.pi * k / self.a), 0]
-                    for k in np.linspace(self.start_vec_q, self.end_vec_q, self.number_of_vec_q)]
-        elif self.direction == 'x':
-            return [[0, (2 * np.pi * k / self.b)]
-                    for k in np.linspace(self.start_vec_q, self.end_vec_q, self.number_of_vec_q)]
-        elif self.direction == 'xy':
-            return [[(2 * np.pi * k / self.a), (2 * np.pi * k / self.b)]
-                    for k in np.linspace(self.start_vec_q, self.end_vec_q, self.number_of_vec_q)]
-        else:
-            sys.exit('Wrong argumnet for direction was set')
+        points = np.linspace(self.start_vec_q, self.end_vec_q, self.number_of_dispersion_point)
+        return 2 * np.pi * np.stack((points, points), axis=-1) * self.coordinate / [self.a, self.b]
 
 
 if __name__ == "__main__":
     def start():
-        return EigenValueProblem(20, 'x').save_frequency_to_file()
+        return EigenValueProblem(20, 'y').save_frequency_to_file()
     
     start()
