@@ -1,4 +1,4 @@
-# from src.eig_problem.cProfiler import do_cprofile
+# from src.utils.cProfiler import do_cprofile
 import ast, glob, os
 import numpy as np
 from src.eig_problem.ParametryMaterialowe import InputParameter
