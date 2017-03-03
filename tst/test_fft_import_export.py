@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 
 from src.eig_problem.FFTfromFile import FFTfromFile
-from src.fft_from_image.FFT import FFT
+from src.fft_from_image.FFT import FFTfromImage
 
 logging.basicConfig(format='%(levelname)s:%(message)s',
                     filename='./log/test_fft_export_import.log',
@@ -15,7 +15,7 @@ logging.basicConfig(format='%(levelname)s:%(message)s',
 
 class TestFFTExportImport(unittest.TestCase):
 
-    fft = FFT()
+    fft = FFTfromImage()
     fft_from_file = FFTfromFile(9, 'I')
 
     def test_export_import(self):

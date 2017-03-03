@@ -1,37 +1,47 @@
-import math
 import unittest
-import  numpy as np
-from src.eig_problem.FFTfromFile import FFTfromFile
-from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
-from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
+import numpy as np
+from src.eig_problem.EigenMatrix import EigenMatrix
 
-class MacierzDoZagadnieniaTestCases(unittest.TestCase):
 
-    def testMatrixtoEignevalue_TheImpact(self):
-        tmp = MacierzDoZagadnienia('ff=0.5.dat', 11, 11, np.array([1e-9, 0]), 400e-9, 400e-9,
-                                   1.752e6, 0.484e6, 1.09e-17, 5.84e-17,
-                                   20e-9, 0, 0.1/(4e-7 * np.pi)).fill_matrix().view(float)
-        tmp1 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].dat')
-        np.testing.assert_array_almost_equal(tmp, tmp1, decimal=5)
+class TheImpactTestCases(unittest.TestCase):
+    """Tests for structure in paper "The impact of the lattice symmetry and
+       the inclusion shape on the spectrum of 2D magnonic crystals"""
+    MoA = 1.752e6
+    MoB = 0.484e6
+    lA = 1.09e-17
+    lB = 5.84e-17
+    H0 = 0.1 / (4e-7 * np.pi)
+    a = 400e-9
+    b = 400e-9
+    d = 20e-9
+    coefficient_from_file = 'ff=0.5.dat'
 
-        tmp = MacierzDoZagadnienia('ff=0.5.txt', 3, 3, np.array([0, 1e-9]), 400e-9, 400e-9,
-                                   1.752e6, 0.484e6, 1.09e-17, 5.84e-17,
-                                   20e-9, 0, 0.1/(4e-7 * np.pi)).fill_matrix().view(float)
-        tmp1 = np.loadtxt('matrix_to_eig_TheImpact_3_3_q=[0,1e-9].dat')
-        np.testing.assert_array_almost_equal(tmp, tmp1, decimal=5)
+    tested_case_1 = EigenMatrix(coefficient_from_file, 11, 11, np.array([1e-9, 0]),
+                                a, b, MoA, MoB, lA, lB, d, 0, H0)
+    tested_case_2 = EigenMatrix(coefficient_from_file, 3, 3, np.array([0, 1e-9]),
+                                a, b, MoA, MoB, lA, lB, d, 0, H0)
+    tested_case_3 = EigenMatrix(coefficient_from_file, 11, 11, np.array([1e-9, 0]),
+                                a, b, MoA, MoB, lA, lB, d, 0, H0)
+    tested_case_4 = EigenMatrix(coefficient_from_file, 11, 11, np.array([0, 20e-9]),
+                                a, b, MoA, MoB, lA, lB, d, 0, H0)
 
-        tmp = MacierzDoZagadnienia('ff=0.5.txt', 11, 11, np.array([1e-9, 0]), 400e-9, 400e-9,
-                                   1.752e6, 0.484e6, 1.09e-17, 5.84e-17,
-                                   20e-9, 0, 0.1/(4e-7 * np.pi)).fill_matrix().view(float)
-        tmp1 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].dat')
-        np.testing.assert_array_almost_equal(tmp, tmp1, decimal=5)
+    def test_eigen_matrix(self):
+        tested_data_1 = TheImpactTestCases.tested_case_1.generate_and_fill_matrix().view(float)
+        tested_data_2 = TheImpactTestCases.tested_case_2.generate_and_fill_matrix().view(float)
+        tested_data_3 = TheImpactTestCases.tested_case_3.generate_and_fill_matrix().view(float)
+        tested_data_4 = TheImpactTestCases.tested_case_4.generate_and_fill_matrix().view(float)
 
-        tmp = MacierzDoZagadnienia('ff=0.5.txt', 11, 11, np.array([0, 20e-9]), 400e-9, 400e-9,
-                                   1.752e6, 0.484e6, 1.09e-17, 5.84e-17,
-                                   20e-9, 0, 0.1/(4e-7 * np.pi)).fill_matrix().view(float)
-        tmp1 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[0,20e-9].dat')
-        np.testing.assert_array_almost_equal(tmp, tmp1, decimal=5)
+        loaded_data_to_compare_1 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].dat')
+        loaded_data_to_compare_2 = np.loadtxt('matrix_to_eig_TheImpact_3_3_q=[0,1e-9].dat')
+        loaded_data_to_compare_3 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].dat')
+        loaded_data_to_compare_4 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[0,20e-9].dat')
+
+        np.testing.assert_array_almost_equal(loaded_data_to_compare_1, tested_data_1, decimal=5)
+        np.testing.assert_array_almost_equal(loaded_data_to_compare_2, tested_data_2, decimal=5)
+        np.testing.assert_array_almost_equal(loaded_data_to_compare_3, tested_data_3, decimal=5)
+        np.testing.assert_array_almost_equal(loaded_data_to_compare_4, tested_data_4, decimal=5)
+
+
 
 if __name__ == '__main__':
     unittest.main()

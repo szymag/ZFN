@@ -1,16 +1,16 @@
 # from src.eig_problem.cProfiler import do_cprofile
 import ast, glob, os
 import numpy as np
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
+from src.eig_problem.ParametryMaterialowe import InputParameter
+from src.eig_problem.WektorySieciOdwrotnej import ReciprocalVector
 import matplotlib.pyplot as plt
 
 
-class Profile(ParametryMaterialowe):
+class Profile(InputParameter):
     def __init__(self, ilosc_wektorow=441, start_path="."):
-        ParametryMaterialowe.__init__(self)
+        InputParameter.__init__(self)
         self.ilosc_wektorow = ilosc_wektorow
-        self.lista_wektorow = WektorySieciOdwrotnej(self.a, self.b, ilosc_wektorow).lista_wektorow2d('min')
+        self.lista_wektorow = ReciprocalVector(self.a, self.b, ilosc_wektorow).lista_wektorow2d('min')
         self.sciezka = glob.glob(os.path.join(start_path, "*."))
         self.wektory_wlasne = np.loadtxt(self.sciezka[0]).view(complex)
         self.wektor_q = ast.literal_eval(self.sciezka[0].strip('.')[1:])

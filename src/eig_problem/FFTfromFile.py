@@ -3,22 +3,13 @@ import pandas as pd
 import numpy as np
 
 class FFTfromFile:
-    """
-    Klasa, która wczytuje zadany plik tekstowy (domyślnie jest to 'fft1.txt' i wyciąga z niego informację o wektorach
-    sieci odrwotnej wraz z odpowiadającymi im współczynnikami Fouriera.
-    """
-
     def __init__(self, input_fft, tab_size):
 
-        """
-        :type tab_size: tuple
-        """
         self.tmp_table = pd.read_csv(input_fft, delimiter=' ', dtype=float, header=None).values
         re = self.tmp_table[:, 0::2]
         im = self.tmp_table[:, 1::2] * 1j
-        self.table = re + im
+        self.table = np.array(re + im, dtype=complex)
         self.numbers_of_rec_vector = tab_size
-
 
     def fourier_coefficient(self, paramA, paramB):
         v = (paramA - paramB) * self.coefficient()
