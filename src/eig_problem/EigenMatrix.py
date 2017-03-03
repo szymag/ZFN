@@ -56,23 +56,29 @@ class EigenMatrix:
 
     # noinspection PyTypeChecker
     def exchange_field(self, wektor_2):
-        shift = self.shift_to_middle_of_coeff_array
-        a = self.lattice_const_x
-        b = self.lattice_const_y
-        wektor_q = self.wektor_q
+        div = [self.lattice_const_y, self.lattice_const_x]
         H0 = self.H0
         tab_from_wektor_1 = np.asfortranarray(
             np.broadcast_to(self.rec_vector_indexes, (self.amount_rec_vector , self.amount_rec_vector, 2)),
             dtype=int)
         tab_from_vec_l = np.transpose(tab_from_wektor_1, (1, 0, 2))
-        tmp = ne.evaluate('tab_from_wektor_1 - tab_from_vec_l + shift')
+
+        e1 = lambda a, b, s: ne.evaluate(
+                '{v1} - {v2} + {s}'.format(v1='a', v2='b', s='s'))
+
+        tmp = e1(tab_from_wektor_1, tab_from_vec_l, self.shift_to_middle_of_coeff_array)
+        tmp2 = e1(tab_from_vec_l, wektor_2, self.shift_to_middle_of_coeff_array)
+
         tmp1 = self.magnetization_sat[tmp[:, :, 0], tmp[:, :, 1]]
-        tmp2 = ne.evaluate('tab_from_vec_l - wektor_2 + shift')
         tmp3 = self.exchange_len[tmp2[:, :, 0], tmp2[:, :, 1]]
-        tab_from_vec_l = tab_from_vec_l / [b, a]
-        wektor_2 = wektor_2 / [b, a]
-        tmp4 = np.dot(ne.evaluate('2 * 3.14159265 * tab_from_vec_l + wektor_q'),
-                      ne.evaluate('2 * 3.14159265 * wektor_2 + wektor_q'))
+
+        e2 = lambda a, b: ne.evaluate(
+                '2 * 3.14159265 * {v} + {q}'.format(v='a', q='b'))
+
+        tmp4 = np.dot(
+                e2(tab_from_vec_l / div, self.wektor_q),
+                e2(wektor_2 / div, self.wektor_q))
+
         return ne.evaluate('sum(tmp1*tmp3*tmp4/H0, 0)')
 
     # noinspection PyTypeChecker
