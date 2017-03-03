@@ -11,10 +11,18 @@ m = np.transpose(np.loadtxt(name))[1:]
 num = np.arange(1, np.shape(m)[0] + 1)
 np.savetxt(name, np.transpose([num, m]), fmt='%.0f  %.12e')
 """
-file = np.transpose(np.loadtxt(name))
 
 
-def plot_dispersion():
+
+def load_data(filename):
+    try:
+        return np.transpose(np.loadtxt(filename))
+    except FileNotFoundError:
+        print('No such file {}'.format(data_filename))
+        sys.exit(1)
+
+
+def plot_dispersion(data):
     for i in range(5):
         plt.plot(file[0], file[1 + i], color='r')
     plt.xlabel('wektor falowy q [m^-1]')
