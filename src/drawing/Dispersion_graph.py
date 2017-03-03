@@ -12,6 +12,8 @@ num = np.arange(1, np.shape(m)[0] + 1)
 np.savetxt(name, np.transpose([num, m]), fmt='%.0f  %.12e')
 """
 
+def usage():
+    print("Usage:\n\t{} {}".format(sys.argv[0], 'd/n'))
 
 
 def load_data(filename):
