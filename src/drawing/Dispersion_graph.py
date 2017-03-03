@@ -26,21 +26,32 @@ def load_data(filename):
 
 def plot_dispersion(data):
     for i in range(5):
-        plt.plot(file[0], file[1 + i], color='r')
+        plt.plot(data[0], data[1 + i], color='r')
     plt.xlabel('wektor falowy q [m^-1]')
     plt.ylabel('f [Hz]')
     plt.title(name)
     #plt.ylim([0.7e10, 1.2e10])
     plt.show()
 
-plot_dispersion()
 
-def plot_num_freq():
-    plt.plot(file[1], file[0], color='r')
+def plot_num_freq(data):
+    plt.plot(data[1], data[0], color='r')
     plt.xlabel('freq')
     plt.ylabel('num')
     plt.title(name)
     plt.show()
 
 
-#plot_num_freq()
+if __name__ == '__main__':
+    data = load_data(data_filename)
+    if len(sys.argv) == 2:
+        if sys.argv[1] == 'd':
+            plot_dispersion(data)
+        elif sys.argv[1] == 'n':
+            plot_num_freq(data)
+        else:
+            usage()
+            sys.exit(1)
+    else:
+        usage()
+        plot_dispersion(data)
