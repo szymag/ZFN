@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-name = 'test.txt'
+import sys
+
+data_filename = 'test.txt'
+
 """
 m = np.transpose(np.loadtxt(name))[1:]
 
