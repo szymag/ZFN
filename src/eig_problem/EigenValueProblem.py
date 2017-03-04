@@ -8,7 +8,7 @@ from math import hypot
 
 class EigenValueProblem:
     def __init__(self, number_of_dispersion_point, direction, a=InputParameter.a, b=InputParameter.b,
-                 gamma=InputParameter.gamma, mu0H0=InputParameter.mu0H0):
+                 gamma=InputParameter.gamma, mu0H0=InputParameter.mu0H0, input_fft_file=InputParameter.fft_file):
         self.number_of_dispersion_point = number_of_dispersion_point
         self.gamma = gamma
         self.mu0H0 = mu0H0
@@ -17,6 +17,7 @@ class EigenValueProblem:
         self.b = b
         self.start_vec_q = 0.01
         self.end_vec_q = 0.5
+
 
         if self.direction == 'x':
             self.coordinate = [0, 1]
@@ -52,7 +53,7 @@ class EigenValueProblem:
 
     @do_cprofile
     def solve_eigen_problem(self, wektor_q, param):
-        macierz_m = EigenMatrix("ff=0.5.txt", 9, 9, wektor_q).generate_and_fill_matrix()
+        macierz_m = EigenMatrix("ff=0.5.txt", EigenMatrix.ReciprocalVectorGrid(9, 9), wektor_q).generate_and_fill_matrix()
         return eig(macierz_m, right=param)
 
     def list_vector_q(self):

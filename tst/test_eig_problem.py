@@ -16,13 +16,13 @@ class TheImpactTestCases(unittest.TestCase):
     d = 20e-9
     coefficient_from_file = 'ff=0.5.dat'
 
-    tested_case_1 = EigenMatrix(coefficient_from_file, 11, 11, np.array([1e-9, 0]),
+    tested_case_1 = EigenMatrix(coefficient_from_file, EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
                                 a, b, MoA, MoB, lA, lB, d, 0, H0)
-    tested_case_2 = EigenMatrix(coefficient_from_file, 3, 3, np.array([0, 1e-9]),
+    tested_case_2 = EigenMatrix(coefficient_from_file, EigenMatrix.ReciprocalVectorGrid(3, 3), np.array([0, 1e-9]),
                                 a, b, MoA, MoB, lA, lB, d, 0, H0)
-    tested_case_3 = EigenMatrix(coefficient_from_file, 11, 11, np.array([1e-9, 0]),
+    tested_case_3 = EigenMatrix(coefficient_from_file, EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
                                 a, b, MoA, MoB, lA, lB, d, 0, H0)
-    tested_case_4 = EigenMatrix(coefficient_from_file, 11, 11, np.array([0, 20e-9]),
+    tested_case_4 = EigenMatrix(coefficient_from_file, EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([0, 20e-9]),
                                 a, b, MoA, MoB, lA, lB, d, 0, H0)
 
     def test_eigen_matrix(self):

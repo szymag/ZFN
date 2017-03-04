@@ -4,8 +4,10 @@ import numpy as np
 
 class FFTfromFile:
     def __init__(self, input_fft, tab_size):
-
-        self.tmp_table = pd.read_csv(input_fft, delimiter=' ', dtype=float, header=None).values
+        try:
+            self.tmp_table = pd.read_csv(input_fft, delimiter=' ', dtype=float, header=None).values
+        except IOError:
+            print('Can not find such file. Generate fourier coeficient in FFT class in fft_from_file directory')
         re = self.tmp_table[:, 0::2]
         im = self.tmp_table[:, 1::2] * 1j
         self.table = np.array(re + im, dtype=complex)
