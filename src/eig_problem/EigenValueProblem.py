@@ -5,6 +5,7 @@ from src.eig_problem.EigenMatrix import EigenMatrix
 from src.eig_problem.InputParameter import InputParameter
 import sys
 from math import hypot
+from src.io.NumpyDataWriter import NumpyDataWriter
 
 class EigenValueProblem:
     def __init__(self, number_of_dispersion_point, direction, a=InputParameter.a, b=InputParameter.b,
@@ -18,7 +19,6 @@ class EigenValueProblem:
         self.start_vec_q = 0.01
         self.end_vec_q = 0.5
 
-
         if self.direction == 'x':
             self.coordinate = [0, 1]
         elif self.direction == 'y':
@@ -26,15 +26,15 @@ class EigenValueProblem:
         elif self.direction == 'xy':
             self.coordinate = [1, 1]
         else:
-            sys.exit('Wrong argumnet for direction was set')
+            sys.exit('Wrong argument for direction was set')
 
-    def save_frequency_to_file(self):
-        file = []
+    def eigen_frequency_for_vectors_q(self):
+        data = []
         for k in self.list_vector_q():
             tmp = [hypot(k[0], k[1])]
             tmp.extend(self.calculate_eigen_frequency(k))
-            file.append(tmp)
-        np.savetxt('test.txt', file)
+            data.append(tmp)
+        return data
 
     def calculate_eigen_frequency(self, wektor_q):
         assert len(wektor_q) == 2, \
@@ -63,6 +63,6 @@ class EigenValueProblem:
 
 if __name__ == "__main__":
     def start():
-        return EigenValueProblem(20, 'y').save_frequency_to_file()
+        return NumpyDataWriter('test.txt').write(EigenValueProblem(20, 'y').eigen_frequency_for_vectors_q())
     
     start()

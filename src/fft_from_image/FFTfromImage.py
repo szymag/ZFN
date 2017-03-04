@@ -3,7 +3,7 @@ import glob
 import re
 import matplotlib.pyplot as plt
 import numpy as np
-
+from src.io.NumpyDataWriter import NumpyDataWriter
 from src.fft_from_image.TablicaWartosciPikseli import TablicaWartosciPikseli
 
 
@@ -34,7 +34,7 @@ class FFTfromImage:
             plt.colorbar()
             plt.show()
 
-    def wypisz_do_pliku(self, path='', lista_fft=None):
+    def wypisz_do_pliku(self,data_writer,  path='', lista_fft=None):
 
         if lista_fft is None:
             lista_fft = self.wywolaj_fft(path)

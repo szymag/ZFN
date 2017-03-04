@@ -29,7 +29,7 @@ def plot_dispersion(data):
         plt.plot(data[0], data[1 + i], color='r')
     plt.xlabel('wektor falowy q [m^-1]')
     plt.ylabel('f [Hz]')
-    plt.title(name)
+    plt.title(data)
     #plt.ylim([0.7e10, 1.2e10])
     plt.show()
 
@@ -38,7 +38,7 @@ def plot_num_freq(data):
     plt.plot(data[1], data[0], color='r')
     plt.xlabel('freq')
     plt.ylabel('num')
-    plt.title(name)
+    plt.title(data_filename)
     plt.show()
 
 

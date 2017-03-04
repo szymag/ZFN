@@ -4,6 +4,7 @@ import numpy as np
 from src.eig_problem.FFTfromFile import FFTfromFile
 from src.eig_problem.InputParameter import InputParameter
 from src.eig_problem.ReciprocalVector import ReciprocalVector
+from src.io.NumpyDataWriter import NumpyDataWriter
 from multiprocessing import Pool
 import numexpr as ne
 
@@ -140,5 +141,4 @@ class EigenMatrix:
 
 if __name__ == "__main__":
     q = EigenMatrix('ff=0.5.txt', EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]))
-
     q.save_matrix_to_file()
