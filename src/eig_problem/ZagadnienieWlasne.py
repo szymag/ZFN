@@ -4,7 +4,7 @@ from scipy.linalg import eig
 import sys
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-# from src.eig_problem.cProfiler import do_cprofile
+from src.eig_problem.cProfiler import do_cprofile
 import os.path
 
 scriptpath = os.path.dirname(__file__)
@@ -12,7 +12,7 @@ scriptpath = os.path.dirname(__file__)
 class ZagadnienieWlasne:
 
 
-    def __init__(self, ilosc_wektorow_q, input_fft, output_file, mu0H0=ParametryMaterialowe.H0,
+    def __init__(self, ilosc_wektorow_q, input_fft, output_file, mu0H0=ParametryMaterialowe.mu0H0,
                   a=ParametryMaterialowe.a, gamma=ParametryMaterialowe.gamma):
         """
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
@@ -20,15 +20,15 @@ class ZagadnienieWlasne:
         to DFT oraz FFT.
         """
         self.gamma = gamma
-        self.mu0H0 = eval(mu0H0)
-        #self.mu0H0 = mu0H0
-        self.H0 = self.mu0H0 / ParametryMaterialowe.mu0
-        self.lista_wektorow_q = [2 * np.pi * k / a for k in np.linspace(0.001, 0.002, ilosc_wektorow_q)]
+        #self.mu0H0 = eval(mu0H0)
+        self.mu0H0 = mu0H0
+        #self.H0 = self.mu0H0 / ParametryMaterialowe.mu0
+        self.lista_wektorow_q = [2 * np.pi * k / a for k in np.linspace(0.001, 0.99, ilosc_wektorow_q)]
         #self.lista_wektorow_q = 2 * np.pi / self.a * float(ilosc_wektorow_q)
         self.input_fft = os.path.join(scriptpath, input_fft)
         self.output_file = output_file
 
-    #@do_cprofile
+    @do_cprofile
     def zagadnienie_wlasne(self, wektor_q, param):
         """
         Metoda, która wywołuje algorytm rozwiązywania zagadnienia własnego. Tworzy sobie tablicę,
@@ -39,7 +39,7 @@ class ZagadnienieWlasne:
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        macierz_m = MacierzDoZagadnienia(self.input_fft, wektor_q, H0=self.H0).matrix_gen_damon_eshbach(wektor_q)
+        macierz_m = MacierzDoZagadnienia(self.input_fft, wektor_q).matrix_angle_dependence(wektor_q)
         #macierz_m = MacierzDoZagadnienia(self.input_fft, wektor_q, H0=self.H0).matrix_gen_backward_volume(wektor_q)
 
         return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
@@ -69,6 +69,7 @@ class ZagadnienieWlasne:
         plik = []
         for k in self.lista_wektorow_q:
             tmp = [k]
+            print(k)
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
         np.savetxt(self.output_file, plik)
@@ -89,7 +90,9 @@ class ZagadnienieWlasne:
 
 def start():
 
-    return ZagadnienieWlasne(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]).wypisz_czestosci_do_pliku()
-    #return ZagadnienieWlasne(1, 'p_coef_500*2.txt', 'peig_test.dat').wektory_wlasne()
+    #return ZagadnienieWlasne(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]).wypisz_czestosci_do_pliku()
+    return ZagadnienieWlasne(30, 'p_coef_100*2.txt', 'test.dat').wypisz_czestosci_do_pliku()
+
+
 if __name__ == "__main__":
     start()

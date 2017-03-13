@@ -14,7 +14,7 @@ class MacierzDoZagadnienia:
     def __init__(self, input_fft, wektor_q, a=ParametryMaterialowe.a, MoA=ParametryMaterialowe.MoA,
                  MoB=ParametryMaterialowe.MoB, lA=ParametryMaterialowe.lA,
                  lB=ParametryMaterialowe.lB, d=ParametryMaterialowe.d,
-                x=ParametryMaterialowe.x, H0=ParametryMaterialowe.H0):
+                x=ParametryMaterialowe.x, H0=ParametryMaterialowe.H0, angle = ParametryMaterialowe.angle):
 
         self.a = a
         self.d = d
@@ -27,7 +27,7 @@ class MacierzDoZagadnienia:
         self.dlugosc_wymiany = self.tmp.fourier_coefficient(lA, lB)
         self.lista_wektorow = WektorySieciOdwrotnej(self.ilosc_wektorow).lista_wektorow1d('min')
         self.shift = len(self.lista_wektorow) - 1
-
+        self.angle = angle
     def funkcja_c(self, wektor_1, wektor_2):
         """
         Metoda obliczająca wartość funkcji C zdefinoweanej wzorem: f(g, x) = cosh(|g|x)*exp(-|g|d/2), gdzie g jest
@@ -129,6 +129,22 @@ class MacierzDoZagadnienia:
             self.macierz_M[i - indeks][np.arange(indeks, 2 * indeks)] += ex - static  # xy
         return self.macierz_M
 
+    def matrix_angle_dependence(self, wektor_q):
+        indeks = self.ilosc_wektorow
+        self.delta_kroneckera()
+        for i in range(indeks, 2 * indeks):
+            w1 = self.lista_wektorow[i - indeks]
+            w2 = self.lista_wektorow
+            ex = self.exchange_field(w1, w2, wektor_q)
+            dyn_in_plane = self.dynamic_demagnetizing_field_in_plane(w1, w2, wektor_q)
+            dyn_out_plane = self.dynamic_demagnetizing_field_out_of_plane(w1, w2, wektor_q)
+            static = self.static_demagnetizing_field(w1, w2)
+            self.macierz_M[i][np.arange(indeks)] += -ex - dyn_in_plane + static * np.cos\
+                (np.pi * self.angle / 180)  # yx
+            self.macierz_M[i - indeks][np.arange(indeks, 2 * indeks)] += ex + dyn_out_plane * np.sin\
+                (np.pi * self.angle / 180) - static * np.cos(np.pi * self.angle / 180)  # xy
+        return self.macierz_M
+
     def wypisz_macierz(self):
         """
         :return: Wypisuje tablice do pliku tekstowego.
@@ -138,5 +154,5 @@ class MacierzDoZagadnienia:
         np.savetxt('macierz.txt', np.array(self.macierz_M))
 
 if __name__ == "__main__":
-    q = MacierzDoZagadnienia('p_coef_200*2.txt', 1e-9)
+    q = MacierzDoZagadnienia('p_coef_10*2.txt', 1e-9)
     q.wypisz_macierz()

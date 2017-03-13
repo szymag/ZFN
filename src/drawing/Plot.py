@@ -59,4 +59,5 @@ class Plot:
 
 
 if __name__ == "__main__":
-    Plot(5).fmr_freq_function_of_magnetic_field('test_', 1, 4)
+    Plot(2).dispersion_relation('test.dat')
+    #Plot(5).fmr_freq_function_of_magnetic_field('test_', 1, 4)
