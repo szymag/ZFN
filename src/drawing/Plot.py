@@ -11,9 +11,10 @@ class Plot:
         loaded_data = np.transpose(np.loadtxt(input_data))
         assert len(loaded_data.shape) == 2, 'loaded file must be two dimensional'
         for i in range(self.number_of_disp_branch):
-            plt.plot(loaded_data[0], loaded_data[1 + i], color='r')
-        plt.xlabel('reciprocal vector k [m^-1]')
-        plt.ylabel('frequency [Hz]')
+            plt.plot(loaded_data[0] / 10e6, loaded_data[1 + i] / 10e8, color='r')
+        #plt.ylim([2.8, 5.8])
+        plt.xlabel('reciprocal vector k [mum^-1]')
+        plt.ylabel('frequency [GHz]')
         self.show_or_save_plot()
 
     def fmr_freq_function_of_magnetic_field(self, begin_of_name_file,
@@ -30,10 +31,12 @@ class Plot:
                 ax.plot(x_axis, data[i], ls='--')
         ax.set_ylabel('frequency (GHz)', fontsize=22)
         ax.set_xlabel(r'external field $H_{0}$ (T)', fontsize=22)
-        ax.set_title(r'FMR ($k=0$)', fontsize=22)
+        ax.set_title(r'FMR ($k=0$), $0^{\circ}$ ', fontsize=22)
+        #ax.set_ylim([0, 20])
+        #ax.set_xlim([0, 0.4])
         ax.xaxis.grid()
         ax.yaxis.grid()
-        self.create_legend_for_fmr(ax)
+        #self.create_legend_for_fmr(ax)
         self.show_or_save_plot()
 
     def load_and_join_frequency_for_diff_field(self, begin_of_loaded_file_name, start_number, end_number):
@@ -52,12 +55,12 @@ class Plot:
         if self.name_of_file == None:
             plt.show()
         elif type(self.name_of_file) == str:
-            plt.savefig(self.name_of_file + '.svg')
+            plt.savefig(self.name_of_file + '.eps')
         else:
             plt.show()
             return 'wrong argument was puted'
 
 
 if __name__ == "__main__":
-    Plot(2).dispersion_relation('test.dat')
-    #Plot(5).fmr_freq_function_of_magnetic_field('test_', 1, 4)
+    #Plot(2).dispersion_relation('dys_90.dat')
+    Plot(11).fmr_freq_function_of_magnetic_field('90_', 300, 450, 10000)

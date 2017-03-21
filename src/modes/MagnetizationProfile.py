@@ -43,21 +43,21 @@ class Profile2D:
 
 class Profile1D:
     def __init__(self, mode_number):
-        self.eig_vectors = np.loadtxt('peig_test.dat').view(complex)
+        self.eig_vectors = np.loadtxt('dys_90.dat').view(complex)
         self.lattice_const = ParametryMaterialowe.a
         self.mode_number = mode_number - 1
 
     def plot(self):
         tmp = self.spatial_distribution_dynamic_magnetization(500)
-        tmp1 = self.elementary_cell_reconstruction(500)
+        #tmp1 = self.elementary_cell_reconstruction(500)
         plt.plot(tmp[0], tmp[1])
-        plt.plot(tmp1[0], tmp1[1])
-        plt.ylim((0,3.5))
-        plt.savefig('pdem_esch_' + str(self.mode_number) + '.svg')
+        #plt.plot(tmp1[0], tmp1[1])
+        #plt.ylim((0,3.5))
+        plt.savefig('90deg_mode_' + str(self.mode_number) + '.svg')
         plt.clf()
 
     def spatial_distribution_dynamic_magnetization(self, grid):
-        mode = self.eig_vectors[self.mode_number, 0:250]
+        mode = self.eig_vectors[self.mode_number, 0:100]
         x = np.linspace(-self.lattice_const, 0, grid)
         tmp = np.zeros(grid)
         for i in enumerate(x):
@@ -65,7 +65,7 @@ class Profile1D:
         return x, tmp
 
     def elementary_cell_reconstruction(self, grid):
-        coefficient = np.transpose(np.loadtxt('p_coef_200.txt').view(complex))
+        coefficient = np.transpose(np.loadtxt('p_coef_100*2.txt').view(complex))
         x = np.linspace(-self.lattice_const, 0, grid)
         tmp = np.zeros(grid)
         for i in enumerate(x):
@@ -75,7 +75,7 @@ class Profile1D:
     def inverse_discrete_foutier_transform(self, data, vector_position):
         reciprocal_vectors = np.array(2 * np.pi * WektorySieciOdwrotnej(max(data.shape)).lista_wektorow1d('min')
                                       / self.lattice_const)
-        return abs(np.sum(data * np.exp(1j * reciprocal_vectors * vector_position)))
+        return abs(np.sum(data * np.exp(1j * reciprocal_vectors * vector_position))) **2
 
-for i in range(1, 11):
+for i in range(1, 5):
     Profile1D(i).plot()

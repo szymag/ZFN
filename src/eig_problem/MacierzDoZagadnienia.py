@@ -11,10 +11,11 @@ class MacierzDoZagadnienia:
     Współczynniki są dla niej tworzone poprzez FFT z pliku graficznego.
     """
 
-    def __init__(self, input_fft, wektor_q, a=ParametryMaterialowe.a, MoA=ParametryMaterialowe.MoA,
+    def __init__(self, input_fft, wektor_q, H0=ParametryMaterialowe.H0, a=ParametryMaterialowe.a,
+                 MoA=ParametryMaterialowe.MoA,
                  MoB=ParametryMaterialowe.MoB, lA=ParametryMaterialowe.lA,
                  lB=ParametryMaterialowe.lB, d=ParametryMaterialowe.d,
-                x=ParametryMaterialowe.x, H0=ParametryMaterialowe.H0, angle = ParametryMaterialowe.angle):
+                x=ParametryMaterialowe.x, angle = ParametryMaterialowe.angle):
 
         self.a = a
         self.d = d

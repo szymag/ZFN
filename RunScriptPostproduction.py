@@ -22,9 +22,9 @@ class RunScriptPostproduction:
         joined_data = []
         for i in range(self.begin_num, self.end_num):
             joined_data.append(np.loadtxt(self.first_part_of_name + str(i) + ".dat"))
-            # np.savetxt('cni0.5.dat', np.delete(np.transpose(np.array(joined_data)), 0, 0))
-            return np.delete(np.transpose(np.array(joined_data)), 0, 0)
+            np.savetxt('0_fmr.dat', np.delete(np.transpose(np.array(joined_data)), 0, 0))
+            #return np.delete(np.transpose(np.array(joined_data)), 0, 0)
 
 
 if __name__ == "__main__":
-    pass
+    RunScriptPostproduction(1, 400, '0_',).load_data_and_join()

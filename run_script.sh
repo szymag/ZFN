@@ -2,8 +2,8 @@
 
 export PYTHONPATH=`pwd`
 
-for i in {1..4}
+for i in {300..450}
     do
-        python ./src/eig_problem/ZagadnienieWlasne.py 1 c_coef_500.txt test_${i}.dat ${i}/1000
+        python ./src/eig_problem/ZagadnienieWlasne.py 1 c_coef_100.txt 90_${i}.dat ${i}/10000
     done
-#python ./src/eig_problem/ZagadnienieWlasne.py 40 p_coef_500*2.txt test.dat 0.2
+#python ./src/eig_problem/ZagadnienieWlslasne.py 40 p_coef_500*2.txt test.dat 0.2
