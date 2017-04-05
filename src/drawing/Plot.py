@@ -12,7 +12,7 @@ class Plot:
         assert len(loaded_data.shape) == 2, 'loaded file must be two dimensional'
         for i in range(self.number_of_disp_branch):
             plt.plot(loaded_data[0] / 10e6, loaded_data[1 + i] / 10e8, color='r')
-        #plt.ylim([2.8, 5.8])
+        plt.ylim([2, 5.8])
         plt.xlabel('reciprocal vector k [mum^-1]')
         plt.ylabel('frequency [GHz]')
         self.show_or_save_plot()
@@ -26,9 +26,9 @@ class Plot:
         data = self.load_and_join_frequency_for_diff_field(begin_of_name_file, start_number, end_number)
         for i in range(1, self.number_of_disp_branch):
             if i%2 != 0:
-                ax.plot(x_axis, data[i])
+                ax.generate_plot(x_axis, data[i])
             else:
-                ax.plot(x_axis, data[i], ls='--')
+                ax.generate_plot(x_axis, data[i], ls='--')
         ax.set_ylabel('frequency (GHz)', fontsize=22)
         ax.set_xlabel(r'external field $H_{0}$ (T)', fontsize=22)
         ax.set_title(r'FMR ($k=0$), $0^{\circ}$ ', fontsize=22)
@@ -55,12 +55,12 @@ class Plot:
         if self.name_of_file == None:
             plt.show()
         elif type(self.name_of_file) == str:
-            plt.savefig(self.name_of_file + '.eps')
+            plt.savefig(self.name_of_file + '.svg')
         else:
             plt.show()
             return 'wrong argument was puted'
 
 
 if __name__ == "__main__":
-    #Plot(2).dispersion_relation('dys_90.dat')
-    Plot(11).fmr_freq_function_of_magnetic_field('90_', 300, 450, 10000)
+    #Plot(10, 'dys_0').dispersion_relation('dys_0.dat')
+    Plot(17, 'fmr_0deg_50-0.1T').fmr_freq_function_of_magnetic_field('0_', 50, 200, 2000)

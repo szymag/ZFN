@@ -19,16 +19,18 @@ class ParametryMaterialowe:
     # YIG
     MoY = 0.194e6
     lY = 1.7e-16
-
+    # CoFeB
+    MoCoFeB = 1.25e6
+    lCoFeB = 1.53e-17
 # System parameters
-    mu0H0 = 0.2
+    mu0H0 = 0.075
     gamma = 176e9
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
     d = 40e-9 # thickness of material
     a = 1000e-9
     x = 0 # position of calculation of dispersion in z-direction
-    angle = 90
+    angle = None
     #r = 14e-9 # radius of inclusion, only for DFT coefficient
 
 # Material parameters
