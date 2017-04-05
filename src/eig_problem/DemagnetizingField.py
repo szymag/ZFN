@@ -6,7 +6,7 @@ from src.eig_problem.FFTfromFile1D import FFTfromFile1D
 import matplotlib.pyplot as plt
 
 
-class StaticDemagnetizingField_1D:
+class StaticDemagnetizingField1D:
     def __init__(self, input_fft, field_angle):
         self.tmp = FFTfromFile1D(input_fft)
         self.field_angle = field_angle
@@ -51,4 +51,4 @@ class StaticDemagnetizingField_1D:
         plt.show()
 
 if __name__ == "__main__":
-    q = StaticDemagnetizingField_1D('c_coef_100.txt', 0).demagnetizing_field_plot()
+    q = StaticDemagnetizingField1D('c_coef_100.txt', 0).demagnetizing_field_plot()

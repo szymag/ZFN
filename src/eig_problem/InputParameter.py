@@ -28,7 +28,7 @@ class InputParameter:
     a = 400e-9 # size of unit cell in x direction
     b = 400e-9 # size of unit cell in y direction
     x = 0  # position of calculation of dispersion in z-direction
-
+    angle = 0
     # Material parameters
     # inclusion
     MoA = MoFe

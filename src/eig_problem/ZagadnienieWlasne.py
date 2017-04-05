@@ -2,7 +2,7 @@
 import numpy as np
 from scipy.linalg import eig
 import sys
-from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
+from src.eig_problem.EigenMatrix1D import EigenMatrix1D
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 import os.path
 
@@ -39,7 +39,7 @@ class ZagadnienieWlasne:
         :param wektor_q: Blochowski wektor. Jest on "uciąglony". Jest on zmienną przy wyznaczaniu dyspersji.
         :return: Wartości własne. Wektory własne są obecnie wyłączone.
         """
-        macierz_m = MacierzDoZagadnienia(self.input_fft, wektor_q,
+        macierz_m = EigenMatrix1D(self.input_fft, wektor_q,
                                          angle=self.angle).matrix_angle_dependence(wektor_q)
 
         return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
