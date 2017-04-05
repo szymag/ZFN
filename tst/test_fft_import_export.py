@@ -3,9 +3,15 @@ import os
 import unittest
 
 import numpy as np
+<<<<<<< HEAD
 
 from src.eig_problem.LoadFFT import LoadFFT
 from src.fft_from_image.FFT import FFTfromImage
+=======
+from src.eig_problem.FFTfromFile import FFTfromFile
+
+from src.fft_from_image.FFT import FFT
+>>>>>>> 1D
 
 logging.basicConfig(format='%(levelname)s:%(message)s',
                     filename='./log/test_fft_export_import.log',
@@ -20,7 +26,7 @@ class TestFFTExportImport(unittest.TestCase):
 
     def test_export_import(self):
         logging.info("### Running test_export_import...")
-        lists_to_export = self.fft.wywolaj_fft(os.path.abspath("./tst/"))
+        lists_to_export = self.fft.wywolaj_fft2d(os.path.abspath("./tst/"))
         logging.info("numer of lists to export = %d" % len(lists_to_export))
         files = self.fft.wypisz_do_pliku(os.path.abspath("./tst/tmp/"), lists_to_export)
         logging.info("Lists were exported to files:")

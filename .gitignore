@@ -1,13 +1,8 @@
 *.txt
-*svg
 *.png
-
-
-__pycache__
+*.dat
+*.svg
 .idea
-0001-Add-code-review.patch
 article/
-src/drawing/Tobey
 src/fft_from_image/niuzywane/
-log/
-tst/tmp/
+
