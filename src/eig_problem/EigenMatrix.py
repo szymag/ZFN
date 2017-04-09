@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from math import sqrt, exp, cosh
 import numpy as np
-from src.eig_problem.LoadFFT import LoadFFT
+from src.eig_problem.LoadFFT import LoadFFT2D
 from src.eig_problem.InputParameter import InputParameter
 from src.eig_problem.ReciprocalVector import ReciprocalVector
 from multiprocessing import Pool
@@ -39,7 +39,7 @@ class EigenMatrix:
         self.vectors_count = self.ReciprocalVectorGrid.vectors_count()
         self.x = x
         self.H0 = H0
-        self.tmp = LoadFFT(input_fft, self.ReciprocalVectorGrid.coefficient_grid_size())
+        self.tmp = LoadFFT2D(input_fft, self.ReciprocalVectorGrid.coefficient_grid_size())
         self.magnetization_sat = self.tmp.rescale_fourier_coefficient(MoA, MoB)
         self.exchange_len = self.tmp.rescale_fourier_coefficient(lA, lB)
         self.rec_vector_indexes = ReciprocalVector(self.vectors_count).lista_wektorow2d('min')

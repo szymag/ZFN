@@ -1,6 +1,6 @@
 ## Magnonic crystals
 
-A program for computing spin waves properties in magnonic crsytal.
+A program for computing spin waves properties in magnonic crystal.
 This program solves Landau–Lifshitz equation using Plane Wave Method.
 ### Dependencies
 
