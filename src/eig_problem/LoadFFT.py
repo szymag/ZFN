@@ -39,7 +39,11 @@ class LoadFFT2D:
 
 class LoadFFT1D:
     def __init__(self, input_fft):
-        self.file = np.transpose(np.loadtxt(input_fft))
+        try:
+            self.file = np.transpose(np.loadtxt(input_fft))
+        except IOError:
+            print('Can not find such file. Generate fourier coefficient in FFT class in fft_from_file directory')
+            sys.exit()
         self.coeff = self.file[0] + self.file[1] * 1j
         self.ilosc_wektorow = len(self.file[0]) // 2
 

@@ -4,7 +4,7 @@ import re
 import matplotlib.pyplot as plt
 import numpy as np
 from src.io.NumpyDataWriter import NumpyDataWriter
-from src.fft_from_image.TablicaWartosciPikseli import TablicaWartosciPikseli
+from src.fft_from_image.ElementaryUnitCellImage import ElementaryUnitCellImage
 
 
 class FFTfromImage:
@@ -18,13 +18,12 @@ class FFTfromImage:
 
     def wywolaj_fft(self, path='.'):
 
-        lista_plikow = TablicaWartosciPikseli(path).tablica_dla_plikow()
+        lista_plikow = ElementaryUnitCellImage(path).apply_for_every_image_in_directory()
 
         lista_fft = [self.fft(k) for k in lista_plikow]
         return lista_fft
 
     def wykres(self):
-
         lista_fft = self.wywolaj_fft
         for tablica in lista_fft():
             rozmiar = (len(tablica[0]), len(tablica))
@@ -35,13 +34,11 @@ class FFTfromImage:
             plt.show()
 
     def wypisz_do_pliku(self,data_writer,  path='', lista_fft=None):
-
         if lista_fft is None:
             lista_fft = self.wywolaj_fft(path)
         indeks = 1
         files = []
         for tablica in lista_fft:
-
             filepath = os.path.join(os.path.abspath(path),
                                     re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks-1]))[0] + '.txt')
             files.append(filepath)

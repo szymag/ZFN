@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.fft_from_image.Sequences import ThueMorse, Fibonacci, Periodic, Heated
-from src.fft_from_image.TablicaWartosciPikseli import TablicaWartosciPikseli
+from src.fft_from_image.TablicaWartosciPikseli import ElementaryUnitCell
 
 
 class FFT:
@@ -33,7 +33,7 @@ class FFT:
         :param path: Scieżka pliku
         :return: Lista tablic, które pochodzą z wywołania metody fft.
         """
-        lista_plikow = TablicaWartosciPikseli(path).tablica_dla_plikow()
+        lista_plikow = ElementaryUnitCell(path).apply_for_every_image_in_directory()
         lista_fft = [self.fft2d(k) for k in lista_plikow]
         return lista_fft
 

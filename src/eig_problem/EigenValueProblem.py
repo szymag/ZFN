@@ -31,9 +31,9 @@ class EigenValueProblem:
         pass
 
     def calculate_eigen_frequency(self, wektor_q):
-        wartosci_wlasne = self.solve_eigen_problem(wektor_q, param=False)
-        czestosci_wlasne = [i.imag * self.gamma * self.mu0H0 / 2.0 / np.pi for i in wartosci_wlasne if i.imag > 0]
-        return list(sorted(czestosci_wlasne)[:50])
+        eigen_vector = self.solve_eigen_problem(wektor_q, param=False)
+        eigen_value = [i.imag * self.gamma * self.mu0H0 / 2.0 / np.pi for i in eigen_vector if i.imag > 0]
+        return list(sorted(eigen_value)[:50])
 
     def calculate_eigen_vectors(self):
         eigen_value, eigen_vector = self.solve_eigen_problem(self.list_vector_q()[0], param=True)
@@ -70,8 +70,9 @@ class EigenValueProblem2D(EigenValueProblem):
         return data
 
     def solve_eigen_problem(self, wektor_q, param):
-        macierz_m = EigenMatrix(self.input_fft_file, EigenMatrix.ReciprocalVectorGrid(9, 9), wektor_q).generate_and_fill_matrix()
-        return eig(macierz_m, right=param)
+        eigen_matrix = EigenMatrix(self.input_fft_file, EigenMatrix.ReciprocalVectorGrid(9, 9),
+                                   wektor_q).generate_and_fill_matrix()
+        return eig(eigen_matrix, right=param)
 
     def list_vector_q(self):
         points = np.linspace(self.start_vec_q, self.end_vec_q, self.number_of_dispersion_point)
@@ -89,12 +90,12 @@ class EigenValueProblem1D(EigenValueProblem):
         self.angle = angle
 
     def eigen_frequency_for_vectors_q(self):
-        plik = []
+        data = []
         for k in self.list_vector_q():
             tmp = [k]
             tmp.extend(self.calculate_eigen_frequency(k))
-            plik.append(tmp)
-        return plik
+            data.append(tmp)
+        return data
 
     def solve_eigen_problem(self, wektor_q, param):
         macierz_m = EigenMatrix1D(self.input_fft_file, wektor_q,
