@@ -12,7 +12,7 @@ class Plot:
         assert len(loaded_data.shape) == 2, 'loaded file must be two dimensional'
         for i in range(self.number_of_disp_branch):
             plt.plot(loaded_data[0] / 10e6, loaded_data[1 + i] / 10e8, color='r')
-        plt.ylim([2, 5.8])
+        #plt.ylim([2, 5.8])
         plt.xlabel('reciprocal vector k [mum^-1]')
         plt.ylabel('frequency [GHz]')
         self.show_or_save_plot()
@@ -62,5 +62,5 @@ class Plot:
 
 
 if __name__ == "__main__":
-    #Plot(10, 'dys_0').dispersion_relation('dys_0.dat')
-    Plot(17, 'fmr_0deg_50-0.1T').fmr_freq_function_of_magnetic_field('0_', 50, 200, 2000)
+    Plot(10).dispersion_relation('dys.txt')
+    #Plot(17, 'fmr_0deg_50-0.1T').fmr_freq_function_of_magnetic_field('0_', 50, 200, 2000)
