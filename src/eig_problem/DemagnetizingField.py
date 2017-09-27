@@ -1,9 +1,11 @@
-import numpy as np
 from math import cos
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
-from src.eig_problem.FFTfromFile1D import FFTfromFile1D
+
 import matplotlib.pyplot as plt
+import numpy as np
+
+from src.eig_problem.FFTfromFile1D import FFTfromFile1D
+from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
+from src.modes.ParametryMaterialowe import ParametryMaterialowe
 
 
 class StaticDemagnetizingField_1D:
@@ -39,16 +41,21 @@ class StaticDemagnetizingField_1D:
         demag = np.zeros(len(elementary_cell))
         for i in enumerate(elementary_cell):
             demag[i[0]] = self.demagnetizing_field_at_point(i[1])
-        return elementary_cell, demag / np.max(demag)
+        return elementary_cell, -demag
 
     def demagnetizing_field_plot(self):
         tmp = self.demagnetizing_field()
-        tmp1 = self.elementary_cell_reconstruction(500)
-        plt.plot(tmp1[0], tmp1[1])
+        #tmp1 = self.elementary_cell_reconstruction(500)
+        #plt.plot(tmp1[0], tmp1[1])
         plt.plot(tmp[0], tmp[1])
         #plt.ylim([-120000, 120000])
         plt.savefig('normalized_demagnetized_field_sin_like.png')
         plt.show()
 
+    def save_to_file(self):
+        tmp = self.demagnetizing_field()
+        np.savetxt('demag_field_' + str(self.field_angle) + '.txt', np.transpose(tmp))
+
 if __name__ == "__main__":
-    q = StaticDemagnetizingField_1D('c_coef_100.txt', 0).demagnetizing_field_plot()
+    #for i in range(0, 92, 2):
+    q = StaticDemagnetizingField_1D('p_coef_1000*2.txt', 0).demagnetizing_field_plot()

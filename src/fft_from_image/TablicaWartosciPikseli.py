@@ -4,8 +4,6 @@ import os
 from PIL import Image
 from numpy import zeros
 
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-
 
 class TablicaWartosciPikseli:
     """

@@ -3,7 +3,7 @@ import numpy as np
 
 from src.eig_problem.FFTfromFile1D import FFTfromFile1D
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
+from src.modes.ParametryMaterialowe import ParametryMaterialowe
 
 class MacierzDoZagadnienia:
     """
@@ -29,7 +29,6 @@ class MacierzDoZagadnienia:
         self.lista_wektorow = WektorySieciOdwrotnej(self.ilosc_wektorow).lista_wektorow1d('min')
         self.shift = len(self.lista_wektorow) - 1
         self.angle = angle
-        print(self.angle)
 
     def funkcja_c(self, wektor_1, wektor_2):
         """

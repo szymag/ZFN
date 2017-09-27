@@ -2,6 +2,7 @@ import math
 import unittest
 
 from src.eig_problem.FFTfromFile import FFTfromFile
+
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 

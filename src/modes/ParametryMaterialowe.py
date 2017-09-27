@@ -14,8 +14,8 @@ class ParametryMaterialowe:
     MoFe = 1.752e6
     lFe = 1.09e-17
     # Nickel
-    MoNi = 0.484e6
-    lNi = 5.84e-17
+    MoNi = 0.484e6 # saturation magnetization
+    lNi = 5.84e-17 # exchange constant
     # YIG
     MoY = 0.194e6
     lY = 1.7e-16
@@ -23,23 +23,23 @@ class ParametryMaterialowe:
     MoCoFeB = 1.25e6
     lCoFeB = 1.53e-17
 # System parameters
-    mu0H0 = 0.075
+    mu0H0 = 0.055
     gamma = 176e9
-    H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
+    H0 = mu0H0 / mu0
     d = 40e-9 # thickness of material
-    a = 1000e-9
+    a = 1100e-9
     x = 0 # position of calculation of dispersion in z-direction
-    angle = None
+    angle = 90
     #r = 14e-9 # radius of inclusion, only for DFT coefficient
 
 # Material parameters
     # inclusion
-    MoA = MoNi
-    lA = lNi
+    MoA = 0.9*MoNi
+    lA = 0.9*lNi
     # matrix
-    MoB = MoNi * 0.3
-    lB = lNi * 0.3
+    MoB = 0.48*MoNi
+    lB = 0.48*lNi
 
     def __init__(self):
         pass

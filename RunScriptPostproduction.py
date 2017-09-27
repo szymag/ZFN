@@ -27,4 +27,4 @@ class RunScriptPostproduction:
 
 
 if __name__ == "__main__":
-    RunScriptPostproduction(1, 400, '0_',).load_data_and_join()
+    RunScriptPostproduction(1, 100, '0_',).load_data_and_join()

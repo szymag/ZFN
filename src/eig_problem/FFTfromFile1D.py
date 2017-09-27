@@ -1,7 +1,5 @@
 import numpy as np
 
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-
 
 class FFTfromFile1D:
     def __init__(self, input_fft):
