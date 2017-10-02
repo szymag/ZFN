@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
-from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
+from src.eig_problem.InputParameter import InputParameter
+from src.eig_problem.ReciprocalVector import ReciprocalVector
 
 
 class Profile1D:
     def __init__(self, mode_number, load_data, name_of_file, **kwargs):
         self.eig_vectors = np.loadtxt(load_data).view(complex)
-        self.lattice_const = ParametryMaterialowe.a
+        self.lattice_const = InputParameter.a
         self.mode_number = mode_number - 1
         self.name_of_file = name_of_file
 
@@ -74,7 +74,7 @@ class Profile1D:
         return x * 10 ** 9, tmp / (10 / 7) + 0.3
 
     def inverse_discrete_fourier_transform(self, data, vector_position):
-        reciprocal_vectors = np.array(2 * np.pi * WektorySieciOdwrotnej(max(data.shape)).lista_wektorow1d('min')
+        reciprocal_vectors = np.array(2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow1d('min')
                                       / self.lattice_const)
         return np.sum(data * np.exp(1j * reciprocal_vectors * vector_position))
 

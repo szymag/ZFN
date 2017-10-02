@@ -19,3 +19,6 @@ class ElementaryUnitCellImage:
 
     def apply_for_every_image_in_directory(self):
         return [self.normalize_pixel_value(str(k)) for k in self.lista_plikow]
+
+    def apply_for_desired_image(self, image):
+        return self.normalize_pixel_value(image)

@@ -10,7 +10,10 @@ class Plot:
         self.y_lim = y_lim
 
     def dispersion_relation(self, input_data):
-        loaded_data = np.transpose(np.loadtxt(input_data))
+        if isinstance(input_data, str):
+            loaded_data = np.transpose(np.loadtxt(input_data))
+        else:
+            loaded_data = np.transpose(input_data)
         assert len(loaded_data.shape) == 2, 'loaded file must be two dimensional'
 
         for i in range(self.number_of_disp_branch):
@@ -18,6 +21,9 @@ class Plot:
 
         if self.y_lim is not None:
             plt.ylim(self.y_lim)
+
+        if self.x_lim is not None:
+            plt.xlim(self.x_lim)
 
         plt.grid()
         plt.grid()

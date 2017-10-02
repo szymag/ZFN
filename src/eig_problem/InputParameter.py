@@ -44,6 +44,6 @@ class InputParameter:
     rec_vector_x = 9
     rec_vector_y = 9
     # name of output file
-    output_file = 'test.txt'
+    output_file = None
     def __init__(self):
         pass

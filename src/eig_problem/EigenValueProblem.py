@@ -33,14 +33,17 @@ class EigenValueProblem:
     def calculate_eigen_frequency(self, wektor_q):
         eigen_vector = self.solve_eigen_problem(wektor_q, param=False)
         eigen_value = [i.imag * self.gamma * self.mu0H0 / 2.0 / np.pi for i in eigen_vector if i.imag > 0]
-        return list(sorted(eigen_value)[:50])
+        return list(sorted(eigen_value)[:50]) # TODO: create smarter choice
 
     def calculate_eigen_vectors(self):
         eigen_value, eigen_vector = self.solve_eigen_problem(self.list_vector_q()[0], param=True)
         eigen_value_index = np.argsort(eigen_value.imag)
         eigen_vector = np.transpose(eigen_vector)
         eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
-        return np.savetxt(str(self.list_vector_q()[0]) + '.', eigen_vector.view(float))
+        return eigen_vector.view(float)
+
+    def print_eigen_vectors(self):
+        np.savetxt(str(self.list_vector_q()[0]) + '.', eigen_vector.view(float))
 
 
 class EigenValueProblem2D(EigenValueProblem):
@@ -60,6 +63,7 @@ class EigenValueProblem2D(EigenValueProblem):
             self.coordinate = [1, 1]
         else:
             sys.exit('Wrong argument for direction was set')
+    # TODO: update symbol; add another paths
 
     def eigen_frequency_for_vectors_q(self):
         data = []

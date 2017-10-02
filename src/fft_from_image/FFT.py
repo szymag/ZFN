@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.fft_from_image.Sequences import ThueMorse, Fibonacci, Periodic, Heated
-from src.fft_from_image.TablicaWartosciPikseli import ElementaryUnitCell
+from src.fft_from_image.ElementaryUnitCellImage import ElementaryUnitCellImage
 
 
 class FFT:
@@ -31,9 +31,10 @@ class FFT:
         """
         Dla każdego pliku '*.png' znajdującego się w tym samym katalogu co klasa, wywoływana jest metdoda fft
         :param path: Scieżka pliku
+
         :return: Lista tablic, które pochodzą z wywołania metody fft.
         """
-        lista_plikow = ElementaryUnitCell(path).apply_for_every_image_in_directory()
+        lista_plikow = ElementaryUnitCellImage(path).apply_for_every_image_in_directory()
         lista_fft = [self.fft2d(k) for k in lista_plikow]
         return lista_fft
 
@@ -69,6 +70,17 @@ class FFT:
             files.append(filepath)
             np.savetxt(filepath, tablica.view(float))
             indeks += 1
+
+    def zwroc_tablice(self, file):
+        """
+        Metoda wypisująca do plików w postaci tablic, współczynniki Fouriera.
+        Odpowiednio dla każdego pliku '*.png' w katalogu.
+        :param lista_fft:
+        :param path: Ścieżka
+        :return: Pliki typu '*.txt' dla każdego obrazka '*.png'
+        """
+        fft = self.fft2d(ElementaryUnitCellImage().apply_for_desired_image(file))
+        return fft.view(float)
 
     @staticmethod
     def fft1d(tablica):
