@@ -105,8 +105,8 @@ class FFT:
 
 
 if __name__ == "__main__":
-    a = FFT().wywolaj_fft1d('Custom', 1000, 2)
+    a = FFT().wywolaj_fft1d('C', 200, 1)
     #FFT().wypisz_do_pliku()
     b = np.arange(len(a))
     plt.plot(b, abs(a) )
-    plt.show()
+    #plt.show()

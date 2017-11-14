@@ -5,7 +5,7 @@ import numpy as np
 
 from src.eig_problem.FFTfromFile1D import FFTfromFile1D
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
-from src.modes.ParametryMaterialowe import ParametryMaterialowe
+from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 
 class StaticDemagnetizingField_1D:
@@ -41,7 +41,7 @@ class StaticDemagnetizingField_1D:
         demag = np.zeros(len(elementary_cell))
         for i in enumerate(elementary_cell):
             demag[i[0]] = self.demagnetizing_field_at_point(i[1])
-        return elementary_cell, -demag
+        return elementary_cell, -demag *ParametryMaterialowe.mu0
 
     def demagnetizing_field_plot(self):
         tmp = self.demagnetizing_field()

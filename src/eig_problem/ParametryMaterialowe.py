@@ -24,22 +24,22 @@ class ParametryMaterialowe:
     lCoFeB = 1.53e-17
 # System parameters
     mu0H0 = 0.055
-    gamma = 176e9
+    gamma = 194.6e9
     mu0 = 4e-7 * pi
     H0 = mu0H0 / mu0
     d = 40e-9 # thickness of material
     a = 1100e-9
     x = 0 # position of calculation of dispersion in z-direction
-    angle = 90
+    angle = None
     #r = 14e-9 # radius of inclusion, only for DFT coefficient
 
 # Material parameters
     # inclusion
-    MoA = 0.9*MoNi
-    lA = 0.9*lNi
+    MoA = MoNi
+    lA = lNi
     # matrix
-    MoB = 0.48*MoNi
-    lB = 0.48*lNi
+    MoB = 0.8*MoNi
+    lB = 0.8*lNi
 
     def __init__(self):
         pass

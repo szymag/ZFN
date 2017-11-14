@@ -13,7 +13,7 @@ class Plot:
         assert len(loaded_data.shape) == 2, 'loaded file must be two dimensional'
         for i in range(self.number_of_disp_branch):
             plt.plot(loaded_data[0] / 10e7, loaded_data[1 + i] / 10e8, color='r')
-        #plt.ylim([2, 15])
+        #plt.ylim([0, 100])
         plt.xlabel(r'wektor odwrotny k $[nm^{-1}]$')
         plt.ylabel('częstotliwość [GHz]')
         self.show_or_save_plot()
@@ -67,17 +67,20 @@ class Plot:
 
 if __name__ == "__main__":
 
-    Plot(13, 0).dispersion_relation('dys_090.dat')
+    #Plot(40, 0).dispersion_relation('py.dat')
     #for i in np.array([0, 8, 16, 24, 32, 40]):
     #    Plot(10, 'dys_' + str(i)).dispersion_relation('fmr' + str(i) + '.dat')
     #for i in range(0, 92, 2):
         #Plot(3, i, 'fmr_'+str(i)+'deg').fmr_freq_function_of_magnetic_field(str(i) + '_', 1, 200, 1000)
-    #tmp = np.loadtxt('freq_vs_angle_t900.dat')
+    tmp = np.loadtxt('freq_vs_angle_ni.dat')
     #print(len(np.arange(0, len(tmp[0,:]))))
     #print(len(tmp[0,:]))
-    #for i in range(0, 50):
-    #    plt.plot(np.arange(0, len(tmp[0,:])), tmp[i,:])
-    #plt.ylim([1.3e9, 6e9])
-    #plt.ylabel('frequency (GHz)', fontsize=22)
-    #plt.xlabel('angle', fontsize=22)
-    #plt.savefig('mode_freq_vs_angle_t900.eps')
+    for i in range(0, 20):
+        plt.plot(np.arange(0, len(tmp[0,:])), tmp[i,:] / 1e9)
+    #plt.ylim([5e9, 15e9])
+    plt.ylabel('frequency (GHz)', fontsize=22)
+    plt.xlabel('angle', fontsize=22)
+    plt.ylim([5, 7])
+    #plt.savefig('mode_freq_vs_angle_cofeb.eps')
+    #plt.savefig('mode_freq_vs_angle_cofeb.svg')
+    plt.show()

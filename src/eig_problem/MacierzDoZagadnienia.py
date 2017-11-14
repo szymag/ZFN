@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-
+from math import radians
 from src.eig_problem.FFTfromFile1D import FFTfromFile1D
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
-from src.modes.ParametryMaterialowe import ParametryMaterialowe
+from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 class MacierzDoZagadnienia:
     """
@@ -85,6 +85,7 @@ class MacierzDoZagadnienia:
         :return: Wynikiem jest drugi wyraz sumy.
         """
         tmp3 = self.magnetyzacja[wektor_1 - wektor_2 + self.shift]
+        #tmp3[self.shift] = 0
         tmp2 = self.funkcja_c(wektor_q, (2 * np.pi * wektor_2 / self.a))
         return tmp2 * tmp3 / self.H0
 
@@ -96,6 +97,7 @@ class MacierzDoZagadnienia:
         """
         tmp1 = self.magnetyzacja[wektor_1 - wektor_2 + self.shift]
         tmp2 = 1 - np.exp(-abs((2 * np.pi * wektor_1 / self.a - 2 * np.pi * wektor_2 / self.a)) * self.d / 2)
+        tmp1[self.shift] = 0
         return tmp2 * tmp1 / self.H0
 
     def matrix_angle_dependence(self, wektor_q):
@@ -108,10 +110,10 @@ class MacierzDoZagadnienia:
             dyn_in_plane = self.dynamic_demagnetizing_field_in_plane(w1, w2, wektor_q)
             dyn_out_plane = self.dynamic_demagnetizing_field_out_of_plane(w1, w2, wektor_q)
             static = self.static_demagnetizing_field(w1, w2)
-            self.macierz_M[i][np.arange(indeks)] += -ex - dyn_in_plane + static * np.cos\
-                (np.pi * self.angle / 180)**2  # yx
-            self.macierz_M[i - indeks][np.arange(indeks, 2 * indeks)] += ex + dyn_out_plane * np.sin\
-                (np.pi * self.angle / 180)**2 - static * np.cos(np.pi * self.angle / 180)**2  # xy
+            self.macierz_M[i][np.arange(indeks)] += -ex - dyn_in_plane * np.sin\
+                (radians(self.angle))**2 + static * np.cos(radians(self.angle))**2  # yx
+            self.macierz_M[i - indeks][np.arange(indeks, 2 * indeks)] += ex + dyn_out_plane\
+                                                                         - static * np.cos(radians(self.angle))**2  # xy
         return self.macierz_M
 
     def wypisz_macierz(self):

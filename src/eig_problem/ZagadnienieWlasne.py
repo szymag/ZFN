@@ -5,7 +5,7 @@ import numpy as np
 from scipy.linalg import eig
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 
-from src.modes.ParametryMaterialowe import ParametryMaterialowe
+from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 scriptpath = os.path.dirname(__file__)
 
@@ -24,7 +24,7 @@ class ZagadnienieWlasne:
         self.mu0H0 = mu0H0
         self.H0 = self.mu0H0 / ParametryMaterialowe.mu0
         self.a = a
-        self.lista_wektorow_q = [2 * np.pi * k / a for k in np.linspace(0.0001, 0.99, ilosc_wektorow_q)]
+        self.lista_wektorow_q = [2 * np.pi * k / a for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
         self.input_fft = os.path.join(scriptpath, input_fft)
         self.output_file = output_file
         #self.angle = eval(angle)
@@ -73,7 +73,7 @@ class ZagadnienieWlasne:
             tmp = [k]
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
-        np.savetxt(self.output_file, plik)
+        #np.savetxt(self.output_file, plik)
         return plik
 
     def wektory_wlasne(self):
@@ -93,14 +93,16 @@ class ZagadnienieWlasne:
 def start():
 
     #return ZagadnienieWlasne(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], angle=sys.argv[5]).wypisz_czestosci_do_pliku()
-    ZagadnienieWlasne(30, 'c_coef_100.txt', 'dys_090.dat').wypisz_czestosci_do_pliku()
+    #for i in enumerate(np.arange(14, 21, 0.1)):
+    #    ZagadnienieWlasne(1, 'c_coef_200.txt', '08ni_'+str(i[1])+'.dat', angle=i[1]).wektory_wlasne()
     #for i in range(0, 92, 2):
-    #freq_vs_anlge = np.zeros((50, 90))
-    #for i in range(0, 90, 1):
-    #    ZagadnienieWlasne(1, 'heat_fft_t700.txt', 't700_' + str(i) + '.dat', angle=i).wektory_wlasne()
+    freq_vs_anlge = np.zeros((50, 70))
+    for i in enumerate(np.arange(14, 21, 0.1)):
+    #ZagadnienieWlasne(1, 'c_coef_100.txt', 'ron_vec_0.dat').wektory_wlasne()
     #    #print(len(ZagadnienieWlasne(1, 'heat_fft.txt', 'fmr'+str(i)+'.dat', angle=i).wypisz_czestosci_do_pliku()[0][1:]))
-    #    freq_vs_anlge[0:50, i] = ZagadnienieWlasne(1, 'heat_fft_t700.txt', 'fmr'+str(i)+'.dat', angle=i).wypisz_czestosci_do_pliku()[0][1:]
-    #    np.savetxt('freq_vs_angle_t700.dat', freq_vs_anlge)
+        print(i)
+        freq_vs_anlge[0:50, i[0]] = ZagadnienieWlasne(2, 'c_coef_200.txt', 'ni'+str(i[1])+'.dat', angle=i[1]).wypisz_czestosci_do_pliku()[0][1:]
+        np.savetxt('densefreq_vs_angle_08ni.dat', freq_vs_anlge)
 
 if __name__ == "__main__":
     start()
