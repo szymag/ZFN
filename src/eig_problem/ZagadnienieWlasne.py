@@ -91,16 +91,10 @@ class ZagadnienieWlasne:
 
 
 def start():
-
-    #return ZagadnienieWlasne(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], angle=sys.argv[5]).wypisz_czestosci_do_pliku()
-    #for i in enumerate(np.arange(14, 21, 0.1)):
-    #    ZagadnienieWlasne(1, 'c_coef_200.txt', '08ni_'+str(i[1])+'.dat', angle=i[1]).wektory_wlasne()
-    #for i in range(0, 92, 2):
     freq_vs_anlge = np.zeros((50, 70))
-    for i in enumerate(np.arange(14, 21, 0.1)):
-    #ZagadnienieWlasne(1, 'c_coef_100.txt', 'ron_vec_0.dat').wektory_wlasne()
-    #    #print(len(ZagadnienieWlasne(1, 'heat_fft.txt', 'fmr'+str(i)+'.dat', angle=i).wypisz_czestosci_do_pliku()[0][1:]))
-        print(i)
+    for i in enumerate(np.arange(13, 20, 0.1)):
+        ZagadnienieWlasne(1, 'c_coef_200.txt', '08ni_'+str(i[1])+'.dat', angle=i[1]).wektory_wlasne()
+
         freq_vs_anlge[0:50, i[0]] = ZagadnienieWlasne(2, 'c_coef_200.txt', 'ni'+str(i[1])+'.dat', angle=i[1]).wypisz_czestosci_do_pliku()[0][1:]
         np.savetxt('densefreq_vs_angle_08ni.dat', freq_vs_anlge)
 

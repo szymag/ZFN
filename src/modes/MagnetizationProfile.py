@@ -27,8 +27,6 @@ class Profile1D:
         ax.plot(magnetization[0], abs(magnetization[1])**2, '-', label=r'$\left|\mathbf{m}\right|^{2}$')
         ax2.plot(magnetization[0], np.arctan2(magnetization[1].imag, magnetization[1].real), '-', label='phase', color="red")
         ax2.plot(elementary_cell[0], elementary_cell[1], '-', label=r'$M_{s}$', color="green", linewidth=3)
-        x = np.linspace(-self.lattice_const, 0, 500)
-        ax.plot(x* 10 ** 9, np.cos(2*np.pi / self.lattice_const * x))
         ax.legend(loc=(0, .15), frameon=False)
         ax2.legend(loc=(0, .05), frameon=False)
         ax.grid()
@@ -36,7 +34,7 @@ class Profile1D:
         ax.set_ylabel(r"Intensity")
         ax2.set_ylabel(r"Phase")
         ax2.set_ylim(-np.pi, np.pi)
-       #ax.set_ylim(0,1.1)
+        ax.set_ylim(0, 2)
         ax.set_title(r'$angle = ' + str(self.angle) + '^{\circ}$, $mode = ' + str(self.mode_number + 1) + ', $'
                      + '$H = 0.05T$', fontsize=22)
         self.output_plot()
@@ -50,7 +48,7 @@ class Profile1D:
             plt.close()
         else:
             plt.show()
-            return 'wrong argument was puted'
+            return 'wrong argument was put'
 
     def save_to_file(self):
 
@@ -90,7 +88,7 @@ class Profile1D:
     def acoustic_cross_section(self, grid, data=None):
         tmp = self.spatial_distribution_dynamic_magnetization(grid, data)
         x = np.linspace(0, self.lattice_const, grid)
-        return sin(radians(2*self.angle))*np.trapz(np.cos(2*np.pi / self.lattice_const * x)*tmp[1])
+        return sin(radians(2*self.angle))*np.trapz(tmp[1])
 
 if __name__ == "__main__":
 
@@ -103,27 +101,25 @@ if __name__ == "__main__":
                 fmr_map = np.loadtxt('fmr' + str(modulation) + '.dat')
 
             for i in enumerate(np.arange(start, stop, step)):
-
-                mode = np.argmax(fmr_map[:, i[0]]) + 1
-                Profile1D(mode, '/home/szymag/python/ZFN/src/eig_problem/0'+str(modulation)+'ni_' + str(int(i[1])) + '.dat',
+                mode = np.argmax(fmr_map[:, i[1]]) + 1
+                Profile1D(mode, '/home/szymon/python/ZFN/src/eig_problem/0'+str(modulation)+'ni_' + str(int(i[1])) + '.dat',
                           'deg' + str(i[1]) + '_mode' + str(mode), angle=i[1]).generate_plot()
         else:
             for i in enumerate(np.arange(start, stop, step)):
                 for j in range(1, 6):
-                    Profile1D(j, '/home/szymag/python/ZFN/src/eig_problem/0'+str(modulation)+'ni_' + str(int(i[1])) + '.dat',
+                    Profile1D(j, '/home/szymon/python/ZFN/src/eig_problem/0'+str(modulation)+'ni_' + str(int(i[1])) + '.dat',
                               'deg' + str(i[1]) + '_mode' + str(j), angle=i[1]).generate_plot()
 
 
     def fmr(modulation, start, stop, step):
         fmr = np.zeros((50, int((stop - start) / step)))
         for i in enumerate(np.arange(start, stop, step)):
-            fmr[:,i[0]] = Profile1D(1, '/home/szymag/python/ZFN/src/eig_problem/0'+str(modulation)+'ni_' + str(i[1]) + '.dat', None,
+            fmr[:,i[0]] = Profile1D(1, '/home/szymon/python/ZFN/src/eig_problem/0'+str(modulation)+'ni_' + str(i[1]) + '.dat', None,
                   angle=i[1]).fmr_intensity_order()
-
         np.savetxt('fmr'+str(modulation)+'.dat', fmr)
 
     def fmr_intensity_map(modulation, start, stop, step):
-        y = np.loadtxt('densefreq_vs_angle_0'+str(modulation)+'ni.dat')
+        y = np.loadtxt('/home/szymon/python/ZFN/src/eig_problem/densefreq_vs_angle_0'+str(modulation)+'ni.dat')
         if int((stop - start) / step) != y.shape[1]:
             raise ValueError('Current settings is different from ZagadnienieWlasne')
         x = np.arange(start, stop, step)
@@ -137,47 +133,40 @@ if __name__ == "__main__":
             z = np.loadtxt('fmr' + str(modulation) + '.dat')
         max = np.max(z)
         min = np.min(z)
-        for i in range(0, 13):
+        for i in range(0, 9):
             plt.scatter(x, y[i], c=z[i,:], s=50, edgecolors='', vmin=min, vmax=max, alpha=0.9)
-        plt.ylim([5e9, 6e9])
-        plt.locator_params(nbins=45)
+        # plt.ylim([4.8e9, 7.4e9])
+        plt.locator_params(nbins=30)
         plt.show()
         plt.savefig('fmr'+str(modulation)+'.png')
         plt.close()
         plt.cla()
 
     def cross_section(modulation):
-        fmr_map = np.loadtxt('densefmr' + str(modulation) + '.dat')
-        mode_freq = np.loadtxt('densefreq_vs_angle_0'+str(modulation)+'ni.dat')
+        fmr_map = np.loadtxt('fmr' + str(modulation) + '.dat')
+        mode_freq = np.loadtxt('/home/szymon/python/ZFN/src/eig_problem/freq_vs_angle_0'+str(modulation)+'ni.dat')
         assert fmr_map.shape == mode_freq.shape
         points = np.zeros(fmr_map.shape[1], dtype=complex)
         for i in enumerate(np.arange(fmr_map.shape[1])):
-            mode = np.argmax(fmr_map[:,i[0]])
-            modes = np.where(np.abs(mode_freq[:, i[0]] - 5.61e9) < 1.5e9)[0]
-            #print(mode_freq[modes, i[0]])
-            #print(mode_freq[mode, i[1]], mode_weight(mode_freq[mode, i[1]]))
+            modes = np.where(np.abs(mode_freq[:, i[1]] - 5.196e9) < 1e9)[0]
             for j in modes:
-                #print(Profile1D(1, '/home/szymag/python/ZFN/src/eig_problem/0' + str(modulation) + 'ni_' + str(i[1]) + '.dat', None,
-             #         angle=i[1]).acoustic_cross_section(500, j) * mode_weight(mode_freq[j, i[1]]))
-                points[i[0]] += Profile1D(1, '/home/szymag/python/ZFN/src/eig_problem/0' + str(modulation) + 'ni_' + str(i[1]) + '.dat', None,
+                points[i[0]] += Profile1D(1, '/home/szymon/python/ZFN/src/eig_problem/0' + str(modulation) + 'ni_' + str(i[1]) + '.dat', None,
                       angle=i[1]).acoustic_cross_section(500, j) * mode_weight(mode_freq[j, i[1]])
-            #print("dfwe er wer wer  er erg", i[0])
         plt.plot(np.arange(fmr_map.shape[1]), np.abs(points))
-        plt.show()
         plt.savefig('cross_section' + str(modulation) + '.png')
-
         plt.close()
         plt.cla()
 
     def mode_weight(position):
-        peak_position = 5.617e9
-        fwhm = 0.15e9
+        peak_position = 5.196e9
+        fwhm = 0.2e9
         return 4e15 / ((peak_position - position)**2 + (fwhm/2)**2)
 
     #for i in range(3,9):
     #    cross_section(i)
-    #fmr(8)
-    #fmr_intensity_map(8, 14, 21, 0.1)
-    #modes(8, 17, 18, 1, False)
+    #fmr(8, 13, 20, 0.1)
+    fmr_intensity_map(8, 13, 20, 0.1)
+    #modes(8, 1, 30, 1, True)
+    #modes(8, 30, 90, 5)
     #fmr(8, 0, 91, 1)
-    cross_section(8)
+    #cross_section(8)
