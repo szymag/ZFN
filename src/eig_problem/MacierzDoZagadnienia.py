@@ -40,7 +40,7 @@ class MacierzDoZagadnienia:
         :param wektor_2: Drugi wektor do obliczenia różnicy.
         :return: wartość funkcji C.
         """
-        return np.exp(-abs((wektor_1 + wektor_2)) * self.d / 2)
+        return np.cosh(abs((wektor_1 + wektor_2)) * self.x)*np.exp(-abs((wektor_1 + wektor_2)) * self.d / 2)
 
     def delta_kroneckera(self):
         """
@@ -96,7 +96,8 @@ class MacierzDoZagadnienia:
         :return: Wynikiem jest czwarte wyrażenie w sumie na element macierzy M.
         """
         tmp1 = self.magnetyzacja[wektor_1 - wektor_2 + self.shift]
-        tmp2 = 1 - np.exp(-abs((2 * np.pi * wektor_1 / self.a - 2 * np.pi * wektor_2 / self.a)) * self.d / 2)
+        co = np.cosh(abs((2 * np.pi * wektor_1 / self.a - 2 * np.pi * wektor_2 / self.a)) * self.x)
+        tmp2 = 1 - co*np.exp(-abs((2 * np.pi * wektor_1 / self.a - 2 * np.pi * wektor_2 / self.a)) * self.d / 2)
         tmp1[self.shift] = 0
         return tmp2 * tmp1 / self.H0
 
