@@ -98,15 +98,18 @@ class FFT:
             tab = Heated(repeat).cos_sequence()
             np.savetxt('c_coef_' + str(repeat) + '.txt', self.fft1d(tab))
         elif typ_struktury == 'Custom':
-            tab = Custom('heat_t900.txt').sequence()
-            np.savetxt('heat_fft_t900.txt', self.fft1d(tab))
+            tab = Custom('profile1.txt').sequence()
+            np.savetxt('heat_fft.txt', self.fft1d(tab))
 
         return np.fft.fftshift(np.fft.fft(tab))
 
 
 if __name__ == "__main__":
-    a = FFT().wywolaj_fft1d('C', 200, 1)
+    a = FFT().wywolaj_fft1d('Custom', 200, 2)
     #FFT().wypisz_do_pliku()
     b = np.arange(len(a))
-    plt.plot(b, abs(a) )
-    #plt.show()
+
+    c = np.fft.fft(np.fft.ifftshift(a))
+
+    plt.plot(b, abs(c))
+    plt.show()

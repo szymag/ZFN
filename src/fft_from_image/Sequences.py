@@ -70,7 +70,9 @@ class Heated(ChainGeneration):
 class Custom(ChainGeneration):
     def __init__(self, file_name, repeat=1):
         ChainGeneration.__init__(self, repeat)
-        self.data = np.loadtxt(file_name, delimiter=',')
+        self.tmp = np.transpose(np.loadtxt(file_name, delimiter=','))[-1]
+        self.data = (self.tmp - np.min(self.tmp))
+        self.data /= np.max(self.data)
 
     def sequence(self):
-        return np.transpose(self.data)[-1]
+        return self.data

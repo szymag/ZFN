@@ -23,8 +23,8 @@ class ParametryMaterialowe:
     MoCoFeB = 1.25e6
     lCoFeB = 1.53e-17
 # System parameters
-    mu0H0 = 0.055
-    gamma = 180e9
+    mu0H0 = 0.05
+    gamma = 176e9
     mu0 = 4e-7 * pi
     H0 = mu0H0 / mu0
     d = 40e-9 # thickness of material
