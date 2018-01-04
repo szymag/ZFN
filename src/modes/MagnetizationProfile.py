@@ -7,6 +7,7 @@ from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
+
 class MidpointNormalize(colors.Normalize):
     def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
         self.midpoint = midpoint
@@ -28,12 +29,11 @@ class Profile1D:
         if 'field' in kwargs:
             self.field = kwargs['field']
 
-    def generate_plot(self):
+    def generate_plot(self, ax):
         magnetization1 = self.spatial_distribution_dynamic_magnetization(500, self.mode_number)
 
         elementary_cell = self.elementary_cell_reconstruction(500)
-        fig = plt.figure()
-        ax = fig.add_subplot(311)
+
         #ax2 = ax.twinx()
         ax.plot(magnetization1[0], abs(magnetization1[1])**2, '-', label=r'$\left|\mathbf{m}\right|^{2}$', color='black')
 
@@ -55,7 +55,7 @@ class Profile1D:
         #plt.yticks([0], [0])
         ax.set_xlabel('Position')
         ax.set_ylabel('$|m|$ (a.u.)')
-        self.output_plot()
+        #self.output_plot()
 
     def output_plot(self):
         if self.name_of_file is None:
@@ -105,12 +105,12 @@ class Profile1D:
 
     def acoustic_cross_section(self, grid, data=None):
         tmp = self.spatial_distribution_dynamic_magnetization(grid, data)
-        x = np.linspace(0, 2*self.lattice_const, grid)
+        x = np.linspace(-self.lattice_const, self.lattice_const, grid)
         return sin(radians(2*self.angle))*np.trapz(tmp[1] * np.cos(x*2*np.pi / self.lattice_const))
 
 if __name__ == "__main__":
 
-    def modes(modulation, start, stop, step, only_max_fmr=True):
+    def modes(modulation, start, stop, step, ax, only_max_fmr=True):
         if only_max_fmr:
             try:
                 fmr_map = np.loadtxt('fmr' + str(modulation) + '.dat')
@@ -120,27 +120,28 @@ if __name__ == "__main__":
 
             for i in enumerate(np.arange(start, stop, step)):
                 mode = np.argmax(fmr_map[:, i[1]]) + 1
-                Profile1D(mode, '/home/szymag/python/ZFN/src/eig_problem/'+ str(int(i[1])) + '.dat',
-                          'deg' + str(i[1]) + '_mode' + str(mode), angle=i[1]).generate_plot()
+                Profile1D(mode, '/home/szymon/python/ZFN/src/eig_problem/'+ str(int(i[1])) + '.dat',
+                          'deg' + str(i[1]) + '_mode' + str(mode), angle=i[1]).generate_plot(ax)
         else:
             for i in enumerate(np.arange(start, stop, step)):
                 for j in range(5, 6):
-                    Profile1D(j, '/home/szymag/python/ZFN/src/eig_problem/'+ str(int(i[1])) + '.dat',
-                              'deg' + str(i[1]) + '_mode' + str(j), angle=i[1]).generate_plot()
+                    Profile1D(j, '/home/szymon/python/ZFN/src/eig_problem/'+ str(int(i[1])) + '.dat',
+                              'deg' + str(i[1]) + '_mode' + str(j), angle=i[1]).generate_plot(ax)
 
 
     def fmr(modulation, start, stop, step):
         fmr = np.zeros((50, int((stop - start) / step)))
         for i in enumerate(np.arange(start, stop, step)):
-            fmr[:,i[0]] = Profile1D(1, '/home/szymag/python/ZFN/src/eig_problem/'+ str(i[1]) + '.dat', None,
+            fmr[:,i[0]] = Profile1D(1, '/home/szymon/python/ZFN/src/eig_problem/'+ str(i[1]) + '.dat', None,
                   angle=i[1]).fmr_intensity_order()
         np.savetxt('fmr'+str(modulation)+'.dat', fmr)
 
-    def fmr_intensity_map(modulation, start, stop, step):
+    def fmr_intensity_map(modulation, start, stop, step, ax):
+        mateusz_plot(ax)
         if type(step) is float:
-            y = np.loadtxt('/home/szymag/python/ZFN/src/eig_problem/densefreq_vs_angle_'+str(modulation)+'.dat') / 1e9
+            y = np.loadtxt('/home/szymon/python/ZFN/src/eig_problem/densefreq_vs_angle_'+str(modulation)+'.dat') / 1e9
         else:
-            y = np.loadtxt('/home/szymag/python/ZFN/src/eig_problem/freq_vs_angle_'+str(modulation)+'.dat') / 1e9
+            y = np.loadtxt('/home/szymon/python/ZFN/src/eig_problem/freq_vs_angle_'+str(modulation)+'.dat') / 1e9
 
         if int((stop - start) / step) != y.shape[1]:
             raise ValueError('Current settings is different from ZagadnienieWlasne')
@@ -161,73 +162,73 @@ if __name__ == "__main__":
         drawing_mode_count = 20
         for i in enumerate(np.arange(start, stop, step)):
             order = z[0:drawing_mode_count,i[0]].argsort()
-            plt.scatter(np.zeros(drawing_mode_count)+i[1],
+            ax.scatter(np.zeros(drawing_mode_count)+i[1],
                         y[0:drawing_mode_count,i[0]][order],
                         c=z[0:drawing_mode_count,i[0]][order],
                         s=15, edgecolors='', vmin=min, vmax=max,
                         cmap=plt.cm.Blues, alpha=0.7,norm=MidpointNormalize(midpoint=50))
-        plt.ylim([4.4, 7])
+        ax.set_ylim([4.4, 7])
         #plt.ylim([5.06, 5.3])
-        plt.locator_params(nbins=11)
+        #ax.set_ylim.locator_params(nbins=11)
         #plt.xticks([13, 19.9], [13, 20])
         #plt.yticks([5.06, 5.3], [5.06, 5.3])
-        plt.xlabel('Angle (Deg)', fontsize=20)
-        plt.ylabel('Frequency (GHz)', fontsize=20)
-        a = plt.colorbar(ticks=[])
-
-        a.set_label('FMR Intensity (a.u.)')
-        if type(step) is float:
-            plt.savefig('densefmr' + str(modulation) + '.svg')
-        elif type(step) is int:
-            plt.savefig('fmr'+str(modulation)+'.svg')
-        plt.close()
-        plt.cla()
+        ax.set_xlabel('Angle (Deg)')
+        ax.set_ylabel('Frequency (GHz)')
+        #a = ax.colorbar(ticks=[])
+        #a.set_label('FMR Intensity (a.u.)')
+        #if type(step) is float:
+        #    plt.savefig('densefmr' + str(modulation) + '.svg')
+        #elif type(step) is int:
+        #    plt.savefig('fmr'+str(modulation)+'.svg')
+        #plt.close()
+        #plt.cla()
 
 
     def cross_section(modulation):
         fmr_map = np.loadtxt('fmr' + str(modulation) + '.dat')
-        mode_freq = np.loadtxt('/home/szymag/python/ZFN/src/eig_problem/freq_vs_angle_'+str(modulation)+'.dat')
+        mode_freq = np.loadtxt('/home/szymon/python/ZFN/src/eig_problem/freq_vs_angle_'+str(modulation)+'.dat')
         assert fmr_map.shape == mode_freq.shape
         points = np.zeros(fmr_map.shape[1], dtype=complex)
         for i in enumerate(np.arange(fmr_map.shape[1])):
-            mode = np.argsort(fmr_map[:, i[1]])[-2:]
-            for j in mode:
-                points[i[0]] = Profile1D(j, '/home/szymag/python/ZFN/src/eig_problem/' + str(i[1]) + '.dat',
-                                              None, angle=i[1]).acoustic_cross_section(500, j)
-        plt.plot(np.arange(0, 91), np.abs(points))
-        plt.show()
+            mode = np.argsort(fmr_map[:, i[1]])[-1]
+            points[i[0]] += Profile1D(mode, '/home/szymon/python/ZFN/src/eig_problem/' + str(i[1]) + '.dat',
+                                              None, angle=i[1]).acoustic_cross_section(500, mode) * mode_weight(mode_freq[mode, i[1]])
+        fig = plt.figure()
+        ax = fig.add_subplot(211)
+        ax.plot(np.arange(0, 91), np.abs(points))
+        ax.set_xlabel('Angle (Deg)')
+        ax.set_ylabel('Arbitrary Unit (a.u.)')
+        ax.set_yticks([], [])
+        plt.savefig('cross.section.png')
 
 
     def mode_weight(position):
         peak_position = 4.8e9
-        fwhm = 0.2e9
-        return 4e15 / ((peak_position - position)**2 + (fwhm/2)**2)
+        fwhm = 0.3e9
+        return 8e15 / ((peak_position - position)**2 + (fwhm/2)**2)
 
-    def mateusz_plot():
-        mateusz = np.loadtxt('szymon_fmr.txt', delimiter=',')[:,:100] / 1e9
-        freq_mat = np.loadtxt('szymon_freq.txt')[100] / 1e9
+    def mateusz_plot(ax):
+        mateusz = np.loadtxt('szymon_fmr.txt', delimiter=',')[:, 300:600]
+        freq_mat = np.loadtxt('szymon_freq.txt')[300:600] / 1e9
 
         x = np.linspace(0, 90, 45)
-        y = np.linspace(0, freq_mat, 100)
-        X, Y = np.meshgrid(y, x)
-        plt.pcolor(Y, X, mateusz, cmap=plt.cm.binary)
-        plt.locator_params(nbins=11)
+        X, Y = np.meshgrid(freq_mat, x)
+        ax.pcolor(Y, X, mateusz, cmap=plt.cm.binary)
+        #plt.locator_params(nbins=11)
         plt.ylim([4.4, 7])
         #plt.xticks([], [])
         #plt.yticks([], [])
-        a = plt.colorbar(ticks=[])
+        #a = plt.colorbar(ticks=[])
 
-        a.set_label('FMR Intensity (a.u.)')
-        plt.savefig('mateusz.svg')
+        #a.set_label('FMR Intensity (a.u.)')
+        #plt.savefig('mateusz.svg')
+        #plt.show()
 
-    #cross_section(8)
-    #for i in range(3,9):
-    #    cross_section(i)
-    #fmr(8, 0, 91, 1)
-    #fmr_intensity_map('heat', 0, 91, 1)
-    #fmr_intensity_map(8, 0, 91, 1)
+    #cross_section(155)
+    #fmr(155, 0, 91, 1)
+    #fmr_intensity_map(155, 0, 91, 1)
     #modes('heat', 0, 90, 1, True)
-    modes(8, 0, 40, 5, True)
+    #modes(155, 0, 70, 2, True)
     #modes(8, 16, 17, 1, False)
     #fmr(8, 0, 91, 1)
     #modulations = [948, 935, 922, 915]
@@ -235,4 +236,40 @@ if __name__ == "__main__":
     #    plt.plot(*cross_section(i), label='Max Ms = 0.' + str(i) + 'Ni')
     #plt.legend()
     #plt.savefig('cross_section' '.png')
-    mateusz_plot()
+    #mateusz_plot()
+    import matplotlib.gridspec as gridspec
+
+    def make_final_plot():
+        outer = gridspec.GridSpec(2, 1, height_ratios=[4, 6])
+
+        gs1 = gridspec.GridSpecFromSubplotSpec(3, 2, subplot_spec = outer[0],
+                                hspace=0.0,
+                                wspace=0.0)
+        ax1 = plt.subplot(gs1[0, 0])
+        modes(155, 10, 11, 1, ax1)
+        ax1.axes.get_xaxis().set_visible(False)
+        #ax1.axes.get_yaxis().set_visible(False)
+        ax2 = plt.subplot(gs1[0, 1])
+        modes(155, 50, 51, 1, ax2)
+        ax2.axes.get_xaxis().set_visible(False)
+        ax2.axes.get_yaxis().set_visible(False)
+        ax3 = plt.subplot(gs1[1, 0])
+        modes(155, 20, 21, 1, ax3)
+        ax3.axes.get_xaxis().set_visible(False)
+        ax4 = plt.subplot(gs1[1, 1])
+        modes(155, 70, 71, 1, ax4)
+        ax4.axes.get_xaxis().set_visible(False)
+        ax4.axes.get_yaxis().set_visible(False)
+        ax5 = plt.subplot(gs1[2, 0])
+        modes(155, 30, 31, 1, ax5)
+        ax6 = plt.subplot(gs1[2, 1])
+        modes(155, 90, 91, 1, ax6)
+        ax6.axes.get_yaxis().set_visible(False)
+
+        gs2 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec = outer[1])
+        ax7 = plt.subplot(gs2[0, :])
+        fmr_intensity_map(155, 0, 91, 1, ax7)
+
+        plt.show()
+
+    make_final_plot()

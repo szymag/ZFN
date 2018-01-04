@@ -93,12 +93,12 @@ class ZagadnienieWlasne:
 def start():
     freq_vs_anlge = np.zeros((50, 91))
     for i in enumerate(np.arange(0, 91, 1)):
-        ZagadnienieWlasne(1, 'c_coef_200.txt', str(i[1])+'.dat', angle=i[1]).wektory_wlasne()
+        ZagadnienieWlasne(1, 'heat_fft.txt', str(i[1])+'.dat', angle=i[1]).wektory_wlasne()
 
-        freq_vs_anlge[0:50, i[0]] = ZagadnienieWlasne(1, 'c_coef_200.txt',
+        freq_vs_anlge[0:50, i[0]] = ZagadnienieWlasne(1, 'heat_fft.txt',
                                                       str(i[1])+'.dat',
                                                       angle=i[1]).wypisz_czestosci_do_pliku()[0][1:]
-        np.savetxt('freq_vs_angle_heat.dat', freq_vs_anlge)
+        np.savetxt('freq_vs_angle_155.dat', freq_vs_anlge)
 
 if __name__ == "__main__":
     start()

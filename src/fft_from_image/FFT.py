@@ -98,7 +98,7 @@ class FFT:
             tab = Heated(repeat).cos_sequence()
             np.savetxt('c_coef_' + str(repeat) + '.txt', self.fft1d(tab))
         elif typ_struktury == 'Custom':
-            tab = Custom('profile1.txt').sequence()
+            tab = Custom('real.txt').sequence()
             np.savetxt('heat_fft.txt', self.fft1d(tab))
 
         return np.fft.fftshift(np.fft.fft(tab))
@@ -111,5 +111,4 @@ if __name__ == "__main__":
 
     c = np.fft.fft(np.fft.ifftshift(a))
 
-    plt.plot(b, abs(c))
     plt.show()

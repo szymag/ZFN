@@ -27,7 +27,7 @@ class ParametryMaterialowe:
     gamma = 176e9
     mu0 = 4e-7 * pi
     H0 = mu0H0 / mu0
-    d = 40e-9 # thickness of material
+    d = 60e-9 # thickness of material
     a = 1100e-9
     x = 0 # position of calculation of dispersion in z-direction
     angle = None
@@ -35,11 +35,11 @@ class ParametryMaterialowe:
 
 # Material parameters
     # inclusion
-    MoA = MoNi
-    lA = lNi
+    MoA = 0.948*MoNi
+    lA = 0.948*lNi
     # matrix
-    MoB = 0.8*MoNi
-    lB = 0.8*lNi
+    MoB = 0.793*MoNi
+    lB = 0.793*lNi
 
     def __init__(self):
         pass
