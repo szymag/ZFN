@@ -98,7 +98,19 @@ def start():
         freq_vs_anlge[0:50, i[0]] = ZagadnienieWlasne(1, 'heat_fft.txt',
                                                       str(i[1])+'.dat',
                                                       angle=i[1]).wypisz_czestosci_do_pliku()[0][1:]
-        np.savetxt('freq_vs_angle_155.dat', freq_vs_anlge)
+        np.savetxt('freq_vs_angle_40.dat', freq_vs_anlge)
+
+def start_1():
+    freq_vs_anlge = np.zeros((50, 91))
+
+    fields = [0.030, 0.035, 0.040, 0.045, 0.05, 0.055, 0.06, 0.065]
+    m_max = []
+    m_min = 793
+    for field in fields:
+        ZagadnienieWlasne(1, 'c_coef_100.txt', str(field)
+                          + '_' + str(m_min) + '.dat', mu0H0=field, angle=10).wektory_wlasne()
+
+
 
 if __name__ == "__main__":
-    start()
+    start_1()

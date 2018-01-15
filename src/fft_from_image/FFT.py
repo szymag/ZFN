@@ -109,6 +109,8 @@ if __name__ == "__main__":
     #FFT().wypisz_do_pliku()
     b = np.arange(len(a))
 
-    c = np.fft.fft(np.fft.ifftshift(a))
-
+    c = np.fft.fft(np.fft.ifftshift(a)) / len(a)
+    #c = c * (0.95529 - 0.8858) + 0.8858
+    plt.ylim([0, 1])
+    plt.plot(b, c)
     plt.show()
