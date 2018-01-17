@@ -9,25 +9,25 @@ from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 
 scriptpath = os.path.dirname(__file__)
 
+
 class ZagadnienieWlasne:
 
-
     def __init__(self, ilosc_wektorow_q, input_fft, output_file, mu0H0=ParametryMaterialowe.mu0H0,
-                  a=ParametryMaterialowe.a, gamma=ParametryMaterialowe.gamma, angle=ParametryMaterialowe.angle):
+                 a=ParametryMaterialowe.a, gamma=ParametryMaterialowe.gamma, angle=ParametryMaterialowe.angle):
         """
         :param ilosc_wektorow_q: Odpowiada za gęstość siatki, na wykresie dyspersji.
         :skad_wspolczynnik: Argument, który odpowiada z źródło pochodzenia wspoółczynników Fouriera. Możliwe wartości
         to DFT oraz FFT.
         """
         self.gamma = gamma
-        #self.mu0H0 = eval(mu0H0)
+        # self.mu0H0 = eval(mu0H0)
         self.mu0H0 = mu0H0
         self.H0 = self.mu0H0 / ParametryMaterialowe.mu0
         self.a = a
         self.lista_wektorow_q = [2 * np.pi * k / a for k in np.linspace(0.01, 0.99, ilosc_wektorow_q)]
         self.input_fft = os.path.join(scriptpath, input_fft)
         self.output_file = output_file
-        #self.angle = eval(angle)
+        # self.angle = eval(angle)
         self.angle = angle
 
     # @do_cprofile
@@ -67,13 +67,13 @@ class ZagadnienieWlasne:
         częstotliwości własne.
         :return: Plik tekstowy.
         """
-        #np.savetxt(self.output_file, self.czestosci_wlasne(self.lista_wektorow_q))
+        # np.savetxt(self.output_file, self.czestosci_wlasne(self.lista_wektorow_q))
         plik = []
         for k in self.lista_wektorow_q:
             tmp = [k]
             tmp.extend(self.czestosci_wlasne(k))
             plik.append(tmp)
-        #np.savetxt(self.output_file, plik)
+        # np.savetxt(self.output_file, plik)
         return plik
 
     def wektory_wlasne(self):
@@ -93,23 +93,29 @@ class ZagadnienieWlasne:
 def start():
     freq_vs_anlge = np.zeros((50, 91))
     for i in enumerate(np.arange(0, 91, 1)):
-        ZagadnienieWlasne(1, 'heat_fft.txt', str(i[1])+'.dat', angle=i[1]).wektory_wlasne()
+        ZagadnienieWlasne(1, 'heat_fft.txt', str(i[1]) + '.dat', angle=i[1]).wektory_wlasne()
 
         freq_vs_anlge[0:50, i[0]] = ZagadnienieWlasne(1, 'heat_fft.txt',
-                                                      str(i[1])+'.dat',
+                                                      str(i[1]) + '.dat',
                                                       angle=i[1]).wypisz_czestosci_do_pliku()[0][1:]
         np.savetxt('freq_vs_angle_40.dat', freq_vs_anlge)
 
+
 def start_1():
-    freq_vs_anlge = np.zeros((50, 91))
 
     fields = [0.030, 0.035, 0.040, 0.045, 0.05, 0.055, 0.06, 0.065]
-    m_max = []
-    m_min = 793
-    for field in fields:
-        ZagadnienieWlasne(1, 'c_coef_100.txt', str(field)
-                          + '_' + str(m_min) + '.dat', mu0H0=field, angle=10).wektory_wlasne()
+    freq_vs_angle = np.zeros((50, len(fields)))
 
+    m_min = 909
+    for ind, field in enumerate(fields):
+        ZagadnienieWlasne(1, 'c_coef_100.txt', str(field)
+                          + '_' + str(m_min) + '.dat', mu0H0=field, angle=60).wektory_wlasne()
+        freq_vs_angle[0:50, ind] = ZagadnienieWlasne(1, 'c_coef_100.txt',
+                                                     'freq_vs_angle_' + str(field)
+                                                     + '_' + str(m_min) + '.dat',
+                                                     mu0H0=field,
+                                                     angle=60).wypisz_czestosci_do_pliku()[0][1:]
+    np.savetxt('freq_vs_angle_' + str(m_min) + '.dat', freq_vs_angle)
 
 
 if __name__ == "__main__":

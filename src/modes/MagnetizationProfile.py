@@ -5,6 +5,7 @@ from math import radians, sin
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 from matplotlib import rcParams
+
 rcParams.update({'figure.autolayout': True})
 
 plt.rc('text', usetex=True)
@@ -32,13 +33,17 @@ class Profile1D:
         if 'field' in kwargs:
             self.field = kwargs['field']
 
-    def generate_plot(self, ax):
-        magnetization1 = self.spatial_distribution_dynamic_magnetization(500, self.mode_number)
-        ax.plot(magnetization1[0], abs(magnetization1[1])**2, '-', label=r'$\left|\mathbf{m}\right|^{2}$')
-        #ax.plot(magnetization1[0], np.arctan2(magnetization1[1].imag, magnetization1[1].real), '-', label='phase')
+    def generate_plot(self, ax, color_index):
+        colors = ['C0', 'C1']
+        x, magnetization = self.spatial_distribution_dynamic_magnetization(500, self.mode_number)
+        phase = np.abs(np.arctan2(magnetization.imag, magnetization.real))
+        parameter = np.array([0 if i < 0.5*np.pi else 1 for i in phase])
+        magnetization1 = np.ma.masked_where(parameter != 0, abs(magnetization)**2)
+        magnetization2 = np.ma.masked_where(parameter == 0, abs(magnetization)**2)
+        ax.plot(x, magnetization1, colors[color_index] + '-',
+                x, magnetization2, colors[color_index] + '--')
 
         ax.set_ylim(0, 1.5)
-
         plt.setp(ax, xticks=[-1100, 0, 1100], xticklabels=[r'$-\Lambda$', 0, r'$\Lambda$'],
                  yticks=[0])
         ax.set_xlabel('Position')
@@ -107,16 +112,16 @@ if __name__ == "__main__":
 
             for i in np.arange(start, stop, step):
                 modes = np.argsort(fmr_map[:, i])[-modes_count:] + 1
-                for mode in modes[::-1]:
-                    Profile1D(mode, '/home/szymag/python/ZFN/src/eig_problem/' + str(int(i)) + '.dat',
-                          'deg' + str(i) + '_mode' + str(mode), angle=i).generate_plot(ax)
+                for mode in enumerate(modes[::-1]):
+                    Profile1D(mode[1], '/home/szymag/python/ZFN/src/eig_problem/' + str(int(i)) + '.dat',
+                          'deg' + str(i) + '_mode' + str(mode[1]), angle=i).generate_plot(ax, mode[0])
             #x = np.linspace(-1100, 1100, 500)
             #ax.plot(x, np.cos(2*np.pi*x / 1100)+1, ls='--')
         else:
             for i in enumerate(np.arange(start, stop, step)):
                 for j in range(5, 8):
                     Profile1D(j, '/home/szymag/python/ZFN/src/eig_problem/'+ str(int(i[1])) + '.dat',
-                              'deg' + str(i[1]) + '_mode' + str(j), angle=i[1]).generate_plot(ax)
+                              'deg' + str(i[1]) + '_mode' + str(j), angle=i[1]).generate_plot(ax, i[0])
 
 
 
@@ -289,19 +294,25 @@ if __name__ == "__main__":
 
         grid = gridspec.GridSpec(6, 8, hspace=0.0, wspace=0.0)
         f = plt.figure()
-        f.suptitle('Angle=10 Deg')
+        f.suptitle('Angle=60 Deg')
         #ax1.title.set_text('sdf')
         for ind_1, modulation in enumerate(modulations):
+            frequencies = np.around(np.loadtxt('/home/szymag/python/ZFN/src/eig_problem/freq_vs_angle_' + str(modulation) + '.dat') / 1e9, decimals=2)
             for ind_2, field in enumerate(fields):
                 mode_number = np.argsort(fmr_1(modulation, field, 0, 1, 1))[-1] + 1
                 Profile1D(mode_number, '/home/szymag/python/ZFN/src/eig_problem/'
                           + str(field) + '_' + str(modulation) + '.dat', 'dummy',
-                          field=field, angle=10).generate_plot(plt.subplot(grid[ind_1, ind_2]))
+                          field=field, angle=60).generate_plot(plt.subplot(grid[ind_1, ind_2]), 0)
 
                 plt.subplot(grid[ind_1, ind_2]).text(0.2, 0.1, r'$H_{0}=' + str(field) +'$', ha="center",
                         transform=plt.subplot(grid[ind_1, ind_2]).transAxes)
                 plt.subplot(grid[ind_1, ind_2]).text(0.2, 0.8, r'$M_{min}=0.' + str(modulation)+'$', ha="center",
                         transform=plt.subplot(grid[ind_1, ind_2]).transAxes)
+                plt.subplot(grid[ind_1, ind_2]).text(0.5, 0.5, r'$freq=' +
+                                                     str(frequencies[mode_number-1, ind_2]) +
+                                                     'GHz$', ha="center",
+                        transform=plt.subplot(grid[ind_1, ind_2]).transAxes)
+
                 if ind_2 != 0:
                     plt.subplot(grid[ind_1, ind_2]).axes.get_yaxis().set_visible(False)
                 if ind_1 != 5:
