@@ -3,6 +3,7 @@ import os.path
 
 import numpy as np
 from scipy.linalg import eig
+import matplotlib.pyplot as plt
 from src.eig_problem.MacierzDoZagadnienia import MacierzDoZagadnienia
 
 from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
@@ -117,6 +118,22 @@ def start_1():
                                                      angle=60).wypisz_czestosci_do_pliku()[0][1:]
     np.savetxt('freq_vs_angle_' + str(m_min) + '.dat', freq_vs_angle)
 
+def start_2():
+    fields = np.arange(0.015, 0.08, 0.005)
+    angle = 10
+    freq_vs_field = np.zeros((50, len(fields)))
+    for field in enumerate(fields):
+        freq_vs_field[0:50, field[0]] = ZagadnienieWlasne(1, 'c_coef_100.txt',
+                                                          'freq_vs_field_' + str(angle) + '.dat',
+                                                          mu0H0=field[1],
+                                                          angle=angle).wypisz_czestosci_do_pliku()[0][1:]
+    #np.savetxt('freq_vs_field_' + str(angle) + '.dat', freq_vs_field)
+    for branch in range(50):
+        plt.plot(fields, freq_vs_field[branch] / 1e9, color='blue')
+    plt.xlabel('Field (T)')
+    plt.ylabel('Freq (GHz)')
+    plt.title('Modulation: M_max=.948, M_min=.793 (.5ns); sin-like profile')
+    plt.show()
 
 if __name__ == "__main__":
     start_1()
