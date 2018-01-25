@@ -43,7 +43,7 @@ class Profile1D:
         ax.plot(x, magnetization1, colors[color_index] + '-',
                 x, magnetization2, colors[color_index] + '--')
 
-        ax.set_ylim(0, 1.5)
+        ax.set_ylim(-0.05, 3)
         plt.setp(ax, xticks=[-1100, 0, 1100], xticklabels=[r'$-\Lambda$', 0, r'$\Lambda$'],
                  yticks=[0])
         ax.set_xlabel('Position')
@@ -101,7 +101,6 @@ class Profile1D:
         return sin(radians(2*self.angle))*np.trapz(tmp[1] * np.cos(x*2*np.pi / self.lattice_const))
 
 if __name__ == "__main__":
-
     def modes(modulation, start, stop, step, modes_count, ax, only_max_fmr=True):
         if only_max_fmr:
             try:
@@ -124,7 +123,6 @@ if __name__ == "__main__":
                               'deg' + str(i[1]) + '_mode' + str(j), angle=i[1]).generate_plot(ax, i[0])
 
 
-
     def fmr(modulation, start, stop, step):
         fmr = np.zeros((50, int((stop - start) / step)))
         for i in enumerate(np.arange(start, stop, step)):
@@ -132,12 +130,14 @@ if __name__ == "__main__":
                   angle=i[1]).fmr_intensity_order()
         np.savetxt('fmr'+str(modulation)+'.dat', fmr)
 
+
     def fmr_1(modulation, field, start, stop, step):
         return Profile1D(1, '/home/szymag/python/ZFN/src/eig_problem/' + str(field)
                                      + '_' + str(modulation) + '.dat', None).fmr_intensity_order()
 
+
     def fmr_intensity_map(modulation, start, stop, step, ax):
-        mateusz_plot(ax)
+        #mateusz_plot(ax)
         if type(step) is float:
             y = np.loadtxt('/home/szymag/python/ZFN/src/eig_problem/densefreq_vs_angle_'+str(modulation)+'.dat') / 1e9
         else:
@@ -161,20 +161,20 @@ if __name__ == "__main__":
         min = np.min(z)
         drawing_mode_count = 40
         for i in enumerate(np.arange(start, stop, step)):
-            order = z[0:drawing_mode_count,i[0]].argsort()
-            ax.scatter(np.zeros(drawing_mode_count)+i[1],
-                        y[0:drawing_mode_count,i[0]][order],
-                        c=z[0:drawing_mode_count,i[0]][order],
+            order = z[0:drawing_mode_count, i[0]].argsort()
+            tmp = ax.scatter(np.zeros(drawing_mode_count)+i[1],
+                        y[0:drawing_mode_count, i[0]][order],
+                        c=z[0:drawing_mode_count, i[0]][order],
                         s=15, edgecolors='', vmin=min, vmax=max,
-                        cmap=plt.cm.Wistia, alpha=0.7,norm=MidpointNormalize(midpoint=50))
-        ax.set_ylim([3.5, 7.4])
+                        cmap=plt.cm.Wistia, alpha=0.7, norm=MidpointNormalize(midpoint=30))
+        ax.set_ylim([4.2, 10])
         #plt.ylim([5.06, 5.3])
         #ax.set_ylim.locator_params(nbins=11)
         #plt.xticks([13, 19.9], [13, 20])
         #plt.yticks([5.06, 5.3], [5.06, 5.3])
         ax.set_xlabel('Angle (Deg)')
         ax.set_ylabel('Frequency (GHz)')
-        #a = ax.colorbar(ticks=[])
+        plt.colorbar(tmp, orientation="horizontal", ax=ax, ticks=[])
         #a.set_label('FMR Intensity (a.u.)')
         #if type(step) is float:
         #    plt.savefig('densefmr' + str(modulation) + '.svg')
@@ -225,6 +225,7 @@ if __name__ == "__main__":
         #plt.show()
 
     #cross_section(155)
+
     #fmr(40, 0, 91, 1)
     #fmr_intensity_map(155, 0, 91, 1)
     #modes('heat', 0, 90, 1, True)
@@ -319,5 +320,5 @@ if __name__ == "__main__":
                     plt.subplot(grid[ind_1, ind_2]).axes.get_xaxis().set_visible(False)
         plt.show()
 
-    show_modes_grid()
-    #make_final_plot()
+    #show_modes_grid()
+    make_final_plot()

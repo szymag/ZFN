@@ -23,10 +23,10 @@ class ParametryMaterialowe:
     MoCoFeB = 1.25e6
     lCoFeB = 1.53e-17
 # System parameters
-    mu0H0 = None
+    mu0H0 = 0.05
     gamma = 176e9
     mu0 = 4e-7 * pi
-    H0 = None
+    H0 = mu0H0 / mu0
     d = 60e-9 # thickness of material
     a = 1100e-9
     x = 0 # position of calculation of dispersion in z-direction
@@ -35,11 +35,11 @@ class ParametryMaterialowe:
 
 # Material parameters
     # inclusion
-    MoA = 0.915*MoNi
-    lA = 0.915*lNi
+    MoA = 0.948*MoNi
+    lA = 0.948*lNi
     # matrix
-    MoB = 0.909*MoNi
-    lB = 0.909*lNi
+    MoB = 0.793*MoNi
+    lB = 0.793*lNi
 
     def __init__(self):
         pass
