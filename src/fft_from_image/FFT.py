@@ -98,8 +98,8 @@ class FFT:
             tab = Heated(repeat).cos_sequence()
             np.savetxt('c_coef_' + str(repeat) + '.txt', self.fft1d(tab))
         elif typ_struktury == 'Custom':
-            tab = Custom('real.txt').sequence()
-            np.savetxt('heat_fft.txt', self.fft1d(tab))
+            tab = Custom('real_Ni.txt').sequence()
+            np.savetxt('heat_fft_Ni.txt', self.fft1d(tab))
 
         return np.fft.fftshift(np.fft.fft(tab))
 

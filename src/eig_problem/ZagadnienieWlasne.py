@@ -94,16 +94,15 @@ class ZagadnienieWlasne:
 def start():
     freq_vs_anlge = np.zeros((50, 91))
     for i in enumerate(np.arange(0, 91, 1)):
-        ZagadnienieWlasne(1, 'heat_fft.txt', str(i[1]) + '.dat', angle=i[1]).wektory_wlasne()
+        ZagadnienieWlasne(1, 'heat_fft_Ni.txt', str(i[1]) + '.dat', angle=i[1]).wektory_wlasne()
 
-        freq_vs_anlge[0:50, i[0]] = ZagadnienieWlasne(1, 'heat_fft.txt',
+        freq_vs_anlge[0:50, i[0]] = ZagadnienieWlasne(1, 'heat_fft_Ni.txt',
                                                       str(i[1]) + '.dat',
                                                       angle=i[1]).wypisz_czestosci_do_pliku()[0][1:]
         np.savetxt('freq_vs_angle_40.dat', freq_vs_anlge)
 
 
 def start_1():
-
     fields = [0.030, 0.035, 0.040, 0.045, 0.05, 0.055, 0.06, 0.065]
     freq_vs_angle = np.zeros((50, len(fields)))
 
@@ -117,6 +116,7 @@ def start_1():
                                                      mu0H0=field,
                                                      angle=60).wypisz_czestosci_do_pliku()[0][1:]
     np.savetxt('freq_vs_angle_' + str(m_min) + '.dat', freq_vs_angle)
+
 
 def start_2():
     fields = np.arange(0.015, 0.08, 0.005)
@@ -136,4 +136,4 @@ def start_2():
     plt.show()
 
 if __name__ == "__main__":
-    start_1()
+    start()
