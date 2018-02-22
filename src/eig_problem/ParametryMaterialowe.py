@@ -35,11 +35,11 @@ class ParametryMaterialowe:
 
 # Material parameters
     # inclusion
-    MoA = 0.948*MoNi
-    lA = 0.948*lNi
+    MoA = 1.0*MoCoFeB
+    lA = 1.0*lCoFeB
     # matrix
-    MoB = 0.785*MoNi
-    lB = 0.785*lNi
+    MoB = 0.88*MoCoFeB
+    lB = 0.88*lCoFeB
 
     def __init__(self):
         pass
