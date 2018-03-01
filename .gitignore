@@ -1,7 +1,7 @@
 *.txt
 *.dat
 *.svg
-
+*.pyc
 .idea
 
 article/
