@@ -1,24 +1,27 @@
 # from src.utils.cProfiler import do_cprofile
 import ast, glob, os
 import numpy as np
-from src.eig_problem.ParametryMaterialowe import InputParameter
-from src.eig_problem.WektorySieciOdwrotnej import ReciprocalVector
+from src.eig_problem.InputParameter import InputParameter
+from src.eig_problem.ReciprocalVector import ReciprocalVector
 import matplotlib.pyplot as plt
 
 
 class Profile(InputParameter):
-    def __init__(self, ilosc_wektorow=441, start_path="."):
+    def __init__(self, eig_vectors, ilosc_wektorow=441, start_path="."):
         InputParameter.__init__(self)
+        self.eig_vectors = np.loadtxt(eig_vectors)
         self.ilosc_wektorow = ilosc_wektorow
-        self.lista_wektorow = ReciprocalVector(self.a, self.b, ilosc_wektorow).lista_wektorow2d('min')
-        self.sciezka = glob.glob(os.path.join(start_path, "*."))
-        self.wektory_wlasne = np.loadtxt(self.sciezka[0]).view(complex)
-        self.wektor_q = ast.literal_eval(self.sciezka[0].strip('.')[1:])
+        self.lista_wektorow = ReciprocalVector(self.ilosc_wektorow).lista_wektorow2d('min')
+        #self.sciezka = glob.glob(os.path.join(start_path, "*."))
+        #self.wektory_wlasne = np.loadtxt(self.sciezka[0]).view(complex)
+        #self.wektor_q = ast.literal_eval(self.sciezka[0].strip('.')[1:])
+        self.wektor_q = 0
 
     def magnetyzacja_w_punkcie(self, wektor_r, numer_modu):
-        wektory_wlasne = np.array(self.wektory_wlasne[numer_modu-1])
+        eig_vectors = np.array(self.eig_vectors[numer_modu-1])
         wektory_odwrotne = np.array(self.lista_wektorow)
-        return abs(np.sum(wektory_wlasne[0:self.ilosc_wektorow] *
+        print(wektory_odwrotne.shape, eig_vectors.shape)
+        return abs(np.sum(eig_vectors[0:self.ilosc_wektorow] *
                           np.prod(np.exp(1j * wektory_odwrotne * (wektor_r + self.wektor_q)), axis=1)))
 
     def mapa_profile(self, numer_modu, dokladnosc):
@@ -36,4 +39,4 @@ class Profile(InputParameter):
         plt.colorbar()
         plt.show()
 
-Profile().wykreslenie_profili(1, 150)
+Profile('tst.vec').wykreslenie_profili(1, 150)

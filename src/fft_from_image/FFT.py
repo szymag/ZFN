@@ -66,7 +66,7 @@ class FFT:
         files = []
         for tablica in lista_fft:
             filepath = os.path.join(os.path.abspath(path),
-                                    re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks - 1]))[0] + '.txt')
+                                    re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks - 1]))[0] + '.fft')
             files.append(filepath)
             np.savetxt(filepath, tablica.view(float))
             indeks += 1
@@ -114,8 +114,6 @@ class FFT:
 
 
 if __name__ == "__main__":
-    a = FFT().wywolaj_fft1d('C', 100, 2)
+    #a = FFT().wywolaj_fft1d('C', 100, 2)
     #FFT().wypisz_do_pliku()
-    b = np.arange(len(a))
-    plt.plot(b, abs(a) )
-    plt.show()
+    a = FFT().wypisz_do_pliku()

@@ -39,7 +39,7 @@ class InputParameter:
 
     # Program parameters
     # input FFT coefficient
-    fft_file = 'ff=0.5.txt'
+    fft_file = 'ff=0.5.fft'
     # amount of reciprocal vectors
     rec_vector_x = 9
     rec_vector_y = 9

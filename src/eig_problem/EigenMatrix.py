@@ -129,5 +129,5 @@ class EigenMatrix:
 
 
 if __name__ == "__main__":
-    q = EigenMatrix('ff=0.5.txt', EigenMatrix.ReciprocalVectorGrid(3, 3), np.array([1e-9, 0]))
+    q = EigenMatrix('ff=0.5.fft', EigenMatrix.ReciprocalVectorGrid(3, 3), np.array([1e-9, 0]))
     q.save_matrix_to_file()

@@ -5,6 +5,27 @@ from src.eig_problem.InputParameter import InputParameter
 from src.eig_problem.ReciprocalVector import ReciprocalVector
 
 
+class Profile2D:
+    def __init__(self, mode_number, load_data):
+        # TODO: Eigvalue problem return fourier coefficients. Name of variables wrongly suggest that they're vectors.
+        self.fourier_coefficient = np.loadtxt(load_data).view(complex)
+        self.lattice_const_x = InputParameter.a
+        self.lattice_const_y = InputParameter.b
+        self.mode_number = mode_number - 1
+
+    def generate_plot(self):
+        pass
+
+    def spatial_distribution_dynamic_magnetization(self, grid):
+        mode = self.fourier_coefficient[self.mode_number, :81]
+        self.inverse_discrete_fourier_transform(mode, [0, 0])
+
+
+    def inverse_discrete_fourier_transform(self, data, vector_position):
+        reciprocal_vectors = 2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow2d('min')
+        abs(np.sum(data * np.exp(1j * np.prod(reciprocal_vectors * vector_position, axis=1))))
+
+
 class Profile1D:
     def __init__(self, mode_number, load_data, name_of_file, **kwargs):
         self.eig_vectors = np.loadtxt(load_data).view(complex)
@@ -23,7 +44,7 @@ class Profile1D:
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.plot(magnetization[0], abs(magnetization[1]) ** 2, '-', label=r'$\left|\mathbf{m}\right|^{2}$')
-        #ax.plot(magnetization[0], np.arctan2(magnetization[1].imag, magnetization[1].real),
+        #ax.plot(manetization[0], np.arctan2(magnetization[1].imag, magnetization[1].real),
         #        '-', label='phase', color="red")
         ax2 = ax.twinx()
         ax2.plot(elementary_cell[0], elementary_cell[1], '-', label=r'$M_{s}$', color="green", linewidth=3)
@@ -80,6 +101,8 @@ class Profile1D:
 
 
 if __name__ == "__main__":
-    for i in range(0, 93, 3):
-        for j in range(1, 2):
-            Profile1D(j, 'vec_' + str(i) + '.dat', 'mode' + str(j) + '_deg' + str(i), angle=i).generate_plot()
+    #for i in range(0, 93, 3):
+    #    for j in range(1, 2):
+    #        Profile1D(j, 'vec_' + str(i) + '.dat', 'mode' + str(j) + '_deg' + str(i), angle=i).generate_plot()
+
+    Profile2D(1, 'tst.vec').spatial_distribution_dynamic_magnetization(50)

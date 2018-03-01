@@ -40,10 +40,10 @@ class EigenValueProblem:
         eigen_value_index = np.argsort(eigen_value.imag)
         eigen_vector = np.transpose(eigen_vector)
         eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
-        return eigen_vector.view(float)
+        return eigen_vector
 
     def print_eigen_vectors(self):
-        np.savetxt(str(self.list_vector_q()[0]) + '.', eigen_vector.view(float))
+        np.savetxt(str(self.list_vector_q()[0]) + '.', self.calculate_eigen_vectors)
 
 
 class EigenValueProblem2D(EigenValueProblem):
@@ -54,7 +54,7 @@ class EigenValueProblem2D(EigenValueProblem):
 
         self.b = b
         self.direction = direction
-        self.input_fft_file = 'ff=0.5.txt'
+        self.input_fft_file = 'ff=0.5.fft'
         if self.direction == 'x':
             self.coordinate = [0, 1]
         elif self.direction == 'y':
@@ -111,4 +111,5 @@ class EigenValueProblem1D(EigenValueProblem):
 
 
 if __name__ == "__main__":
-    EigenValueProblem1D(1, 'c_coef_100.txt', 'dys.txt').calculate_eigen_vectors()
+    #EigenValueProblem1D(1, 'c_coef_100.txt', 'dys.txt').calculate_eigen_vectors()
+    print(EigenValueProblem2D(1, 'xy').calculate_eigen_vectors())
