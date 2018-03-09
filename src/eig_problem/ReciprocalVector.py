@@ -6,6 +6,7 @@ import numpy as np
 class ReciprocalVector:
 
     def __init__(self, rozmiar_macierzy_blok):
+        # TODO: Apply different set of vectors in different directions
         self.ilosc_wektorow = rozmiar_macierzy_blok
 
     def lista_wektorow2d(self, typ):
