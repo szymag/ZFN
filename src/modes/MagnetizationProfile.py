@@ -5,6 +5,7 @@ from src.eig_problem.InputParameter import InputParameter
 from src.eig_problem.ReciprocalVector import ReciprocalVector
 from src.eig_problem.LoadFFT import LoadFFT2D
 
+
 class Profile2D:
     def __init__(self, mode_number, load_data):
         # TODO: Eigvalue problem return fourier coefficients. Name of variables wrongly suggest that they're vectors.
@@ -13,37 +14,30 @@ class Profile2D:
         self.lattice_const_y = InputParameter.b
         self.mode_number = mode_number - 1
 
-    def cartesian_product(self, arrays):
-        la = len(arrays)
-        dtype = np.find_common_type([a.dtype for a in arrays], [])
-        arr = np.empty([len(a) for a in arrays] + [la], dtype=dtype)
-        for i, a in enumerate(np.ix_(*arrays)):
-            arr[..., i] = a
-        return arr.reshape(-1, la)
-
-    def generate_plot(self, grid):
-        lista_x, lista_y, lista_wartosci = self.spatial_distribution_dynamic_magnetization(grid)
-        x, y = np.meshgrid(lista_x, lista_y)
-        plt.pcolor(x, y, np.array(lista_wartosci))
-        plt.colorbar()
-        plt.show()
+    def elementary_cell(self, file_name, coef_count, grid):
+        lattice_coef = LoadFFT2D(file_name,
+                                 coef_count).rescale_fourier_coefficient(
+            InputParameter.lA,
+            InputParameter.lB).reshape((coef_count[0]*coef_count[1],))
+        return self.reconstruct_whole_structure(lattice_coef, grid)
 
     def spatial_distribution_dynamic_magnetization(self, grid):
         mode = self.fourier_coefficients[self.mode_number, :]
-        lattice_coef = LoadFFT2D('ff=0.5.fft', [9, 9]).rescale_fourier_coefficient(InputParameter.lA, InputParameter.lB).reshape((81,))
         mode = mode[:len(mode) // 2]
-        x = np.linspace(-self.lattice_const_x*2, self.lattice_const_x*3, grid)
-        y = np.linspace(-self.lattice_const_x*2, self.lattice_const_y*3, grid)
-        z = self.cartesian_product((x, y))
+        return self.reconstruct_whole_structure(mode, grid)
+
+    def reconstruct_whole_structure(self, input_coefficient, grid):
+        x = np.linspace(-self.lattice_const_x, self.lattice_const_x, grid)
+        y = np.linspace(-self.lattice_const_x, self.lattice_const_y, grid)
         m = np.zeros(grid * grid)
-        for i, j in enumerate(z):
-            m[i] = self.inverse_discrete_fourier_transform(lattice_coef, j + self.lattice_const_y/13)
+        for i, j in enumerate(np.dstack(np.meshgrid(x, y)).reshape(-1, 2)):
+            m[i] = self.inverse_discrete_fourier_transform(input_coefficient, j)
         return x, y, m.reshape((grid, grid))
 
     def inverse_discrete_fourier_transform(self, data, position):
-        reciprocal_vectors = 2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow2d('min') / self.lattice_const_y
-        # TODO: Add normalization for rec vectors
-        return abs(np.sum(np.exp(1j * np.prod(reciprocal_vectors * position, axis=1))))
+        reciprocal_vectors = 2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow2d('min') /\
+                             np.array((self.lattice_const_x, self.lattice_const_y))
+        return abs(np.sum(data * np.prod(np.exp(1j * reciprocal_vectors * position), axis=1)))
 
 
 class Profile1D:
@@ -121,8 +115,4 @@ class Profile1D:
 
 
 if __name__ == "__main__":
-    #for i in range(0, 93, 3):
-    #    for j in range(1, 2):
-    #        Profile1D(j, 'vec_' + str(i) + '.dat', 'mode' + str(j) + '_deg' + str(i), angle=i).generate_plot()
-
-    Profile2D(1, 'tst.vec').generate_plot(100)
+    pass

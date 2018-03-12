@@ -33,4 +33,6 @@ def do_program():  # TODO: file type should represent containing data
     else:
         return 0
 
-do_program()
+
+if __name__ == "__main__":
+    do_program()

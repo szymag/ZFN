@@ -12,6 +12,7 @@ x_lim = None
 y_lim = None
 show_plot = True
 
+
 def do_program():
     if file_name[-3:] == 'png':
         fft = FFT().zwroc_tablice(file_name)
@@ -28,4 +29,6 @@ def do_program():
     else:
         return 0
 
-do_program()
+
+if __name__ == "__main__":
+    do_program()

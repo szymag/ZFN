@@ -31,5 +31,4 @@ class ReciprocalVector:
         return self.wspolrzedna_wektora1d(typ)
 
 if __name__ == "__main__":
-    q = ReciprocalVector(9).lista_wektorow2d('min')
-    print(q)
+    pass
