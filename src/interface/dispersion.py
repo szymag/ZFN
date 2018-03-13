@@ -25,7 +25,7 @@ def do_program():  # TODO: file type should represent containing data
         raise ValueError
 
     eig_freq = EigenValueProblem2D(number_of_dispersion_point, direction,
-                                   input_fft_file=fft).eigen_frequency_for_vectors_q()
+                                   input_fft_file=fft).eigen_frequency_for_bloch_vectors()
     np.savetxt('tst.txt', eig_freq)
     if show_plot:
         return Plot(number_of_dispersion_branch, x_lim, y_lim,

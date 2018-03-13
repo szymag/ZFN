@@ -1,4 +1,3 @@
-
 from src.eig_problem.EigenMatrix import EigenMatrix
 from math import hypot
 import numpy as np
@@ -10,18 +9,25 @@ import os.path
 
 scriptpath = os.path.dirname(__file__)
 
+
 class EigenValueProblem:
-    def __init__(self, number_of_dispersion_point, a, gamma, mu0H0, input_fft_file):
+    def __init__(self, number_of_dispersion_point, lattice_const_x, lattice_const_y, gamma, mu0H0,
+                 input_fft_file, output_file_name):
         self.number_of_dispersion_point = number_of_dispersion_point
         self.gamma = gamma
         self.mu0H0 = mu0H0
 
         self.input_fft_file = input_fft_file
-        self.a = a
+        if output_file_name[-4:] == '.vec':
+            self.output_file_name = output_file_name
+        else:
+            self.output_file_name = output_file_name + '.vec'
+        self.lattice_const_x = lattice_const_x
+        self.lattice_const_y = lattice_const_y
         self.start_vec_q = 0.01
         self.end_vec_q = 0.5
 
-    def eigen_frequency_for_vectors_q(self):
+    def eigen_frequency_for_bloch_vectors(self):
         pass
 
     def solve_eigen_problem(self, wektor_q, param):
@@ -30,10 +36,10 @@ class EigenValueProblem:
     def list_vector_q(self):
         pass
 
-    def calculate_eigen_frequency(self, wektor_q):
-        eigen_vector = self.solve_eigen_problem(wektor_q, param=False)
+    def calculate_eigen_frequency(self, bloch_vector):
+        eigen_vector = self.solve_eigen_problem(bloch_vector, param=False)
         eigen_value = [i.imag * self.gamma * self.mu0H0 / 2.0 / np.pi for i in eigen_vector if i.imag > 0]
-        return list(sorted(eigen_value)[:50]) # TODO: create smarter choice
+        return list(sorted(eigen_value)[:50])  # TODO: create smarter choice
 
     def calculate_eigen_vectors(self):
         eigen_value, eigen_vector = self.solve_eigen_problem(self.list_vector_q()[0], param=True)
@@ -43,16 +49,20 @@ class EigenValueProblem:
         return eigen_vector
 
     def print_eigen_vectors(self):
-        np.savetxt(str(self.list_vector_q()[0]) + '.', self.calculate_eigen_vectors)
+        np.savetxt(self.output_file_name,
+                   self.calculate_eigen_vectors().view(float),
+                   header='Bloch wave vector, q=' + str(self.list_vector_q()[0]))
 
 
 class EigenValueProblem2D(EigenValueProblem):
-    def __init__(self, number_of_dispersion_point, direction, a=InputParameter.a, b=InputParameter.b,
-                 gamma=InputParameter.gamma, mu0H0=InputParameter.mu0H0, input_fft_file=InputParameter.fft_file):
+    def __init__(self, number_of_dispersion_point, direction,
+                 lattice_const_x=InputParameter.a, lattice_const_y=InputParameter.b,
+                 gamma=InputParameter.gamma, mu0H0=InputParameter.mu0H0, input_fft_file=InputParameter.fft_file,
+                 output_file_name=InputParameter.output_file):
 
-        EigenValueProblem.__init__(self, number_of_dispersion_point, a, gamma, mu0H0, input_fft_file)
+        EigenValueProblem.__init__(self, number_of_dispersion_point, lattice_const_x,
+                                   lattice_const_y, gamma, mu0H0, input_fft_file, output_file_name)
 
-        self.b = b
         self.direction = direction
         self.input_fft_file = 'ff=0.5.fft'
         if self.direction == 'x':
@@ -63,9 +73,10 @@ class EigenValueProblem2D(EigenValueProblem):
             self.coordinate = [1, 1]
         else:
             sys.exit('Wrong argument for direction was set')
+
     # TODO: update symbol; add another paths
 
-    def eigen_frequency_for_vectors_q(self):
+    def eigen_frequency_for_bloch_vectors(self):
         data = []
         for k in self.list_vector_q():
             tmp = [hypot(k[0], k[1])]
@@ -80,20 +91,22 @@ class EigenValueProblem2D(EigenValueProblem):
 
     def list_vector_q(self):
         points = np.linspace(self.start_vec_q, self.end_vec_q, self.number_of_dispersion_point)
-        return 2 * np.pi * np.stack((points, points), axis=-1) * self.coordinate / [self.a, self.b]
+        return 2 * np.pi * np.stack((points, points), axis=-1) * self.coordinate / \
+               [self.lattice_const_x, self.lattice_const_y]
 
 
 class EigenValueProblem1D(EigenValueProblem):
     def __init__(self, number_of_dispersion_point, input_fft_file, output_file, mu0H0=InputParameter.mu0H0,
-                  a=InputParameter.a, gamma=InputParameter.gamma, angle=InputParameter.angle):
-
-        EigenValueProblem.__init__(self, number_of_dispersion_point, a, gamma, mu0H0, input_fft_file)
+                 lattice_const_x=InputParameter.a, lattice_const_y=None,
+                 gamma=InputParameter.gamma, angle=InputParameter.angle):
+        EigenValueProblem.__init__(self, number_of_dispersion_point, lattice_const_x, lattice_const_y,
+                                   gamma, mu0H0, input_fft_file, output_file_name=InputParameter.output_file)
 
         self.input_fft_file = os.path.join(scriptpath, input_fft_file)
         self.output_file = output_file
         self.angle = angle
 
-    def eigen_frequency_for_vectors_q(self):
+    def eigen_frequency_for_bloch_vectors(self):
         data = []
         for k in self.list_vector_q():
             tmp = [k]
@@ -101,15 +114,15 @@ class EigenValueProblem1D(EigenValueProblem):
             data.append(tmp)
         return data
 
-    def solve_eigen_problem(self, wektor_q, param):
-        macierz_m = EigenMatrix1D(self.input_fft_file, wektor_q,
-                                  angle=self.angle).matrix_angle_dependence(wektor_q)
-        return eig(macierz_m, right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
+    def solve_eigen_problem(self, bloch_vector, param):
+        return eig(EigenMatrix1D(self.input_fft_file, bloch_vector,
+                                 angle=self.angle).matrix_angle_dependence(bloch_vector)
+                   , right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def list_vector_q(self):
-        return [2 * np.pi * k / self.a for k in np.linspace(0.0001, 0.9999, self.number_of_dispersion_point)]
+        return [2 * np.pi * k / self.lattice_const_x
+                for k in np.linspace(0.0001, 0.9999, self.number_of_dispersion_point)]
 
 
 if __name__ == "__main__":
-    #EigenValueProblem1D(1, 'c_coef_100.txt', 'dys.txt').calculate_eigen_vectors()
-    print(EigenValueProblem2D(1, 'xy').calculate_eigen_vectors())
+    EigenValueProblem2D(1, 'xy').print_eigen_vectors()

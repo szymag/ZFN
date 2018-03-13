@@ -2,6 +2,7 @@ from numpy import pi
 
 
 class InputParameter:
+    # TODO: Make this class as JSON file.
     # Materials
     # Cobalt
     MoCo = 1.15e6
@@ -44,6 +45,7 @@ class InputParameter:
     rec_vector_x = 9
     rec_vector_y = 9
     # name of output file
-    output_file = None
+    output_file = 'vec'
+
     def __init__(self):
         pass
