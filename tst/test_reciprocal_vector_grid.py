@@ -2,13 +2,14 @@ import unittest
 from src.eig_problem.EigenMatrix import EigenMatrix
 import numpy as np
 
+
 class ReciprocalVectorGridTestCases(unittest.TestCase):
 
     def test_raise_on_invalid_arguments(self):
         with self.assertRaises(ValueError):
             grid = EigenMatrix.ReciprocalVectorGrid(0, 0)
         with self.assertRaises(ValueError):
-            grid = EigenMatrix.ReciprocalVectorGrid(-1,1)
+            grid = EigenMatrix.ReciprocalVectorGrid(-1, 1)
 
     def test_return_correct_vectors_count(self):
         self.assertEqual(EigenMatrix.ReciprocalVectorGrid(5, 5).vectors_count(), 25)

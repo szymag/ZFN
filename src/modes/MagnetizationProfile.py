@@ -37,8 +37,8 @@ class Profile2D:
     def inverse_discrete_fourier_transform(self, data, position):
         reciprocal_vectors = 2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow2d('min') /\
                              np.array((self.lattice_const_x, self.lattice_const_y))
-        return abs(np.sum(data * np.prod(np.exp(1j * reciprocal_vectors * position), axis=1)))
-
+        return abs(np.sum(data * np.prod(np.exp(1j * reciprocal_vectors * position), axis=1)))**2
+        # TODO: Implement FMR spectra
 
 class Profile1D:
     def __init__(self, mode_number, load_data, name_of_file, **kwargs):

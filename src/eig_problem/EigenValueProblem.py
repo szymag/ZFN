@@ -12,6 +12,7 @@ scriptpath = os.path.dirname(__file__)
 
 class EigenValueProblem:
     def __init__(self, number_of_dispersion_point, lattice_const_x, lattice_const_y, gamma, mu0H0,
+                 rec_vector_x, rec_vector_y,
                  input_fft_file, output_file_name):
         self.number_of_dispersion_point = number_of_dispersion_point
         self.gamma = gamma
@@ -22,6 +23,8 @@ class EigenValueProblem:
             self.output_file_name = output_file_name
         else:
             self.output_file_name = output_file_name + '.vec'
+        self.rec_vector_x = rec_vector_x
+        self.rec_vector_y = rec_vector_y
         self.lattice_const_x = lattice_const_x
         self.lattice_const_y = lattice_const_y
         self.start_vec_q = 0.01
@@ -57,11 +60,14 @@ class EigenValueProblem:
 class EigenValueProblem2D(EigenValueProblem):
     def __init__(self, number_of_dispersion_point, direction,
                  lattice_const_x=InputParameter.a, lattice_const_y=InputParameter.b,
-                 gamma=InputParameter.gamma, mu0H0=InputParameter.mu0H0, input_fft_file=InputParameter.fft_file,
+                 gamma=InputParameter.gamma, mu0H0=InputParameter.mu0H0,
+                 rec_vector_x=InputParameter.rec_vector_x, rec_vector_y=InputParameter.rec_vector_y,
+                 input_fft_file=InputParameter.fft_file,
                  output_file_name=InputParameter.output_file):
 
         EigenValueProblem.__init__(self, number_of_dispersion_point, lattice_const_x,
-                                   lattice_const_y, gamma, mu0H0, input_fft_file, output_file_name)
+                                   lattice_const_y, gamma, mu0H0, rec_vector_x, rec_vector_y,
+                                   input_fft_file, output_file_name)
 
         self.direction = direction
         self.input_fft_file = 'ff=0.5.fft'
@@ -85,7 +91,9 @@ class EigenValueProblem2D(EigenValueProblem):
         return data
 
     def solve_eigen_problem(self, wektor_q, param):
-        eigen_matrix = EigenMatrix(self.input_fft_file, EigenMatrix.ReciprocalVectorGrid(9, 9),
+        eigen_matrix = EigenMatrix(self.input_fft_file, EigenMatrix.ReciprocalVectorGrid(
+            self.rec_vector_x,
+            self.rec_vector_y),
                                    wektor_q).generate_and_fill_matrix()
         return eig(eigen_matrix, right=param)
 
@@ -125,4 +133,4 @@ class EigenValueProblem1D(EigenValueProblem):
 
 
 if __name__ == "__main__":
-    EigenValueProblem2D(1, 'xy').print_eigen_vectors()
+    EigenValueProblem2D(1, 'x').print_eigen_vectors()

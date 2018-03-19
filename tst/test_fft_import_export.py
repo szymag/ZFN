@@ -3,15 +3,10 @@ import os
 import unittest
 
 import numpy as np
-<<<<<<< HEAD
 
-from src.eig_problem.LoadFFT import LoadFFT
-from src.fft_from_image.FFT import FFTfromImage
-=======
-from src.eig_problem.FFTfromFile import FFTfromFile
 
-from src.fft_from_image.FFT import FFT
->>>>>>> 1D
+from src.eig_problem.LoadFFT import LoadFFT2D
+
 
 logging.basicConfig(format='%(levelname)s:%(message)s',
                     filename='./log/test_fft_export_import.log',
@@ -21,8 +16,7 @@ logging.basicConfig(format='%(levelname)s:%(message)s',
 
 class TestFFTExportImport(unittest.TestCase):
 
-    fft = FFTfromImage()
-    fft_from_file = LoadFFT(9, 'I')
+    fft_from_file = LoadFFT2D('ff=0.5.fft', [9, 9])
 
     def test_export_import(self):
         logging.info("### Running test_export_import...")

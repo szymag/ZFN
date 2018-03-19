@@ -22,7 +22,7 @@ class InputParameter:
 
     # System parameters
     mu0H0 = 0.1
-    gamma = 176e9
+    gamma = 176.6e9
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
     d = 20e-9  # thickness of material
@@ -40,10 +40,10 @@ class InputParameter:
 
     # Program parameters
     # input FFT coefficient
-    fft_file = 'ff=0.5.fft'
+    fft_file = 'klos2012.fft'
     # amount of reciprocal vectors
-    rec_vector_x = 9
-    rec_vector_y = 9
+    rec_vector_x = 7
+    rec_vector_y = 7
     # name of output file
     output_file = 'vec'
 

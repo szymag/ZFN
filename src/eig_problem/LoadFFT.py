@@ -37,6 +37,7 @@ class LoadFFT2D:
         table = np.array(re + im, dtype=complex)
         return table
 
+
 class LoadFFT1D:
     def __init__(self, input_fft):
         try:

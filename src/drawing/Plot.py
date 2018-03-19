@@ -3,6 +3,7 @@ import numpy as np
 
 
 class Plot:
+    # TODO: Refactor ths class
     def __init__(self, number_of_disp_branch, x_lim=None, y_lim=None, name_of_output_file=None):
         self.name_of_file = name_of_output_file
         self.number_of_disp_branch = number_of_disp_branch + 1
