@@ -2,8 +2,9 @@
 from math import sqrt, exp, cosh
 import numpy as np
 from src.eig_problem.LoadFFT import LoadFFT2D
-from src.eig_problem.InputParameter import InputParameter
 from src.eig_problem.ReciprocalVector import ReciprocalVector
+from src.io.DataReader import load_yaml_file
+
 from multiprocessing import Pool
 import numexpr as ne
 
@@ -28,20 +29,29 @@ class EigenMatrix:
         def shift_to_middle_of_coeff_array(self):
             return np.array([self.rec_vector_x - 1, self.rec_vector_y - 1])
 
-    def __init__(self, input_fft, ReciprocalVectorGrid, vector_q, a=InputParameter.a, b=InputParameter.b,
-                 MoA=InputParameter.MoA, MoB=InputParameter.MoB, lA=InputParameter.lA,
-                 lB=InputParameter.lB, d=InputParameter.d,
-                 x=InputParameter.x, H0=InputParameter.H0):
-        self.lattice_const_x = a
-        self.lattice_const_y = b
-        self.thickness = d
+    def __init__(self, ReciprocalVectorGrid, vector_q,
+                 input_parameters, material_A, material_B):
+        # TODO: The constructor should be somehow modifed to be more transparent
+        # TODO: Info about materials shouldn't be here
+        # TODO: **kwargs should allows to overwrite element in dictionary
+        if isinstance(input_parameters, str):
+            self.parameters = load_yaml_file(input_parameters)
+        elif isinstance(input_parameters, dict):
+            self.parameters = input_parameters
+        self.system_dimensions = self.parameters['system_dimensions']
+        self.material_A = self.parameters['material_parameters'][material_A]
+        self.material_B = self.parameters['material_parameters'][material_B]
+        self.lattice_const_x = self.system_dimensions['a']
+        self.lattice_const_y = self.system_dimensions['b']
+        self.thickness = self.system_dimensions['d']
         self.ReciprocalVectorGrid = ReciprocalVectorGrid
         self.vectors_count = self.ReciprocalVectorGrid.vectors_count()
-        self.x = x
-        self.H0 = H0
-        self.tmp = LoadFFT2D(input_fft, self.ReciprocalVectorGrid.coefficient_grid_size())
-        self.magnetization_sat = self.tmp.rescale_fourier_coefficient(MoA, MoB)
-        self.exchange_len = self.tmp.rescale_fourier_coefficient(lA, lB)
+        self.x = self.system_dimensions['x']
+        self.H0 = self.parameters['physical_parameters']['mu0H0'] / self.parameters['physical_parameters']['mu0']
+        self.tmp = LoadFFT2D(self.parameters['numerical_parameters']['fft_file'],
+                             self.ReciprocalVectorGrid.coefficient_grid_size())
+        self.magnetization_sat = self.tmp.rescale_fourier_coefficient(self.material_A['Mo'], self.material_B['Mo'])
+        self.exchange_len = self.tmp.rescale_fourier_coefficient(self.material_A['l'], self.material_B['l'])
         self.rec_vector_indexes = ReciprocalVector(self.vectors_count).lista_wektorow2d('min')
         self.shift_to_middle_of_coeff_array = ReciprocalVectorGrid.shift_to_middle_of_coeff_array()
         self.vector_q = vector_q
@@ -129,5 +139,6 @@ class EigenMatrix:
 
 
 if __name__ == "__main__":
-    q = EigenMatrix('ff=0.5.fft', EigenMatrix.ReciprocalVectorGrid(3, 3), np.array([1e-9, 0]))
+    q = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(3, 3), np.array([1e-9, 0]),
+                    'InputParameter.yaml', 'Fe', 'Ni')
     q.save_matrix_to_file()

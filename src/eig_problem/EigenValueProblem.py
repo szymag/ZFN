@@ -5,30 +5,30 @@ from scipy.linalg import eig
 import sys
 from src.eig_problem.EigenMatrix1D import EigenMatrix1D
 from src.eig_problem.InputParameter import InputParameter
+from src.io.DataReader import load_yaml_file
 import os.path
 
 scriptpath = os.path.dirname(__file__)
 
 
 class EigenValueProblem:
-    def __init__(self, number_of_dispersion_point, lattice_const_x, lattice_const_y, gamma, mu0H0,
-                 rec_vector_x, rec_vector_y,
-                 input_fft_file, output_file_name):
-        self.number_of_dispersion_point = number_of_dispersion_point
-        self.gamma = gamma
-        self.mu0H0 = mu0H0
+    def __init__(self, input_parameters):
+        self.parameters = load_yaml_file(input_parameters)
+        self.number_of_dispersion_point = self.parameters['q_vector']['dispersion_count']
+        self.gamma = self.parameters['physical_parameters']['gamma']
+        self.mu0H0 = self.parameters['physical_parameters']['mu0H0']
 
-        self.input_fft_file = input_fft_file
-        if output_file_name[-4:] == '.vec':
-            self.output_file_name = output_file_name
+        self.input_fft_file = self.parameters['numerical_parameters']['fft_file']
+        if self.parameters['numerical_parameters']['output_file'][-4:] == '.vec':
+            self.output_file_name = self.parameters['numerical_parameters']['output_file']
         else:
-            self.output_file_name = output_file_name + '.vec'
-        self.rec_vector_x = rec_vector_x
-        self.rec_vector_y = rec_vector_y
-        self.lattice_const_x = lattice_const_x
-        self.lattice_const_y = lattice_const_y
-        self.start_vec_q = 0.01
-        self.end_vec_q = 0.5
+            self.output_file_name = self.parameters['numerical_parameters']['output_file'] + '.vec'
+        self.rec_vector_x = self.parameters['numerical_parameters']['rec_vector_x']
+        self.rec_vector_y = self.parameters['numerical_parameters']['rec_vector_y']
+        self.lattice_const_x = self.parameters['system_dimensions']['a']
+        self.lattice_const_y = self.parameters['system_dimensions']['b']
+        self.start_vec_q = self.parameters['q_vector']['start']
+        self.end_vec_q = self.parameters['q_vector']['end']
 
     def eigen_frequency_for_bloch_vectors(self):
         pass
@@ -58,17 +58,8 @@ class EigenValueProblem:
 
 
 class EigenValueProblem2D(EigenValueProblem):
-    def __init__(self, number_of_dispersion_point, direction,
-                 lattice_const_x=InputParameter.a, lattice_const_y=InputParameter.b,
-                 gamma=InputParameter.gamma, mu0H0=InputParameter.mu0H0,
-                 rec_vector_x=InputParameter.rec_vector_x, rec_vector_y=InputParameter.rec_vector_y,
-                 input_fft_file=InputParameter.fft_file,
-                 output_file_name=InputParameter.output_file):
-
-        EigenValueProblem.__init__(self, number_of_dispersion_point, lattice_const_x,
-                                   lattice_const_y, gamma, mu0H0, rec_vector_x, rec_vector_y,
-                                   input_fft_file, output_file_name)
-
+    def __init__(self, direction, input_parameters):
+        EigenValueProblem.__init__(self, input_parameters)
         self.direction = direction
         self.input_fft_file = 'ff=0.5.fft'
         if self.direction == 'x':
@@ -91,10 +82,10 @@ class EigenValueProblem2D(EigenValueProblem):
         return data
 
     def solve_eigen_problem(self, wektor_q, param):
-        eigen_matrix = EigenMatrix(self.input_fft_file, EigenMatrix.ReciprocalVectorGrid(
+        print(self.parameters)
+        eigen_matrix = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(
             self.rec_vector_x,
-            self.rec_vector_y),
-                                   wektor_q).generate_and_fill_matrix()
+            self.rec_vector_y), wektor_q, self.parameters, 'Fe', 'Ni').generate_and_fill_matrix()
         return eig(eigen_matrix, right=param)
 
     def list_vector_q(self):
@@ -104,11 +95,9 @@ class EigenValueProblem2D(EigenValueProblem):
 
 
 class EigenValueProblem1D(EigenValueProblem):
-    def __init__(self, number_of_dispersion_point, input_fft_file, output_file, mu0H0=InputParameter.mu0H0,
-                 lattice_const_x=InputParameter.a, lattice_const_y=None,
-                 gamma=InputParameter.gamma, angle=InputParameter.angle):
-        EigenValueProblem.__init__(self, number_of_dispersion_point, lattice_const_x, lattice_const_y,
-                                   gamma, mu0H0, input_fft_file, output_file_name=InputParameter.output_file)
+    def __init__(self, number_of_dispersion_point, input_fft_file, output_file, input_parameters,
+                 angle=InputParameter.angle):
+        EigenValueProblem.__init__(self, number_of_dispersion_point, input_parameters)
 
         self.input_fft_file = os.path.join(scriptpath, input_fft_file)
         self.output_file = output_file
@@ -133,4 +122,4 @@ class EigenValueProblem1D(EigenValueProblem):
 
 
 if __name__ == "__main__":
-    EigenValueProblem2D(1, 'x').print_eigen_vectors()
+    EigenValueProblem2D('x', 'InputParameter.yaml').print_eigen_vectors()

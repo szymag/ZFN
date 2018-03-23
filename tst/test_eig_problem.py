@@ -3,36 +3,33 @@ import numpy as np
 from src.eig_problem.EigenMatrix import EigenMatrix
 from src.eig_problem.EigenValueProblem import EigenValueProblem2D
 
+from src.io.DataReader import load_yaml_file
+
 
 class TheImpactTestCases(unittest.TestCase):
     """Tests for structure in paper "The impact of the lattice symmetry and
        the inclusion shape on the spectrum of 2D magnonic crystals"""
-    MoA = 1.752e6
-    MoB = 0.484e6
-    lA = 1.09e-17
-    lB = 5.84e-17
+    loaded_data = load_yaml_file("Parameter_for_TheImpact.yaml")
+    Fe = loaded_data['material_parameters']['Fe']
+    Ni = loaded_data['material_parameters']['Ni']
+    dim_sys = loaded_data['system_dimensions']
     H0 = 0.1 / (4e-7 * np.pi)
-    a = 400e-9
-    b = 400e-9
-    d = 20e-9
     gamma = 176e9
     mu0H0 = 0.1
     rec_vector_x = 7
     rec_vector_y = 7
     coefficient_from_file = 'ff=0.5.dat'
 
-    tested_case_1 = EigenMatrix(coefficient_from_file, EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
-                                a, b, MoA, MoB, lA, lB, d, 0, H0)
-    tested_case_2 = EigenMatrix(coefficient_from_file, EigenMatrix.ReciprocalVectorGrid(3, 3), np.array([0, 1e-9]),
-                                a, b, MoA, MoB, lA, lB, d, 0, H0)
-    tested_case_3 = EigenMatrix(coefficient_from_file, EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
-                                a, b, MoA, MoB, lA, lB, d, 0, H0)
-    tested_case_4 = EigenMatrix(coefficient_from_file, EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([0, 20e-9]),
-                                a, b, MoA, MoB, lA, lB, d, 0, H0)
+    tested_case_1 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
+                                "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
+    tested_case_2 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(3, 3), np.array([0, 1e-9]),
+                                "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
+    tested_case_3 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
+                                "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
+    tested_case_4 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([0, 20e-9]),
+                                "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
 
-    tested_case_5 = EigenValueProblem2D(1, 'x', a, b, gamma, mu0H0,
-                                        rec_vector_x, rec_vector_y,
-                                        coefficient_from_file, 'test_1.vec')
+    tested_case_5 = EigenValueProblem2D('x', "Parameter_for_TheImpact.yaml")
 
     @staticmethod
     def test_eigen_matrix():
