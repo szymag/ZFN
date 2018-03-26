@@ -4,6 +4,7 @@ from src.eig_problem.EigenValueProblem import EigenValueProblem2D
 from src.eig_problem.InputParameter import InputParameter
 from src.drawing.Plot import Plot
 
+input_parameters = 'InputParameters.yaml'
 file_name = 'tst.dat'
 number_of_dispersion_point = 20
 direction = 'xy'
@@ -24,8 +25,7 @@ def do_program():  # TODO: file type should represent containing data
     else:
         raise ValueError
 
-    eig_freq = EigenValueProblem2D(number_of_dispersion_point, direction,
-                                   input_fft_file=fft).eigen_frequency_for_bloch_vectors()
+    eig_freq = EigenValueProblem2D(direction, input_parameters=input_parameters).eigen_frequency_for_bloch_vectors()
     np.savetxt('tst.txt', eig_freq)
     if show_plot:
         return Plot(number_of_dispersion_branch, x_lim, y_lim,
