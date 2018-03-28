@@ -13,6 +13,7 @@ class TheImpactTestCases(unittest.TestCase):
     Fe = loaded_data['material_parameters']['Fe']
     Ni = loaded_data['material_parameters']['Ni']
     dim_sys = loaded_data['system_dimensions']
+    # TODO: remove unnecessary parameters
     H0 = 0.1 / (4e-7 * np.pi)
     gamma = 176e9
     mu0H0 = 0.1
