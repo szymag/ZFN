@@ -13,9 +13,7 @@ scriptpath = os.path.dirname(__file__)
 
 class EigenValueProblem:
     def __init__(self, input_parameters):
-        # TODO: input_parameters which is passed to EigenMatrix should be also class ParsingData
-        self.parameters_1 = ParsingData(input_parameters)
-        self.parameters = load_yaml_file(input_parameters)
+        self.parameters = ParsingData(input_parameters)
 
     def eigen_frequency_for_bloch_vectors(self):
         pass
@@ -27,7 +25,7 @@ class EigenValueProblem:
         pass
 
     def calculate_eigen_frequency(self, bloch_vector):
-        gamma, mu0H0 = self.parameters_1.physical_constant()
+        gamma, mu0H0 = self.parameters.physical_constant()
         eigen_vector = self.solve_eigen_problem(bloch_vector, param=False)
         eigen_value = [i.imag * gamma * mu0H0 / 2.0 / np.pi for i in eigen_vector if i.imag > 0]
         return list(sorted(eigen_value)[:50])  # TODO: create smarter choice
@@ -40,7 +38,7 @@ class EigenValueProblem:
         return eigen_vector
 
     def print_eigen_vectors(self):
-        np.savetxt(self.parameters_1.output_file(),
+        np.savetxt(self.parameters.output_file(),
                    self.calculate_eigen_vectors().view(float),
                    header='Bloch wave vector, q=' + str(self.list_vector_q()[0]))
 
@@ -69,14 +67,14 @@ class EigenValueProblem2D(EigenValueProblem):
         return data
 
     def solve_eigen_problem(self, wektor_q, param):
-        eigen_matrix = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(*self.parameters_1.rec_vector()),
+        eigen_matrix = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(*self.parameters.rec_vector()),
                                    wektor_q, self.parameters, 'Fe', 'Ni').generate_and_fill_matrix()
         return eig(eigen_matrix, right=param)
 
     def list_vector_q(self):
-        points = np.linspace(*self.parameters_1.bloch_vector())
+        points = np.linspace(*self.parameters.bloch_vector())
         return 2 * np.pi * np.stack((points, points), axis=-1) * self.coordinate / \
-               self.parameters_1.lattice_const()
+               self.parameters.lattice_const()
 
 
 class EigenValueProblem1D(EigenValueProblem):
@@ -101,8 +99,8 @@ class EigenValueProblem1D(EigenValueProblem):
                    , right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def list_vector_q(self):
-        return [2 * np.pi * k / self.parameters_1.lattice_const()[0]
-                for k in np.linspace(*self.parameters_1.bloch_vector())]
+        return [2 * np.pi * k / self.parameters.lattice_const()[0]
+                for k in np.linspace(*self.parameters.bloch_vector())]
 
 
 if __name__ == "__main__":

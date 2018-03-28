@@ -26,6 +26,7 @@ def load_yaml_file(file_name):
 class ParsingData:
     # TODO: Rename class, I guess
     # TODO: put in above functions into this class
+    # TODO: consider static method
     def __init__(self, input_parameters):
         if isinstance(input_parameters, str):
             self.input_parameters = load_yaml_file(input_parameters)
@@ -61,3 +62,12 @@ class ParsingData:
             return self.input_parameters['numerical_parameters']['output_file']
         else:
             return self.input_parameters['numerical_parameters']['output_file'] + '.vec'
+
+    def x(self):
+        return self.input_parameters['system_dimensions']['x']
+
+    def material_constant(self, material_name):
+        return self.input_parameters['material_parameters'][material_name]
+
+    def mu0(self):
+        return self.input_parameters['physical_parameters']['mu0']
