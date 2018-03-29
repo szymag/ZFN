@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from multiprocessing import Pool
 
 from src.eig_problem.InputParameter import InputParameter
 from src.eig_problem.ReciprocalVector import ReciprocalVector
@@ -7,38 +8,47 @@ from src.eig_problem.LoadFFT import LoadFFT2D
 
 
 class Profile2D:
-    def __init__(self, mode_number, load_data):
+    def __init__(self, mode_number, grid, load_data):
         # TODO: Eigvalue problem return fourier coefficients. Name of variables wrongly suggest that they're vectors.
         self.fourier_coefficients = np.loadtxt(load_data).view(complex)
         self.lattice_const_x = InputParameter.a
         self.lattice_const_y = InputParameter.b
-        self.mode_number = mode_number - 1
+        self.grid = grid
 
-    def elementary_cell(self, file_name, coef_count, grid):
-        lattice_coef = LoadFFT2D(file_name,
-                                 coef_count).rescale_fourier_coefficient(
-            InputParameter.lA,
-            InputParameter.lB).reshape((coef_count[0]*coef_count[1],))
-        return self.reconstruct_whole_structure(lattice_coef, grid)
+    def generate_plot(self, mode_number):
+        lista_x, lista_y, lista_wartosci = self.spatial_distribution_dynamic_magnetization(mode_number)
+        x, y = np.meshgrid(lista_x, lista_y)
+        plt.pcolor(x, y, np.array(lista_wartosci))
+        plt.colorbar()
+        plt.show()
 
-    def spatial_distribution_dynamic_magnetization(self, grid):
-        mode = self.fourier_coefficients[self.mode_number, :]
+    def spatial_distribution_dynamic_magnetization(self, mode_number):
+        mode = self.fourier_coefficients[mode_number, :]
         mode = mode[:len(mode) // 2]
-        return self.reconstruct_whole_structure(mode, grid)
+        return self.reconstruct_whole_structure(mode)
 
-    def reconstruct_whole_structure(self, input_coefficient, grid):
-        x = np.linspace(-self.lattice_const_x, self.lattice_const_x, grid)
-        y = np.linspace(-self.lattice_const_x, self.lattice_const_y, grid)
-        m = np.zeros(grid * grid)
+    def reconstruct_whole_structure(self, input_coefficient):
+        x = np.linspace(-self.lattice_const_x, self.lattice_const_x, self.grid)
+        y = np.linspace(-self.lattice_const_x, self.lattice_const_y, self.grid)
+        m = np.zeros(self.grid * self.grid, dtype=complex)
         for i, j in enumerate(np.dstack(np.meshgrid(x, y)).reshape(-1, 2)):
             m[i] = self.inverse_discrete_fourier_transform(input_coefficient, j)
-        return x, y, m.reshape((grid, grid))
+        return x, y, m.reshape((self.grid, self.grid))
 
     def inverse_discrete_fourier_transform(self, data, position):
         reciprocal_vectors = 2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow2d('min') /\
                              np.array((self.lattice_const_x, self.lattice_const_y))
-        return abs(np.sum(data * np.prod(np.exp(1j * reciprocal_vectors * position), axis=1)))**2
+        return np.sum(data * np.prod(np.exp(1j * reciprocal_vectors * position), axis=1))
         # TODO: Implement FMR spectra
+
+    def fmr(self, mode_number):
+        mode = self.spatial_distribution_dynamic_magnetization(mode_number)[2]
+        return np.sum(np.abs(np.trapz(mode, axis=1)) ** 2 / np.trapz(np.abs(mode) ** 2, axis=1))
+
+    def fmr_intensity_order(self):
+        fmr = Pool().map(self.fmr, range(10))
+        return np.array(fmr)
+
 
 class Profile1D:
     def __init__(self, mode_number, load_data, name_of_file, **kwargs):
