@@ -105,4 +105,4 @@ class EigenValueProblem1D(EigenValueProblem):
 
 if __name__ == "__main__":
     EigenValueProblem2D('x', 'InputParameter.yaml').calculate_eigen_vectors()
-    #EigenValueProblem2D('x', 'InputParameter.yaml').calculate_eigen_frequency([1e-9, 0])
+    EigenValueProblem2D('x', 'InputParameter.yaml').calculate_eigen_frequency([1e-9, 0])

@@ -4,12 +4,13 @@ from multiprocessing import Pool
 
 from src.eig_problem.InputParameter import InputParameter
 from src.eig_problem.ReciprocalVector import ReciprocalVector
+from src.io.DataReader import ParsingData
 from src.eig_problem.LoadFFT import LoadFFT2D
 
 
 class Profile2D:
-    def __init__(self, mode_number, grid, load_data):
-        # TODO: Eigvalue problem return fourier coefficients. Name of variables wrongly suggest that they're vectors.
+    def __init__(self, grid, load_data):
+        # TODO: How to pass lattice constant? InputParameter is depreciated
         self.fourier_coefficients = np.loadtxt(load_data).view(complex)
         self.lattice_const_x = InputParameter.a
         self.lattice_const_y = InputParameter.b
@@ -39,7 +40,6 @@ class Profile2D:
         reciprocal_vectors = 2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow2d('min') /\
                              np.array((self.lattice_const_x, self.lattice_const_y))
         return np.sum(data * np.prod(np.exp(1j * reciprocal_vectors * position), axis=1))
-        # TODO: Implement FMR spectra
 
     def fmr(self, mode_number):
         mode = self.spatial_distribution_dynamic_magnetization(mode_number)[2]

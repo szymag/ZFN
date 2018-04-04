@@ -43,17 +43,23 @@ class EigenMatrix:
 
         self.material_A = self.parameters.material_constant(material_A)
         self.material_B = self.parameters.material_constant(material_B)
+
         self.ReciprocalVectorGrid = ReciprocalVectorGrid
         self.vectors_count = self.ReciprocalVectorGrid.vectors_count()
         self.gamma, self.mu0H0 = self.parameters.physical_constant()
         self.H0 = self.mu0H0 / self.parameters.mu0()
         self.tmp = LoadFFT2D(self.parameters.input_fft_file(),
                              self.ReciprocalVectorGrid.coefficient_grid_size())
-        self.magnetization_sat = self.tmp.rescale_fourier_coefficient(self.material_A['Mo'], self.material_B['Mo'])
-        self.exchange_len = self.tmp.rescale_fourier_coefficient(self.material_A['l'], self.material_B['l'])
+        # TODO: Check if keeping these lines in constructor isn't faster than moving to separate methods
         self.rec_vector_indexes = ReciprocalVector(self.vectors_count).lista_wektorow2d('min')
         self.shift_to_middle_of_coeff_array = ReciprocalVectorGrid.shift_to_middle_of_coeff_array()
         self.vector_q = vector_q
+
+    def magnetization_sat(self):
+        return self.tmp.rescale_fourier_coefficient(self.material_A['Mo'], self.material_B['Mo'])
+
+    def exchange_len(self):
+        return self.tmp.rescale_fourier_coefficient(self.material_A['l'], self.material_B['l'])
 
     def save_matrix_to_file(self):
         tmp = self.generate_and_fill_matrix()
@@ -92,8 +98,8 @@ class EigenMatrix:
         tmp = vectors_diff(tab_from_wektor_1, tab_from_vec_l, self.shift_to_middle_of_coeff_array)
         tmp2 = vectors_diff(tab_from_vec_l, vector_2, self.shift_to_middle_of_coeff_array)
 
-        tmp1 = self.magnetization_sat[tmp[:, :, 0], tmp[:, :, 1]]
-        tmp3 = self.exchange_len[tmp2[:, :, 0], tmp2[:, :, 1]]
+        tmp1 = self.magnetization_sat()[tmp[:, :, 0], tmp[:, :, 1]]
+        tmp3 = self.exchange_len()[tmp2[:, :, 0], tmp2[:, :, 1]]
 
         vectors_sum = lambda a, b: ne.evaluate('2 * 3.14159265 * {v} + {q}'.format(v='a', q='b'))
 
@@ -110,7 +116,7 @@ class EigenMatrix:
         tmp1 = (self.vector_q[1] + vec_2[1]) ** 2 / norm ** 2
         tmp2 = 1 - cosh(norm * self.parameters.x()) * exp(-norm * self.parameters.thickness() / 2.)
         tmp3 = self.rec_vector_indexes - wektor_2 + self.shift_to_middle_of_coeff_array
-        tmp4 = self.magnetization_sat[tmp3[:, 0], tmp3[:, 1]]
+        tmp4 = self.magnetization_sat()[tmp3[:, 0], tmp3[:, 1]]
         e3 = lambda a, b, c, d: ne.evaluate('{a}*{b}*{c}/{d}'.format(a='a', b='b', c='c', d='d'))
         return e3(tmp1, tmp2, tmp4, self.H0)
 
@@ -119,7 +125,7 @@ class EigenMatrix:
         norm = sqrt((self.vector_q[0] + vec_2[0]) ** 2 + (self.vector_q[1] + vec_2[1]) ** 2)
         tmp1 = cosh(norm * self.parameters.x()) * exp(-norm * self.parameters.thickness() / 2.)
         tmp3 = self.rec_vector_indexes - wektor_2 + self.shift_to_middle_of_coeff_array
-        tmp4 = self.magnetization_sat[tmp3[:, 0], tmp3[:, 1]]
+        tmp4 = self.magnetization_sat()[tmp3[:, 0], tmp3[:, 1]]
         e3 = lambda a, b, c: ne.evaluate('{a}*{b}/{c}'.format(a='a', b='b', c='c'))
         return e3(tmp1, tmp4, self.H0)
 
@@ -132,7 +138,7 @@ class EigenMatrix:
         tmp2 = 1 - np.cosh(np.linalg.norm(vec_1 - vec_2, axis=1) * self.parameters.x()) * \
                np.exp(-np.linalg.norm(vec_1 - vec_2, axis=1) * self.parameters.thickness() / 2.)
         tmp3 = vector_1 - wektor_2 + self.shift_to_middle_of_coeff_array
-        tmp4 = self.magnetization_sat[tmp3[:, 0], tmp3[:, 1]]
+        tmp4 = self.magnetization_sat()[tmp3[:, 0], tmp3[:, 1]]
         e3 = lambda a, b, c, d: ne.evaluate('{a}*{b}*{c}/{d}'.format(a='a', b='b', c='c', d='d'))
         return e3(tmp1, tmp2, tmp4, self.H0)
 
