@@ -66,3 +66,13 @@ class Heated(ChainGeneration):
 
     def cos_sequence(self):
         return (np.cos(np.linspace(0, 2 * np.pi, self.repeat)) + 1) / 2
+
+class Custom(ChainGeneration):
+    def __init__(self, file_name, repeat=1):
+        ChainGeneration.__init__(self, repeat)
+        self.tmp = np.transpose(np.loadtxt(file_name))[-1]
+        self.data = (self.tmp - np.min(self.tmp))
+        self.data /= np.max(self.data)
+
+    def sequence(self):
+        return self.data

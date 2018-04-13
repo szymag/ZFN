@@ -5,8 +5,9 @@ import re
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.fft_from_image.Sequences import ThueMorse, Fibonacci, Periodic, Heated
+from src.fft_from_image.Sequences import ThueMorse, Fibonacci, Periodic, Heated, Custom
 from src.fft_from_image.ElementaryUnitCellImage import ElementaryUnitCellImage
+
 
 
 class FFT:
@@ -108,8 +109,11 @@ class FFT:
             np.savetxt('p_coef_' + str(repeat) + '*' + str(len_num) + '.txt', self.fft1d(tab))
         elif typ_struktury == 'C':
             tab = Heated(repeat).cos_sequence()
-            print(tab)
             np.savetxt('c_coef_' + str(repeat) + '.txt', self.fft1d(tab))
+        elif typ_struktury == 'Custom':
+            tab = Custom('real_Ni.txt').sequence()
+            np.savetxt('heat_fft_Ni.txt', self.fft1d(tab))
+
         return np.fft.fftshift(np.fft.fft(tab))
 
 
@@ -117,3 +121,4 @@ if __name__ == "__main__":
     #a = FFT().wywolaj_fft1d('C', 100, 2)
     #FFT().wypisz_do_pliku()
     a = FFT().wypisz_do_pliku()
+
