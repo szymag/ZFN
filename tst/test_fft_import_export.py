@@ -3,9 +3,10 @@ import os
 import unittest
 
 import numpy as np
-from src.eig_problem.FFTfromFile import FFTfromFile
 
-from src.fft_from_image.FFT import FFT
+
+from src.eig_problem.LoadFFT import LoadFFT2D
+
 
 logging.basicConfig(format='%(levelname)s:%(message)s',
                     filename='./log/test_fft_export_import.log',
@@ -15,8 +16,7 @@ logging.basicConfig(format='%(levelname)s:%(message)s',
 
 class TestFFTExportImport(unittest.TestCase):
 
-    fft = FFT()
-    fft_from_file = FFTfromFile(9, 'I')
+    fft_from_file = LoadFFT2D('ff=0.5.fft', [9, 9])
 
     def test_export_import(self):
         logging.info("### Running test_export_import...")
@@ -28,7 +28,7 @@ class TestFFTExportImport(unittest.TestCase):
             logging.info(" - %s" % filename)
 
         for i in range(len(files)):
-            imported_list = self.fft_from_file.table(files[i])
+            imported_list = self.fft_from_file.fourier_coefficient(files[i])
             np.testing.assert_array_almost_equal(imported_list, lists_to_export[i])
         logging.info("### end of test_export_import")
 

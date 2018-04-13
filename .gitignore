@@ -1,8 +1,11 @@
+*.pyc
 *.txt
+*.png
 *.dat
 *.svg
 *.pyc
-.idea
 
+.idea
 article/
-src/drawing/Tobey/
+src/fft_from_image/niuzywane/
+

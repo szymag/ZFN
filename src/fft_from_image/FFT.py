@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.fft_from_image.Sequences import ThueMorse, Fibonacci, Periodic, Heated, Custom
-from src.fft_from_image.TablicaWartosciPikseli import TablicaWartosciPikseli
+from src.fft_from_image.ElementaryUnitCellImage import ElementaryUnitCellImage
+
 
 
 class FFT:
@@ -31,9 +32,10 @@ class FFT:
         """
         Dla każdego pliku '*.png' znajdującego się w tym samym katalogu co klasa, wywoływana jest metdoda fft
         :param path: Scieżka pliku
+
         :return: Lista tablic, które pochodzą z wywołania metody fft.
         """
-        lista_plikow = TablicaWartosciPikseli(path).tablica_dla_plikow()
+        lista_plikow = ElementaryUnitCellImage(path).apply_for_every_image_in_directory()
         lista_fft = [self.fft2d(k) for k in lista_plikow]
         return lista_fft
 
@@ -65,10 +67,21 @@ class FFT:
         files = []
         for tablica in lista_fft:
             filepath = os.path.join(os.path.abspath(path),
-                                    re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks - 1]))[0] + '.txt')
+                                    re.split(r'\.(?!\d)', str(list((glob.glob("*.png")))[indeks - 1]))[0] + '.fft')
             files.append(filepath)
             np.savetxt(filepath, tablica.view(float))
             indeks += 1
+
+    def zwroc_tablice(self, file):
+        """
+        Metoda wypisująca do plików w postaci tablic, współczynniki Fouriera.
+        Odpowiednio dla każdego pliku '*.png' w katalogu.
+        :param lista_fft:
+        :param path: Ścieżka
+        :return: Pliki typu '*.txt' dla każdego obrazka '*.png'
+        """
+        fft = self.fft2d(ElementaryUnitCellImage().apply_for_desired_image(file))
+        return fft.view(float)
 
     @staticmethod
     def fft1d(tablica):
@@ -105,12 +118,7 @@ class FFT:
 
 
 if __name__ == "__main__":
-    a = FFT().wywolaj_fft1d('Custom', 200, 2)
+    #a = FFT().wywolaj_fft1d('C', 100, 2)
     #FFT().wypisz_do_pliku()
-    b = np.arange(len(a))
+    a = FFT().wypisz_do_pliku()
 
-    c = np.fft.fft(np.fft.ifftshift(a)) / len(a)
-    #c = c * (0.95529 - 0.8858) + 0.8858
-    plt.ylim([0, 1])
-    plt.plot(b, c)
-    plt.show()

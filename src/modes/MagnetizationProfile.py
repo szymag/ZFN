@@ -24,11 +24,60 @@ class MidpointNormalize(colors.Normalize):
         x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
         return np.ma.masked_array(np.interp(value, x, y))
 
+from multiprocessing import Pool
+
+from src.eig_problem.InputParameter import InputParameter
+from src.eig_problem.ReciprocalVector import ReciprocalVector
+from src.io.DataReader import ParsingData
+from src.eig_problem.LoadFFT import LoadFFT2D
+
+
+class Profile2D:
+    def __init__(self, grid, load_data):
+        # TODO: How to pass lattice constant? InputParameter is depreciated
+        self.fourier_coefficients = np.loadtxt(load_data).view(complex)
+        self.lattice_const_x = InputParameter.a
+        self.lattice_const_y = InputParameter.b
+        self.grid = grid
+
+    def generate_plot(self, mode_number):
+        lista_x, lista_y, lista_wartosci = self.spatial_distribution_dynamic_magnetization(mode_number)
+        x, y = np.meshgrid(lista_x, lista_y)
+        plt.pcolor(x, y, np.array(lista_wartosci))
+        plt.colorbar()
+        plt.show()
+
+    def spatial_distribution_dynamic_magnetization(self, mode_number):
+        mode = self.fourier_coefficients[mode_number, :]
+        mode = mode[:len(mode) // 2]
+        return self.reconstruct_whole_structure(mode)
+
+    def reconstruct_whole_structure(self, input_coefficient):
+        x = np.linspace(-self.lattice_const_x, self.lattice_const_x, self.grid)
+        y = np.linspace(-self.lattice_const_x, self.lattice_const_y, self.grid)
+        m = np.zeros(self.grid * self.grid, dtype=complex)
+        for i, j in enumerate(np.dstack(np.meshgrid(x, y)).reshape(-1, 2)):
+            m[i] = self.inverse_discrete_fourier_transform(input_coefficient, j)
+        return x, y, m.reshape((self.grid, self.grid))
+
+    def inverse_discrete_fourier_transform(self, data, position):
+        reciprocal_vectors = 2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow2d('min') /\
+                             np.array((self.lattice_const_x, self.lattice_const_y))
+        return np.sum(data * np.prod(np.exp(1j * reciprocal_vectors * position), axis=1))
+
+    def fmr(self, mode_number):
+        mode = self.spatial_distribution_dynamic_magnetization(mode_number)[2]
+        return np.sum(np.abs(np.trapz(mode, axis=1)) ** 2 / np.trapz(np.abs(mode) ** 2, axis=1))
+
+    def fmr_intensity_order(self):
+        fmr = Pool().map(self.fmr, range(10))
+        return np.array(fmr)
+
 
 class Profile1D:
     def __init__(self, mode_number, load_data, name_of_file, **kwargs):
         self.eig_vectors = np.loadtxt(load_data).view(complex)
-        self.lattice_const = ParametryMaterialowe.a
+        self.lattice_const = InputParameter.a
         self.mode_number = mode_number - 1
         self.name_of_file = name_of_file
 
@@ -57,6 +106,28 @@ class Profile1D:
         ax.set_xlabel('Position', fontsize=14)
         ax.set_ylabel(r'$\left|\textup{m}_{\textup{out}}\right|$', fontsize=14)
         # self.output_plot()
+
+    def generate_plot(self):
+        magnetization = self.spatial_distribution_dynamic_magnetization(500)
+        elementary_cell = self.elementary_cell_reconstruction(500)
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(magnetization[0], abs(magnetization[1]) ** 2, '-', label=r'$\left|\mathbf{m}\right|^{2}$')
+        #ax.plot(manetization[0], np.arctan2(magnetization[1].imag, magnetization[1].real),
+        #        '-', label='phase', color="red")
+        ax2 = ax.twinx()
+        ax2.plot(elementary_cell[0], elementary_cell[1], '-', label=r'$M_{s}$', color="green", linewidth=3)
+        ax.legend(loc=(0, .1), frameon=False)
+        ax2.legend(loc=(0, .05), frameon=False)
+        ax.grid()
+        ax.set_xlabel("elementary cell [nm]")
+        ax.set_ylabel(r"Intensity")
+        ax2.set_ylabel(r"Magnetization saturation $M_{s,Ni}\left(x\right)/M_{s,Ni}$")
+        ax2.set_ylim(0, 1)
+        ax.set_ylim(0, 2)
+        ax.set_title(r'$angle = ' + str(self.angle) + '^{\circ}$, $mode = ' + str(self.mode_number + 1) + ', $'
+                     + '$H = 0.05T$', fontsize=22)
+        self.output_plot()
 
     def output_plot(self):
         if self.name_of_file is None:
@@ -94,6 +165,9 @@ class Profile1D:
     def inverse_discrete_fourier_transform(self, data, vector_position):
         reciprocal_vectors = np.array(
             2 * np.pi * WektorySieciOdwrotnej(max(data.shape)).lista_wektorow1d('min') / self.lattice_const)
+        reciprocal_vectors = np.array(2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow1d('min')
+                                      / self.lattice_const)
+
         return np.sum(data * np.exp(1j * reciprocal_vectors * vector_position))
 
     def fmr_intensity(self, mode):
@@ -347,3 +421,4 @@ if __name__ == "__main__":
     #fmr(40, 0, 91, 1)
     make_final_plot()
     #cross_section(40)
+
