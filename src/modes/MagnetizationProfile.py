@@ -6,6 +6,7 @@ from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 import matplotlib.gridspec as gridspec
 import matplotlib.image as mpimg
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from matplotlib import rcParams
 
@@ -13,7 +14,7 @@ rcParams.update({'figure.autolayout': True})
 
 plt.rc('text', usetex=True)
 rcParams['font.family'] = 'sans-serif'
-rcParams['font.sans-serif'] = ['Arial']
+rcParams['font.sans-serif'] = ['Helvetica']
 
 class MidpointNormalize(colors.Normalize):
     def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
@@ -103,31 +104,9 @@ class Profile1D:
         #ax.set_ylim(-0.05, 3)
         plt.setp(ax, xticks=[-1100, 0, 1100], xticklabels=[r'$-\Lambda$', 0, r'$\Lambda$'],
                  yticks=[0])
-        ax.set_xlabel('Position', fontsize=14)
-        ax.set_ylabel(r'$\left|\textup{m}_{\textup{out}}\right|$', fontsize=14)
+        ax.set_xlabel('Position', fontsize=12)
+        ax.set_ylabel(r'$\left|\textup{m}_{\textup{z}}\right|$', fontsize=12)
         # self.output_plot()
-
-    def generate_plot(self):
-        magnetization = self.spatial_distribution_dynamic_magnetization(500)
-        elementary_cell = self.elementary_cell_reconstruction(500)
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.plot(magnetization[0], abs(magnetization[1]) ** 2, '-', label=r'$\left|\mathbf{m}\right|^{2}$')
-        #ax.plot(manetization[0], np.arctan2(magnetization[1].imag, magnetization[1].real),
-        #        '-', label='phase', color="red")
-        ax2 = ax.twinx()
-        ax2.plot(elementary_cell[0], elementary_cell[1], '-', label=r'$M_{s}$', color="green", linewidth=3)
-        ax.legend(loc=(0, .1), frameon=False)
-        ax2.legend(loc=(0, .05), frameon=False)
-        ax.grid()
-        ax.set_xlabel("elementary cell [nm]")
-        ax.set_ylabel(r"Intensity")
-        ax2.set_ylabel(r"Magnetization saturation $M_{s,Ni}\left(x\right)/M_{s,Ni}$")
-        ax2.set_ylim(0, 1)
-        ax.set_ylim(0, 2)
-        ax.set_title(r'$angle = ' + str(self.angle) + '^{\circ}$, $mode = ' + str(self.mode_number + 1) + ', $'
-                     + '$H = 0.05T$', fontsize=22)
-        self.output_plot()
 
     def output_plot(self):
         if self.name_of_file is None:
@@ -156,7 +135,7 @@ class Profile1D:
 
     def elementary_cell_reconstruction(self, grid):
         coefficient = np.transpose(np.loadtxt('c_coef_100.txt').view(complex))
-        x = np.linspace(-self.lattice_const, 0, grid)
+        x = np.linspace(-self.lattice_const, self.lattice_const, grid)
         tmp = np.zeros(grid)
         for ind in enumerate(x):
             tmp[ind[0]] = abs(self.inverse_discrete_fourier_transform(coefficient, ind[1]))
@@ -260,14 +239,14 @@ if __name__ == "__main__":
                              c=z[0:drawing_mode_count, i[0]][order],
                              s=10, edgecolors='', vmin=min, vmax=max,
                              cmap=plt.cm.Wistia, alpha=0.96, norm=MidpointNormalize(midpoint=30))
-        ax.set_ylim([4, 10])
+        ax.set_ylim([4, 8])
         ax.axes.get_xaxis().set_ticklabels([])
-        ax.set_ylabel('Frequency (GHz)', fontsize=13)
+        ax.set_ylabel('Frequency (GHz)', fontsize=12)
         # part responsible for color bar
-        # divider = make_axes_locatable(ax)
-        # cax2 = divider.append_axes("right", size="3%", pad=0.0)
-        # a = plt.colorbar(tmp, ax=ax, ticks=[], cax=cax2)
-        # a.set_label('FMR Intensity (a.u.)')
+        divider = make_axes_locatable(ax)
+        cax2 = divider.append_axes("right", size="3%", pad=0.0)
+        a = plt.colorbar(tmp, ax=ax, ticks=[], cax=cax2)
+        a.set_label('Detection intensity (a.u.) (a) (b) (c)')
 
 
 
@@ -317,13 +296,13 @@ if __name__ == "__main__":
     def make_final_plot():
         angles = [10, 17, 20, 30, 40, 60]
         y_coordinates = get_y_coordinates(angles, 40)
-        labels_1 = ['(a)', '(h)', '(i)', '(j)', '(k)', '(l)']
-        labels_2 = ['(g)', '(b)', '(c)', '(d)', '(e)', '(f)']
+        labels_1 = ['(VII)', '(VIII)', '(IX)', '(X)', '(XI)', '(XII)']
+        labels_2 = ['(I)', '(II)', '(III)', '(IV)', '(V)', '(VI)']
         fig = plt.figure(figsize=(6, 7))
         fig.tight_layout()
         img = mpimg.imread('struct.png')
 
-        outer = gridspec.GridSpec(4, 1, height_ratios=[0.3, 2, 3, 1])
+        outer = gridspec.GridSpec(4, 1, height_ratios=[0.3, 2, 5, 1])
 
         gs0 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=outer[0],
                                                hspace=0.0,
@@ -378,8 +357,8 @@ if __name__ == "__main__":
         ax8 = plt.subplot(gs3[:, :])
         ax8.plot(*np.transpose(np.loadtxt('cross_section_Ni_corrected.txt')))
         ax8.set_yticks([0])
-        ax8.set_ylabel('Prec. Ampl. (a.u.)', fontsize=13)
-        ax8.set_xlabel('Magnet Angle (deg)', fontsize=16)
+        ax8.set_ylabel('Prec. Ampl. (a.u.)', fontsize=12)
+        ax8.set_xlabel('Magnet Angle (deg)', fontsize=12)
 
         plt.savefig('final.svg')
 

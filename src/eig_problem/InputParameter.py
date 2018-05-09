@@ -26,7 +26,7 @@ class InputParameter:
     H0 = mu0H0 / (4e-7 * pi)
     mu0 = 4e-7 * pi
     d = 20e-9  # thickness of material
-    a = 400e-9 # size of unit cell in x direction
+    a = 1100e-9 # size of unit cell in x direction
     b = 400e-9 # size of unit cell in y direction
     x = 0  # position of calculation of dispersion in z-direction
     angle = 0
