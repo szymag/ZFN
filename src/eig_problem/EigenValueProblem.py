@@ -10,12 +10,16 @@ import os.path
 
 scriptpath = os.path.dirname(__file__)
 
-
 class EigenValueProblem:
     def __init__(self, input_parameters):
-        self.parameters = ParsingData(input_parameters)
+        if isinstance(input_parameters, str):
+            self.parameters = ParsingData(input_parameters)
+        elif isinstance(input_parameters, dict):
+            self.parameters = ParsingData(input_parameters)
+        else:
+            self.parameters = input_parameters
 
-    def eigen_frequency_for_bloch_vectors(self):
+    def calculate_dispersion(self):
         pass
 
     def solve_eigen_problem(self, wektor_q, param):
@@ -58,7 +62,7 @@ class EigenValueProblem2D(EigenValueProblem):
 
     # TODO: update symbol; add another paths
 
-    def eigen_frequency_for_bloch_vectors(self):
+    def calculate_dispersion(self):
         data = []
         for k in self.list_vector_q():
             tmp = [hypot(k[0], k[1])]
@@ -81,11 +85,9 @@ class EigenValueProblem1D(EigenValueProblem):
     def __init__(self, input_parameters,
                  angle=InputParameter.angle):
         EigenValueProblem.__init__(self, input_parameters)
-
-        self.input_fft_file = os.path.join(scriptpath)
         self.angle = angle
 
-    def eigen_frequency_for_bloch_vectors(self):
+    def calculate_dispersion(self):
         data = []
         for k in self.list_vector_q():
             tmp = [k]
@@ -94,9 +96,8 @@ class EigenValueProblem1D(EigenValueProblem):
         return data
 
     def solve_eigen_problem(self, bloch_vector, param):
-        return eig(EigenMatrix1D(self.input_fft_file, bloch_vector,
-                                 angle=self.angle).matrix_angle_dependence(bloch_vector)
-                   , right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
+        return eig(EigenMatrix1D(self.parameters, 'Co', 'Py').matrix_angle_dependence(bloch_vector),
+                   right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def list_vector_q(self):
         return [2 * np.pi * k / self.parameters.lattice_const()[0]
@@ -104,5 +105,6 @@ class EigenValueProblem1D(EigenValueProblem):
 
 
 if __name__ == "__main__":
-    EigenValueProblem2D('x', 'InputParameter.yaml').calculate_eigen_vectors()
-    EigenValueProblem2D('x', 'InputParameter.yaml').calculate_eigen_frequency([1e-9, 0])
+    #EigenValueProblem2D('x', 'InputParameter.yaml').calculate_eigen_vectors()
+    #EigenValueProblem2D('x', 'InputParameter.yaml').calculate_eigen_frequency([1e-9, 0])
+    pass

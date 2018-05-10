@@ -71,3 +71,6 @@ class ParsingData:
 
     def mu0(self):
         return self.input_parameters['physical_parameters']['mu0']
+
+    def angle(self):
+        return self.input_parameters['system_dimensions']['angle']
