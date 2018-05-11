@@ -4,11 +4,11 @@ import numpy as np
 from scipy.linalg import eig
 import sys
 from src.eig_problem.EigenMatrix1D import EigenMatrix1D
-from src.eig_problem.InputParameter import InputParameter
-from src.io.DataReader import load_yaml_file, ParsingData
+from src.io.DataReader import ParsingData
 import os.path
 
 scriptpath = os.path.dirname(__file__)
+
 
 class EigenValueProblem:
     def __init__(self, input_parameters):
@@ -82,10 +82,8 @@ class EigenValueProblem2D(EigenValueProblem):
 
 
 class EigenValueProblem1D(EigenValueProblem):
-    def __init__(self, input_parameters,
-                 angle=InputParameter.angle):
+    def __init__(self, input_parameters):
         EigenValueProblem.__init__(self, input_parameters)
-        self.angle = angle
 
     def calculate_dispersion(self):
         data = []
@@ -105,6 +103,4 @@ class EigenValueProblem1D(EigenValueProblem):
 
 
 if __name__ == "__main__":
-    #EigenValueProblem2D('x', 'InputParameter.yaml').calculate_eigen_vectors()
-    #EigenValueProblem2D('x', 'InputParameter.yaml').calculate_eigen_frequency([1e-9, 0])
     pass

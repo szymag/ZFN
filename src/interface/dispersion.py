@@ -35,7 +35,7 @@ def do_program():  # TODO: file type should represent containing data
 
 
 def do_program_1D():
-    eig_freq = EigenValueProblem1D(input_parameters=input_parameters, angle=90).calculate_dispersion()
+    eig_freq = EigenValueProblem1D(input_parameters=input_parameters).calculate_dispersion()
     np.savetxt('tst.txt', eig_freq)
     if show_plot:
         return Plot(number_of_dispersion_branch, x_lim, y_lim,

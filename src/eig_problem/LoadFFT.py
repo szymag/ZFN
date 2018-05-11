@@ -46,18 +46,18 @@ class LoadFFT1D:
             print('Can not find such file. Generate fourier coefficient in FFT class in fft_from_file directory')
             sys.exit()
         self.coeff = self.file[0] + self.file[1] * 1j
-        self.ilosc_wektorow = len(self.file[0]) // 2
+        self.vectors_count = len(self.file[0]) // 2
 
     def coefficient1d(self):
         index = len(self.file[0]) // 2
-        return np.array(self.coeff[index - int(self.ilosc_wektorow) + 1:index + int(self.ilosc_wektorow)])
+        return np.array(self.coeff[index - int(self.vectors_count) + 1:index + int(self.vectors_count)])
 
     def fourier_coefficient(self, paramA, paramB):
         """
         Metoda ta tworzy słownik, gdzi kluczem jest wektor sieci odwrotnej, a wartością współczynnik Fouriera.
         :return: Słownik
         """
-        index0 = self.ilosc_wektorow - 1
+        index0 = self.vectors_count - 1
         tab = (paramA - paramB) * self.coefficient1d()
         tab[index0] += paramB
         assert tab[index0].imag == 0.
