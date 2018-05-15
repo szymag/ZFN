@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from src.eig_problem.EigenMatrix import EigenMatrix
-from src.eig_problem.EigenValueProblem import EigenValueProblem2D
+from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
 
 from src.io.DataReader import load_yaml_file
 
@@ -13,13 +13,6 @@ class TheImpactTestCases(unittest.TestCase):
     Fe = loaded_data['material_parameters']['Fe']
     Ni = loaded_data['material_parameters']['Ni']
     dim_sys = loaded_data['system_dimensions']
-    # TODO: remove unnecessary parameters
-    H0 = 0.1 / (4e-7 * np.pi)
-    gamma = 176e9
-    mu0H0 = 0.1
-    rec_vector_x = 7
-    rec_vector_y = 7
-    coefficient_from_file = 'ff=0.5.dat'
 
     tested_case_1 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
                                 "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
@@ -39,10 +32,10 @@ class TheImpactTestCases(unittest.TestCase):
         tested_data_3 = TheImpactTestCases.tested_case_3.generate_and_fill_matrix().view(float)
         tested_data_4 = TheImpactTestCases.tested_case_4.generate_and_fill_matrix().view(float)
 
-        loaded_data_to_compare_1 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].dat')
-        loaded_data_to_compare_2 = np.loadtxt('matrix_to_eig_TheImpact_3_3_q=[0,1e-9].dat')
-        loaded_data_to_compare_3 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].dat')
-        loaded_data_to_compare_4 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[0,20e-9].dat')
+        loaded_data_to_compare_1 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].tst')
+        loaded_data_to_compare_2 = np.loadtxt('matrix_to_eig_TheImpact_3_3_q=[0,1e-9].tst')
+        loaded_data_to_compare_3 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].tst')
+        loaded_data_to_compare_4 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[0,20e-9].tst')
 
         np.testing.assert_array_almost_equal(loaded_data_to_compare_1, tested_data_1, decimal=5)
         np.testing.assert_array_almost_equal(loaded_data_to_compare_2, tested_data_2, decimal=5)
@@ -74,6 +67,20 @@ class TheImpactTestCases(unittest.TestCase):
         np.testing.assert_array_almost_equal(EigenValueProblem2D('x',
                                                                  "Parameter_for_TheImpact.yaml").
                                              calculate_eigen_frequency([1e-9, 0]), test_val, decimal=5)
+
+
+class SokolovskyyTestCases(unittest.TestCase):
+    """Tests for structure in paper "The magnetostatic modes in planar one-dimensional magnonic crystals
+    with nanoscale sizes"""
+    loaded_data = "Sokolovskyy.yaml"
+
+    @staticmethod
+    def test_dispersion():
+        loaded_data_to_compare_1 = np.loadtxt('dispersion_sokolovskyy_0.2T.tst')
+        np.testing.assert_array_almost_equal(
+            np.array(EigenValueProblem1D(SokolovskyyTestCases.loaded_data).calculate_dispersion()),
+            loaded_data_to_compare_1,
+            decimal=5)
 
 
 if __name__ == '__main__':
