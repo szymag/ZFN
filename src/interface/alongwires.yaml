@@ -16,24 +16,25 @@ material_parameters:
         l: 1.7e-17
 
 numerical_parameters:
-    fft_file: "ff=0.5.fft"
-    rec_vector_x: 7
-    rec_vector_y: 7
-    output_file: "vec"
+    fft_file: "periodic.fft"
+    rec_vector_x: None
+    rec_vector_y: None
+    output_file: None
 
 physical_parameters:
-    mu0H0: 0.1
-    gamma: 176e9
+    mu0H0: 0.2
+    gamma: 194.6e9
     mu0: 1.2566370614359173e-06
 
 system_dimensions:
-    d: 20e-9
-    a: 400e-9
-    b: 400e-9
+    d: 30e-9
+    a: 500e-9
+    b: None
     x: 0
-    angle: 0
+    angle: 90
 
 q_vector:
     start: 0.01
-    end: 0.5
-    dispersion_count: 1
+    end: 0.99
+    dispersion_count: 20
+    parallel_component: 0

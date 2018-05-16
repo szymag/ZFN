@@ -66,7 +66,7 @@ class TheImpactTestCases(unittest.TestCase):
 
         np.testing.assert_array_almost_equal(EigenValueProblem2D('x',
                                                                  "Parameter_for_TheImpact.yaml").
-                                             calculate_eigen_frequency([1e-9, 0]), test_val, decimal=5)
+                                             calculate_eigen_frequency([1e-9, 0]), test_val, decimal=3)
 
 
 class SokolovskyyTestCases(unittest.TestCase):
@@ -80,7 +80,7 @@ class SokolovskyyTestCases(unittest.TestCase):
         np.testing.assert_array_almost_equal(
             np.array(EigenValueProblem1D(SokolovskyyTestCases.loaded_data).calculate_dispersion()),
             loaded_data_to_compare_1,
-            decimal=5)
+            decimal=3)
 
 
 if __name__ == '__main__':

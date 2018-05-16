@@ -21,6 +21,7 @@ numerical_parameters:
     rec_vector_y: None
     output_file: None
 
+
 physical_parameters:
     mu0H0: 0.2
     gamma: 194.6e9
@@ -37,3 +38,4 @@ q_vector:
     start: 0.01
     end: 0.99
     dispersion_count: 20
+    parallel_component: 0
