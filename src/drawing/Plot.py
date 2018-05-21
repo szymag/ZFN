@@ -90,4 +90,4 @@ class Plot:
 
 
 if __name__ == "__main__":
-    pass
+    Plot(5).dispersion_relation('/home/szymag/python/ZFN/src/interface/1.12e-07.txt')

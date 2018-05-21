@@ -32,7 +32,7 @@ class ParsingData:
             self.input_parameters = load_yaml_file(input_parameters)
         elif isinstance(input_parameters, dict):
             # TODO: when data are loaded in GUI, they should be stored in dict
-            raise IOError
+            self.input_parameters = input_parameters
         else:
             raise IOError
 
