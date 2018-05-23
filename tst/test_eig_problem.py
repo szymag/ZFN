@@ -3,16 +3,10 @@ import numpy as np
 from src.eig_problem.EigenMatrix import EigenMatrix
 from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
 
-from src.io.DataReader import load_yaml_file
-
 
 class TheImpactTestCases(unittest.TestCase):
     """Tests for structure in paper "The impact of the lattice symmetry and
        the inclusion shape on the spectrum of 2D magnonic crystals"""
-    loaded_data = load_yaml_file("Parameter_for_TheImpact.yaml")
-    Fe = loaded_data['material_parameters']['Fe']
-    Ni = loaded_data['material_parameters']['Ni']
-    dim_sys = loaded_data['system_dimensions']
 
     tested_case_1 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
                                 "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')

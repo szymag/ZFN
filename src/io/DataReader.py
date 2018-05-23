@@ -1,40 +1,47 @@
 import yaml
 
 
-def to_float(d):
-    if len(d) == d or type(d) != dict:
-        return d
-    for k, v in d.items():
-        if isinstance(v, dict):
-            to_float(v)
-        elif isinstance(v, str):
-            try:
-                d[k] = float(v)
-            except Exception:
-                pass
-    return d
-
-
-def load_yaml_file(file_name):
-    with open(file_name, 'r') as stream:
-        try:
-            return to_float(yaml.load(stream))
-        except yaml.YAMLError as exc:
-            return to_float(exc)
-
-
 class ParsingData:
     # TODO: Rename class, I guess
-    # TODO: put in above functions into this class
     # TODO: consider static method
     def __init__(self, input_parameters):
         if isinstance(input_parameters, str):
-            self.input_parameters = load_yaml_file(input_parameters)
+            self.input_parameters = self.load_yaml_file(input_parameters)
         elif isinstance(input_parameters, dict):
             # TODO: when data are loaded in GUI, they should be stored in dict
             self.input_parameters = input_parameters
         else:
             raise IOError
+
+    def load_yaml_file(self, input_parameters):
+        with open(input_parameters, 'r') as stream:
+            try:
+                return self.convert_to_value(yaml.load(stream))
+            except yaml.YAMLError as exc:
+                return exc
+
+    def convert_to_value(self, d):
+        if len(d) == d or type(d) != dict:
+            return d
+        for k, v in d.items():
+            if isinstance(v, dict):
+                self.convert_to_value(v)
+            elif isinstance(v, str):
+                try:
+                    d[k] = float(v)
+                except Exception:
+                    if d[k] == 'None':
+                        d[k] = None
+                    elif d[k] == 'True':
+                        d[k] = True
+                    elif d[k] == 'False':
+                        d[k] = False
+                    else:
+                        pass
+        return d
+
+    def set_new_value(self, value, argument_1, argument_2):
+        self.input_parameters[argument_1][argument_2] = value
 
     def bloch_vector(self):
         return self.input_parameters['q_vector']['start'], self.input_parameters['q_vector']['end'],\

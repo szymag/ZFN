@@ -46,12 +46,13 @@ class EigenMatrix:
 
         self.gamma, self.mu0H0 = self.parameters.physical_constant()
         self.H0 = self.mu0H0 / self.parameters.mu0()
+        self.ReciprocalVectorGrid = ReciprocalVectorGrid
         self.tmp = LoadFFT2D(self.parameters.input_fft_file(),
                              self.ReciprocalVectorGrid.coefficient_grid_size())
         self.vectors_count = self.ReciprocalVectorGrid.vectors_count()
         self.shift_to_middle_of_coeff_array = ReciprocalVectorGrid.shift_to_middle_of_coeff_array()
         self.bloch_vec = bloch_vec
-        self.ReciprocalVectorGrid = ReciprocalVectorGrid
+
         # TODO: Check if keeping these lines in constructor isn't faster than moving to separate methods
         self.rec_vector_indexes = ReciprocalVector(self.vectors_count).lista_wektorow2d('min')
 

@@ -1,7 +1,7 @@
 import numpy as np
 from src.fft_from_image.FFT import FFT
 from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
-from src.io.DataReader import ParsingData, load_yaml_file
+from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
 
 input_parameters = ParsingData('Centala.yaml')
@@ -45,7 +45,6 @@ def do_program_1D(param, output_name):
 
 if __name__ == "__main__":
     thickness = np.arange(16, 192, 16) * 1e-9
-    param = load_yaml_file('Centala.yaml')
     for i in thickness:
-        param['system_dimensions']['d'] = i
-        do_program_1D(param, str(i) + '.txt')
+        input_parameters.set_new_value(i, 'system_dimensions', 'd')
+        do_program_1D(input_parameters, str(i) + '.txt')
