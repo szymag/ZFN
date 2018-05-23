@@ -22,10 +22,10 @@ class EigenValueProblem:
     def calculate_dispersion(self):
         pass
 
-    def solve_eigen_problem(self, wektor_q, param):
+    def solve_eigen_problem(self, bloch_vector, param):
         pass
 
-    def list_vector_q(self):
+    def list_bloch_vector(self):
         pass
 
     def calculate_eigen_frequency(self, bloch_vector):
@@ -35,7 +35,7 @@ class EigenValueProblem:
         return list(sorted(eigen_value)[:50])  # TODO: create smarter choice
 
     def calculate_eigen_vectors(self):
-        eigen_value, eigen_vector = self.solve_eigen_problem(self.list_vector_q()[0], param=True)
+        eigen_value, eigen_vector = self.solve_eigen_problem(self.list_bloch_vector()[0], param=True)
         eigen_value_index = np.argsort(eigen_value.imag)
         eigen_vector = np.transpose(eigen_vector)
         eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
@@ -44,7 +44,7 @@ class EigenValueProblem:
     def print_eigen_vectors(self):
         np.savetxt(self.parameters.output_file(),
                    self.calculate_eigen_vectors().view(float),
-                   header='Bloch wave vector, q=' + str(self.list_vector_q()[0]))
+                   header='Bloch wave vector, q=' + str(self.list_bloch_vector()[0]))
 
 
 class EigenValueProblem2D(EigenValueProblem):
@@ -64,18 +64,18 @@ class EigenValueProblem2D(EigenValueProblem):
 
     def calculate_dispersion(self):
         data = []
-        for k in self.list_vector_q():
+        for k in self.list_bloch_vector():
             tmp = [hypot(k[0], k[1])]
             tmp.extend(self.calculate_eigen_frequency(k))
             data.append(tmp)
         return data
 
-    def solve_eigen_problem(self, wektor_q, param):
+    def solve_eigen_problem(self, bloch_vector, param):
         eigen_matrix = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(*self.parameters.rec_vector()),
-                                   wektor_q, self.parameters, 'Fe', 'Ni').generate_and_fill_matrix()
+                                   bloch_vector, self.parameters, 'Fe', 'Ni').generate_and_fill_matrix()
         return eig(eigen_matrix, right=param)
 
-    def list_vector_q(self):
+    def list_bloch_vector(self):
         points = np.linspace(*self.parameters.bloch_vector())
         return 2 * np.pi * np.stack((points, points), axis=-1) * self.coordinate / \
                self.parameters.lattice_const()
@@ -87,17 +87,17 @@ class EigenValueProblem1D(EigenValueProblem):
 
     def calculate_dispersion(self):
         data = []
-        for k in self.list_vector_q():
+        for k in self.list_bloch_vector():
             tmp = [k]
             tmp.extend(self.calculate_eigen_frequency(k))
             data.append(tmp)
         return data
 
     def solve_eigen_problem(self, bloch_vector, param):
-        return eig(EigenMatrix1D(self.parameters, 'Co', 'Py').matrix_angle_dependence(bloch_vector),
+        return eig(EigenMatrix1D(bloch_vector, self.parameters, 'Co', 'Py').generate_and_fill_matrix(),
                    right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
-    def list_vector_q(self):
+    def list_bloch_vector(self):
         return [2 * np.pi * k / self.parameters.lattice_const()[0]
                 for k in np.linspace(*self.parameters.bloch_vector())]
 

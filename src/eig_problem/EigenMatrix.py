@@ -29,7 +29,7 @@ class EigenMatrix:
         def shift_to_middle_of_coeff_array(self):
             return np.array([self.rec_vector_x - 1, self.rec_vector_y - 1])
 
-    def __init__(self, ReciprocalVectorGrid, vector_q,
+    def __init__(self, ReciprocalVectorGrid, bloch_vec,
                  input_parameters, material_A, material_B):
         # TODO: The constructor should be somehow modified to be more transparent
         # TODO: Info about materials shouldn't be here
@@ -44,16 +44,16 @@ class EigenMatrix:
         self.material_A = self.parameters.material_constant(material_A)
         self.material_B = self.parameters.material_constant(material_B)
 
-        self.ReciprocalVectorGrid = ReciprocalVectorGrid
-        self.vectors_count = self.ReciprocalVectorGrid.vectors_count()
         self.gamma, self.mu0H0 = self.parameters.physical_constant()
         self.H0 = self.mu0H0 / self.parameters.mu0()
         self.tmp = LoadFFT2D(self.parameters.input_fft_file(),
                              self.ReciprocalVectorGrid.coefficient_grid_size())
+        self.vectors_count = self.ReciprocalVectorGrid.vectors_count()
+        self.shift_to_middle_of_coeff_array = ReciprocalVectorGrid.shift_to_middle_of_coeff_array()
+        self.bloch_vec = bloch_vec
+        self.ReciprocalVectorGrid = ReciprocalVectorGrid
         # TODO: Check if keeping these lines in constructor isn't faster than moving to separate methods
         self.rec_vector_indexes = ReciprocalVector(self.vectors_count).lista_wektorow2d('min')
-        self.shift_to_middle_of_coeff_array = ReciprocalVectorGrid.shift_to_middle_of_coeff_array()
-        self.vector_q = vector_q
 
     def magnetization_sat(self):
         return self.tmp.rescale_fourier_coefficient(self.material_A['Mo'], self.material_B['Mo'])
@@ -104,40 +104,40 @@ class EigenMatrix:
         vectors_sum = lambda a, b: ne.evaluate('2 * 3.14159265 * {v} + {q}'.format(v='a', q='b'))
 
         tmp4 = np.dot(
-            vectors_sum(tab_from_vec_l / div, self.vector_q),
-            vectors_sum(vector_2 / div, self.vector_q))
+            vectors_sum(tab_from_vec_l / div, self.bloch_vec),
+            vectors_sum(vector_2 / div, self.bloch_vec))
 
         e3 = lambda a, b, c, d: ne.evaluate('sum({a}*{b}*{c}/{d}, 0)'.format(a='a', b='b', c='c', d='d'))
         return e3(tmp1, tmp3, tmp4, self.H0)
 
-    def dynamic_demagnetizing_field_in_plane(self, wektor_2):
-        vec_2 = np.array(2 * np.pi * wektor_2) / self.parameters.lattice_const()[::-1]
-        norm = sqrt((self.vector_q[0] + vec_2[0]) ** 2 + (self.vector_q[1] + vec_2[1]) ** 2)
-        tmp1 = (self.vector_q[1] + vec_2[1]) ** 2 / norm ** 2
+    def dynamic_demagnetizing_field_in_plane(self, vector_2):
+        vec_2 = np.array(2 * np.pi * vector_2) / self.parameters.lattice_const()[::-1]
+        norm = sqrt((self.bloch_vec[0] + vec_2[0]) ** 2 + (self.bloch_vec[1] + vec_2[1]) ** 2)
+        tmp1 = (self.bloch_vec[1] + vec_2[1]) ** 2 / norm ** 2
         tmp2 = 1 - cosh(norm * self.parameters.x()) * exp(-norm * self.parameters.thickness() / 2.)
-        tmp3 = self.rec_vector_indexes - wektor_2 + self.shift_to_middle_of_coeff_array
+        tmp3 = self.rec_vector_indexes - vector_2 + self.shift_to_middle_of_coeff_array
         tmp4 = self.magnetization_sat()[tmp3[:, 0], tmp3[:, 1]]
         e3 = lambda a, b, c, d: ne.evaluate('{a}*{b}*{c}/{d}'.format(a='a', b='b', c='c', d='d'))
         return e3(tmp1, tmp2, tmp4, self.H0)
 
-    def dynamic_demagnetizing_field_out_of_plane(self, wektor_2):
-        vec_2 = np.array(2 * np.pi * wektor_2) / self.parameters.lattice_const()[::-1]
-        norm = sqrt((self.vector_q[0] + vec_2[0]) ** 2 + (self.vector_q[1] + vec_2[1]) ** 2)
+    def dynamic_demagnetizing_field_out_of_plane(self, vector_2):
+        vec_2 = np.array(2 * np.pi * vector_2) / self.parameters.lattice_const()[::-1]
+        norm = sqrt((self.bloch_vec[0] + vec_2[0]) ** 2 + (self.bloch_vec[1] + vec_2[1]) ** 2)
         tmp1 = cosh(norm * self.parameters.x()) * exp(-norm * self.parameters.thickness() / 2.)
-        tmp3 = self.rec_vector_indexes - wektor_2 + self.shift_to_middle_of_coeff_array
+        tmp3 = self.rec_vector_indexes - vector_2 + self.shift_to_middle_of_coeff_array
         tmp4 = self.magnetization_sat()[tmp3[:, 0], tmp3[:, 1]]
         e3 = lambda a, b, c: ne.evaluate('{a}*{b}/{c}'.format(a='a', b='b', c='c'))
         return e3(tmp1, tmp4, self.H0)
 
-    def static_demagnetizing_field(self, wektor_2):
+    def static_demagnetizing_field(self, vector_2):
         # along external field
         vector_1 = self.rec_vector_indexes
-        vec_2 = np.array(2 * np.pi * wektor_2) / self.parameters.lattice_const()[::-1]
+        vec_2 = np.array(2 * np.pi * vector_2) / self.parameters.lattice_const()[::-1]
         vec_1 = np.array(2 * np.pi * vector_1) / self.parameters.lattice_const()[::-1]
         tmp1 = (vec_1[:, 0] - vec_2[0]) ** 2 / (np.linalg.norm(vec_1 - vec_2, axis=1) ** 2 + 1e-36)
         tmp2 = 1 - np.cosh(np.linalg.norm(vec_1 - vec_2, axis=1) * self.parameters.x()) * \
                np.exp(-np.linalg.norm(vec_1 - vec_2, axis=1) * self.parameters.thickness() / 2.)
-        tmp3 = vector_1 - wektor_2 + self.shift_to_middle_of_coeff_array
+        tmp3 = vector_1 - vector_2 + self.shift_to_middle_of_coeff_array
         tmp4 = self.magnetization_sat()[tmp3[:, 0], tmp3[:, 1]]
         e3 = lambda a, b, c, d: ne.evaluate('{a}*{b}*{c}/{d}'.format(a='a', b='b', c='c', d='d'))
         return e3(tmp1, tmp2, tmp4, self.H0)
