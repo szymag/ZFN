@@ -40,6 +40,9 @@ class ParsingData:
         return self.input_parameters['q_vector']['start'], self.input_parameters['q_vector']['end'],\
                self.input_parameters['q_vector']['dispersion_count']
 
+    def parallel_component(self):
+        return self.input_parameters['q_vector']['parallel_component']
+
     def lattice_const(self):
         return self.input_parameters['system_dimensions']['a'], self.input_parameters['system_dimensions']['b']
 

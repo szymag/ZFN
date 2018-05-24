@@ -23,7 +23,7 @@ class TheImpactTestCases(unittest.TestCase):
     tested_case_4 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([0, 20e-9]),
                                 "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
 
-    tested_case_5 = EigenValueProblem2D('x', "Parameter_for_TheImpact.yaml")
+    tested_case_5 = EigenValueProblem2D('x', "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
 
     @staticmethod
     def test_eigen_matrix():
@@ -65,8 +65,8 @@ class TheImpactTestCases(unittest.TestCase):
              28783565233.363815, 28792615746.10499, 30688563763.639248, 31036486325.37612])
 
         np.testing.assert_array_almost_equal(EigenValueProblem2D('x',
-                                                                 "Parameter_for_TheImpact.yaml").
-                                             calculate_eigen_frequency([1e-9, 0]), test_val, decimal=5)
+                                                                 "Parameter_for_TheImpact.yaml", 'Fe', 'Ni').
+                                             calculate_eigen_frequency([1e-9, 0]), test_val, decimal=3)
 
 
 class SokolovskyyTestCases(unittest.TestCase):
@@ -78,9 +78,9 @@ class SokolovskyyTestCases(unittest.TestCase):
     def test_dispersion():
         loaded_data_to_compare_1 = np.loadtxt('dispersion_sokolovskyy_0.2T.tst')
         np.testing.assert_array_almost_equal(
-            np.array(EigenValueProblem1D(SokolovskyyTestCases.loaded_data).calculate_dispersion()),
+            np.array(EigenValueProblem1D(SokolovskyyTestCases.loaded_data, 'Co', 'Py').calculate_dispersion()),
             loaded_data_to_compare_1,
-            decimal=5)
+            decimal=3)
 
 
 if __name__ == '__main__':

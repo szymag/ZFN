@@ -11,13 +11,15 @@ scriptpath = os.path.dirname(__file__)
 
 
 class EigenValueProblem:
-    def __init__(self, input_parameters):
+    def __init__(self, input_parameters, mat_1, mat_2):
         if isinstance(input_parameters, str):
             self.parameters = ParsingData(input_parameters)
         elif isinstance(input_parameters, dict):
             self.parameters = ParsingData(input_parameters)
         else:
             self.parameters = input_parameters
+        self.mat_1 = mat_1
+        self.mat_2 = mat_2
 
     def calculate_dispersion(self):
         pass
@@ -48,8 +50,8 @@ class EigenValueProblem:
 
 
 class EigenValueProblem2D(EigenValueProblem):
-    def __init__(self, direction, input_parameters):
-        EigenValueProblem.__init__(self, input_parameters)
+    def __init__(self, direction, input_parameters, mat_1, mat_2):
+        EigenValueProblem.__init__(self, input_parameters, mat_1, mat_2)
         self.direction = direction
         if self.direction == 'x':
             self.coordinate = [0, 1]
@@ -72,7 +74,7 @@ class EigenValueProblem2D(EigenValueProblem):
 
     def solve_eigen_problem(self, wektor_q, param):
         eigen_matrix = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(*self.parameters.rec_vector()),
-                                   wektor_q, self.parameters, 'Fe', 'Ni').generate_and_fill_matrix()
+                                   wektor_q, self.parameters, self.mat_1, self.mat_2).generate_and_fill_matrix()
         return eig(eigen_matrix, right=param)
 
     def list_vector_q(self):
@@ -82,8 +84,8 @@ class EigenValueProblem2D(EigenValueProblem):
 
 
 class EigenValueProblem1D(EigenValueProblem):
-    def __init__(self, input_parameters):
-        EigenValueProblem.__init__(self, input_parameters)
+    def __init__(self, input_parameters, mat_1, mat_2):
+        EigenValueProblem.__init__(self, input_parameters, mat_1, mat_2)
 
     def calculate_dispersion(self):
         data = []
@@ -94,7 +96,7 @@ class EigenValueProblem1D(EigenValueProblem):
         return data
 
     def solve_eigen_problem(self, bloch_vector, param):
-        return eig(EigenMatrix1D(self.parameters, 'Co', 'Py').matrix_angle_dependence(bloch_vector),
+        return eig(EigenMatrix1D(self.parameters, self.mat_1, self.mat_2).matrix_angle_dependence(bloch_vector),
                    right=param)  # trzeba pamiętać o włączeniu/wyłączeniu generowania wektorów
 
     def list_vector_q(self):

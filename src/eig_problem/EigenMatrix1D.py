@@ -29,7 +29,7 @@ class EigenMatrix1D:
         self.shift_to_middle_of_coeff_array = len(self.reciprocal_vec) - 1
 
     def exp_function(self, vec_1, vec_2):
-        return np.exp(-abs((vec_1 + vec_2)) * self.parameters.thickness() / 2)
+        return np.exp(-np.linalg.norm([vec_1 + vec_2, self.parameters.parallel_component()]) * self.parameters.thickness() / 2)
 
     def kroneker_delta(self):
         for i in range(self.vectors_count, 2 * self.vectors_count):
@@ -42,17 +42,21 @@ class EigenMatrix1D:
         tmp2 = self.magnetization_sat[vec_1 - vec_l + self.shift_to_middle_of_coeff_array]
         tmp3 = (bloch_vec + 2 * np.pi * vec_2 /
                 self.parameters.lattice_const()[0]) * (2 * np.pi * vec_l /
-                                                       self.parameters.lattice_const()[0] + bloch_vec)
+                                                       self.parameters.lattice_const()[0] + bloch_vec) +\
+               self.parameters.parallel_component()**2
         return np.sum(tmp1 * tmp2 * tmp3, axis=0) / self.H0
 
     def dynamic_demagnetizing_field_in_plane(self, vec_1, vec_2, bloch_vec):
         tmp3 = self.magnetization_sat[vec_1 - vec_2 + self.shift_to_middle_of_coeff_array]
-        tmp2 = 1 - self.exp_function(bloch_vec, (2 * np.pi * vec_2 / self.parameters.lattice_const()[0]))
-        return tmp3 * tmp2 / self.H0
+        tmp2 = 1 - self.exp_function(bloch_vec,
+                                     (2 * np.pi * vec_2 / self.parameters.lattice_const()[0]))
+        tmp1 = (vec_2 + bloch_vec)**2 / np.linalg.norm([vec_2 + bloch_vec, self.parameters.parallel_component()])**2
+        return tmp3 * tmp2 * tmp1 / self.H0
 
     def dynamic_demagnetizing_field_out_of_plane(self, vec_1, vec_2, bloch_vec):
         tmp3 = self.magnetization_sat[vec_1 - vec_2 + self.shift_to_middle_of_coeff_array]
-        tmp2 = self.exp_function(bloch_vec, (2 * np.pi * vec_2 / self.parameters.lattice_const()[0]))
+        tmp2 = self.exp_function(bloch_vec,
+                                 (2 * np.pi * vec_2 / self.parameters.lattice_const()[0]))
         return tmp2 * tmp3 / self.H0
 
     def static_demagnetizing_field(self, vec_1, vec_2):
@@ -61,7 +65,6 @@ class EigenMatrix1D:
                           self.parameters.lattice_const()[0])) * self.parameters.x())
         tmp2 = 1 - co*np.exp(-abs((2 * np.pi * vec_1 / self.parameters.lattice_const()[0] - 2 * np.pi * vec_2 /
                                    self.parameters.lattice_const()[0])) * self.parameters.thickness() / 2)
-        tmp1[self.shift_to_middle_of_coeff_array] = 0
         return tmp2 * tmp1 / self.H0
 
     def matrix_angle_dependence(self, bloch_vec):
