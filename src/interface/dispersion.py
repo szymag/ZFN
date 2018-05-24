@@ -6,7 +6,6 @@ from src.drawing.Plot import Plot
 
 input_parameters = ParsingData('alongwires.yaml')
 file_name = 'tst.dat'
-#number_of_dispersion_point = 20
 direction = 'xy'
 number_of_dispersion_branch = 3
 x_lim = None
@@ -45,4 +44,7 @@ def do_program_1D():
 
 
 if __name__ == "__main__":
-    do_program_1D()
+    thickness = np.arange(16, 192, 16) * 1e-9
+    for i in thickness:
+        input_parameters.set_new_value(i, 'system_dimensions', 'd')
+        do_program_1D(input_parameters, str(i) + '.txt')
