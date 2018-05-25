@@ -47,9 +47,6 @@ class ParsingData:
         return self.input_parameters['q_vector']['start'], self.input_parameters['q_vector']['end'],\
                self.input_parameters['q_vector']['dispersion_count']
 
-    def parallel_component(self):
-        return self.input_parameters['q_vector']['parallel_component']
-
     def lattice_const(self):
         return self.input_parameters['system_dimensions']['a'], self.input_parameters['system_dimensions']['b']
 
@@ -84,3 +81,6 @@ class ParsingData:
 
     def angle(self):
         return self.input_parameters['system_dimensions']['angle']
+
+    def perpendicular_bloch_vector(self):
+        return self.input_parameters['perp_vector']['angle'], self.input_parameters['perp_vector']['max_value']

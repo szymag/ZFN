@@ -8,7 +8,7 @@ from src.io.DataReader import ParsingData
 
 
 class EigenMatrix1D:
-    def __init__(self, bloch_vec, input_parameters, material_A, material_B):
+    def __init__(self, bloch_vec, input_parameters, material_A, material_B, bloch_vec_perp=0):
         if isinstance(input_parameters, str):
             self.parameters = ParsingData(input_parameters)
         elif isinstance(input_parameters, dict):
@@ -28,6 +28,7 @@ class EigenMatrix1D:
         self.reciprocal_vec = ReciprocalVector(self.vectors_count).lista_wektorow1d('min')
         self.shift_to_middle_of_coeff_array = len(self.reciprocal_vec) - 1
         self.bloch_vec = bloch_vec
+        self.bloch_vec_perp = bloch_vec_perp
 
     def generate_and_fill_matrix(self):
         matrix = np.zeros((2 * self.vectors_count, 2 * self.vectors_count), dtype=complex)
@@ -47,7 +48,7 @@ class EigenMatrix1D:
         return matrix
 
     def exp_function(self, vec_1, vec_2):
-        return np.exp(-np.linalg.norm([vec_1 + vec_2, self.parameters.parallel_component()]) * self.parameters.thickness() / 2)
+        return np.exp(-np.linalg.norm([vec_1 + vec_2, self.bloch_vec_perp]) * self.parameters.thickness() / 2)
 
     def kroneker_delta(self, matrix):
         for i in range(self.vectors_count, 2 * self.vectors_count):
@@ -60,14 +61,15 @@ class EigenMatrix1D:
         tmp2 = self.magnetization_sat[vec_1 - vec_l + self.shift_to_middle_of_coeff_array]
         tmp3 = (self.bloch_vec + 2 * np.pi * vec_2 /
                 self.parameters.lattice_const()[0]) * (2 * np.pi * vec_l /
-                                                       self.parameters.lattice_const()[0] + self.bloch_vec)
+                                                       self.parameters.lattice_const()[0] + self.bloch_vec) + \
+               self.bloch_vec_perp**2
         return np.sum(tmp1 * tmp2 * tmp3, axis=0) / self.H0
 
     def dynamic_demagnetizing_field_in_plane(self, vec_1, vec_2):
         tmp3 = self.magnetization_sat[vec_1 - vec_2 + self.shift_to_middle_of_coeff_array]
         tmp2 = 1 - self.exp_function(self.bloch_vec,
                                      (2 * np.pi * vec_2 / self.parameters.lattice_const()[0]))
-        tmp1 = (vec_2 + self.bloch_vec)**2 / np.linalg.norm([vec_2 + self.bloch_vec, self.parameters.parallel_component()])**2
+        tmp1 = (vec_2 + self.bloch_vec)**2 / np.linalg.norm([vec_2 + self.bloch_vec, self.bloch_vec_perp])**2
         return tmp3 * tmp2 * tmp1 / self.H0
 
     def dynamic_demagnetizing_field_out_of_plane(self, vec_1, vec_2):
@@ -89,5 +91,4 @@ class EigenMatrix1D:
 
 
 if __name__ == "__main__":
-    q = EigenMatrix1D('soko.fft', 1e-9)
-    q.save_matrix_to_file()
+    pass

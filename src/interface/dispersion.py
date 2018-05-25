@@ -34,7 +34,7 @@ def do_program():  # TODO: file type should represent containing data
 
 
 def do_program_1D():
-    eig_freq = EigenValueProblem1D(input_parameters, 'Co', 'Py').calculate_dispersion()
+    eig_freq = EigenValueProblem1D(input_parameters, 'Py', 'Py').calculate_dispersion()
     np.savetxt(file_name, eig_freq)
     if show_plot:
         return Plot(number_of_dispersion_branch, x_lim, y_lim,
@@ -44,7 +44,8 @@ def do_program_1D():
 
 
 if __name__ == "__main__":
-    thickness = np.arange(16, 192, 16) * 1e-9
-    for i in thickness:
-        input_parameters.set_new_value(i, 'system_dimensions', 'd')
-        do_program_1D(input_parameters, str(i) + '.txt')
+    eig_freq = EigenValueProblem1D(input_parameters, 'Py', 'Py').oblique_dispersion()
+    #print(eig_freq)
+    np.savetxt(file_name, eig_freq)
+    Plot(2).dispersion_relation('tst.dat')
+    #do_program_1D()
