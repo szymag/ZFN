@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from math import radians
+from math import radians, sin
 
 from src.eig_problem.LoadFFT import LoadFFT1D
 from src.eig_problem.ReciprocalVector import ReciprocalVector
@@ -48,7 +48,15 @@ class EigenMatrix1D:
         return matrix
 
     def exp_function(self, vec_1, vec_2):
-        return np.exp(-np.linalg.norm([vec_1 + vec_2, self.bloch_vec_perp]) * self.parameters.thickness() / 2)
+        tmp = self.demag_field_factor(vec_1, vec_2)
+        return tmp*np.exp(-np.linalg.norm([vec_1 + vec_2, self.bloch_vec_perp]) * self.parameters.thickness() / 2)
+
+    def demag_field_factor(self, vec_1, vec_2):
+        x = np.linspace(-self.parameters.thickness()/2, self.parameters.thickness()/2, 50)
+        norm_vec = np.cosh(np.linalg.norm([vec_1 + vec_2, self.bloch_vec_perp]) * x[:, np.newaxis])
+        tmp = np.trapz(norm_vec, x, axis=0) / self.parameters.thickness()
+        #print(tmp*sin(radians(self.parameters.perpendicular_bloch_vector()[0]))**2 / 2)
+        return tmp
 
     def kroneker_delta(self, matrix):
         for i in range(self.vectors_count, 2 * self.vectors_count):
