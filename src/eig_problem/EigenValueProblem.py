@@ -91,7 +91,6 @@ class EigenValueProblem1D(EigenValueProblem):
 
     def calculate_dispersion(self):
         data = []
-        print(self.list_bloch_vector())
         for k in self.list_bloch_vector():
             tmp = [k]
             tmp.extend(self.calculate_eigen_frequency(k))

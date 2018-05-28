@@ -37,7 +37,7 @@ class EigenMatrix1D:
         for i in range(indeks, 2 * indeks):
             w1 = self.reciprocal_vec[i - indeks]
             w2 = self.reciprocal_vec
-            ex = self.exchange_field(w1, w2)
+            ex = self.exchange_field_simplified(w1, w2)
             dyn_in_plane = self.dynamic_demagnetizing_field_in_plane(w1, w2)
             dyn_out_plane = self.dynamic_demagnetizing_field_out_of_plane(w1, w2)
             static = self.static_demagnetizing_field(w1, w2)
@@ -72,6 +72,13 @@ class EigenMatrix1D:
                                                        self.parameters.lattice_const()[0] + self.bloch_vec) + \
                self.bloch_vec_perp**2
         return np.sum(tmp1 * tmp2 * tmp3, axis=0) / self.H0
+
+    def exchange_field_simplified(self, vec_1, vec_2):
+        tmp1 = self.exchange_len[vec_1 - vec_2 + self.shift_to_middle_of_coeff_array]
+        tmp3 = (self.bloch_vec + 2 * np.pi * vec_2 /
+                self.parameters.lattice_const()[0]) * (2 * np.pi * vec_1 /
+                                                       self.parameters.lattice_const()[0] + self.bloch_vec)
+        return tmp1 * tmp3 / self.H0
 
     def dynamic_demagnetizing_field_in_plane(self, vec_1, vec_2):
         tmp3 = self.magnetization_sat[vec_1 - vec_2 + self.shift_to_middle_of_coeff_array]
