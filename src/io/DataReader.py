@@ -4,6 +4,7 @@ import yaml
 class ParsingData:
     # TODO: Rename class, I guess
     # TODO: consider static method
+    # TODO: Add support for logical values
     def __init__(self, input_parameters):
         if isinstance(input_parameters, str):
             self.input_parameters = self.load_yaml_file(input_parameters)

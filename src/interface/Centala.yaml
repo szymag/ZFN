@@ -14,6 +14,15 @@ material_parameters:
     YIG:
         Mo: 0.194e6
         l: 1.7e-17
+    CoFeB:
+        Mo: 1250000.0
+        l: 1.4260282901033823e-11
+    CoFeB_1:
+        Mo: 937500.0
+        l: 1.432394487827058e-11
+    CoFeB_2:
+        Mo: 625000.0
+        l: 9.54929658551372e-12
 
 numerical_parameters:
     fft_file: "periodic.fft"
@@ -21,15 +30,14 @@ numerical_parameters:
     rec_vector_y: None
     output_file: None
 
-
 physical_parameters:
-    mu0H0: 0.2
-    gamma: 194.6e9
+    mu0H0: 0.3
+    gamma: 176e9
     mu0: 1.2566370614359173e-06
 
 system_dimensions:
-    d: 30e-9
-    a: 500e-9
+    d: 2e-9
+    a: 700e-9
     b: None
     x: 0
     angle: 90

@@ -4,10 +4,10 @@ from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValuePro
 from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
 
-input_parameters = ParsingData('Sokolovskyy.yaml')
-file_name = 'tst.dat'
+input_parameters = ParsingData('Centala.yaml')
+file_name = 'dys_2.dat'
 direction = 'xy'
-number_of_dispersion_branch = 13
+number_of_dispersion_branch = 5
 x_lim = None
 y_lim = None
 show_plot = True
@@ -34,19 +34,19 @@ def do_program():  # TODO: file type should represent containing data
 
 
 def do_program_1D():
-    eig_freq = EigenValueProblem1D(input_parameters, 'Co', 'Py').calculate_dispersion()
+    eig_freq = EigenValueProblem1D(input_parameters, 'CoFeB_1', 'CoFeB_2').calculate_dispersion()
     np.savetxt(file_name, eig_freq)
     if show_plot:
-        return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation('tst.dat')
+        return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation(file_name)
     else:
         return 0
 
 
 def do_program_oblique():
-    eig_freq = EigenValueProblem1D('alongwires.yaml', 'Py', 'Py').oblique_dispersion()
+    eig_freq = EigenValueProblem1D('alongwires.yaml', 'Co', 'Py').oblique_dispersion()
     np.savetxt(file_name, eig_freq)
-    Plot(2).dispersion_relation('tst.dat')
+    Plot(5, x_lim, y_lim).dispersion_relation(file_name)
 
 
 if __name__ == "__main__":
-    do_program_1D()
+    do_program_oblique()

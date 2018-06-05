@@ -98,11 +98,11 @@ class EigenValueProblem1D(EigenValueProblem):
         return data
 
     def oblique_dispersion(self):
+        '''propagation along given direction'''
         angle, max_value = self.parameters.perpendicular_bloch_vector()
         min, max, step = self.parameters.bloch_vector()
         max_value = np.pi/self.parameters.lattice_const()[0] / cos(np.radians(angle))
-        bloch_vec = np.linspace(2.278401604183777526e+02, max_value, step)
-        print(max_value)
+        bloch_vec = np.linspace(100, 13*max_value, step)
         x_bloch_vec = bloch_vec * cos(np.radians(angle))
         y_bloch_vec = bloch_vec * sin(np.radians(angle))
         data = []

@@ -37,7 +37,7 @@ class EigenMatrix1D:
         for i in range(indeks, 2 * indeks):
             w1 = self.reciprocal_vec[i - indeks]
             w2 = self.reciprocal_vec
-            ex = self.exchange_field_simplified(w1, w2)
+            ex = self.exchange_field(w1, w2)
             dyn_in_plane = self.dynamic_demagnetizing_field_in_plane(w1, w2)
             dyn_out_plane = self.dynamic_demagnetizing_field_out_of_plane(w1, w2)
             static = self.static_demagnetizing_field(w1, w2)
