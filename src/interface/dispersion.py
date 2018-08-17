@@ -3,6 +3,7 @@ from src.fft_from_image.FFT import FFT
 from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
 from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
+from matplotlib import pyplot as plt
 
 input_parameters = ParsingData('Centala.yaml')
 file_name = 'dys_2.dat'
@@ -16,19 +17,19 @@ show_plot = True
 def do_program():  # TODO: file type should represent containing data
     if file_name[-3:] == 'png':
         fft = FFT().zwroc_tablice(file_name)
-    elif file_name[-3:] == 'txt':
+        np.savetxt('tmp.fft', fft)
+        input_parameters.set_new_value('tmp.vec', 'numerical_parameters', 'fft_file')
+    elif file_name[-3:] == 'fft':
         fft = np.loadtxt(file_name)
-    elif file_name[-3:] == 'dat':
-        return Plot(number_of_dispersion_branch, x_lim, y_lim,
-                    name_of_output_file=input_parameters.output_file()).dispersion_relation(file_name)
+    elif file_name[-3:] == 'dys':
+        return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation(file_name)
     else:
         raise ValueError
 
     eig_freq = EigenValueProblem2D(direction, input_parameters, 'Co', 'Py').calculate_dispersion()
-    np.savetxt('tst.txt', eig_freq)
+    np.savetxt(input_parameters.output_file() + '.dys', eig_freq)
     if show_plot:
-        return Plot(number_of_dispersion_branch, x_lim, y_lim,
-                    name_of_output_file=input_parameters.output_file()).dispersion_relation(eig_freq)
+        return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation(eig_freq)
     else:
         return 0
 

@@ -42,6 +42,7 @@ class ParsingData:
         return d
 
     def set_new_value(self, value, argument_1, argument_2):
+        # TODO: for non existence argument_2, this method doesn't return exception
         self.input_parameters[argument_1][argument_2] = value
 
     def bloch_vector(self):
