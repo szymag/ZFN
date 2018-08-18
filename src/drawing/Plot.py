@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from math import hypot
 
 
 class Plot:
@@ -18,7 +19,7 @@ class Plot:
         assert len(loaded_data.shape) == 2, 'loaded file must be two dimensional'
 
         for i in range(self.number_of_disp_branch):
-            plt.plot(loaded_data[0] / 10e6, loaded_data[1 + i] / 10e8, color='r')
+            plt.plot(np.hypot(loaded_data[0], loaded_data[1]) / 10e6, loaded_data[2 + i] / 10e8, color='r')
 
         if self.y_lim is not None:
             plt.ylim(self.y_lim)
@@ -33,6 +34,11 @@ class Plot:
         plt.ylabel('frequency [GHz]')
 
         self.show_or_save_plot()
+
+    def bls(self, frequencies, weights):
+        for i in range(self.number_of_disp_branch):
+            plt.scatter(np.hypot(frequencies[:,0], frequencies[:,1]), frequencies[:, i +2], c=weights[:, i+2])
+        plt.show()
 
     def idos(self):
         pass

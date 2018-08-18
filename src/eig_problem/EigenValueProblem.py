@@ -35,14 +35,24 @@ class EigenValueProblem:
         gamma, mu0H0 = self.parameters.physical_constant()
         eigen_vector = self.solve_eigen_problem(bloch_vector, param=False, bloch_vector_perp=bloch_vector_perp)
         eigen_value = [i.imag * gamma * mu0H0 / 2.0 / np.pi for i in eigen_vector if i.imag > 0]
-        return list(sorted(eigen_value)[:50])  # TODO: create smarter choice
+        return np.array(list(sorted(eigen_value)[:50]))  # TODO: create smarter choice
 
-    def calculate_eigen_vectors(self):
-        eigen_value, eigen_vector = self.solve_eigen_problem(self.list_bloch_vector()[0], param=True)
+    def calculate_eigen_vectors(self, bloch_vector=np.array([1, 1])):
+        eigen_value, eigen_vector = self.solve_eigen_problem(bloch_vector, param=True)
         eigen_value_index = np.argsort(eigen_value.imag)
         eigen_vector = np.transpose(eigen_vector)
         eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
         return eigen_vector
+
+    def calculate_eigen_vectors_and_frequency(self, bloch_vector=np.array([1, 1])):
+        gamma, mu0H0 = self.parameters.physical_constant()
+
+        eigen_value, eigen_vector = self.solve_eigen_problem(bloch_vector, param=True)
+        frequencies = [i.imag * gamma * mu0H0 / 2.0 / np.pi for i in eigen_value if i.imag > 0]
+        eigen_value_index = np.argsort(eigen_value.imag)
+        eigen_vector = np.transpose(eigen_vector)
+        eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
+        return eigen_vector, np.array(list(sorted(frequencies)[:40]))
 
     def print_eigen_vectors(self):
         np.savetxt(self.parameters.output_file(),
@@ -68,10 +78,10 @@ class EigenValueProblem2D(EigenValueProblem):
     def calculate_dispersion(self):
         data = []
         for k in self.list_bloch_vector():
-            tmp = [hypot(k[0], k[1])]
+            tmp = [k[0], k[1]]
             tmp.extend(self.calculate_eigen_frequency(k))
             data.append(tmp)
-        return data
+        return np.array(data)
 
     def solve_eigen_problem(self, bloch_vector, param, bloch_vector_perp=0):
         eigen_matrix = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(*self.parameters.rec_vector()),
@@ -92,10 +102,10 @@ class EigenValueProblem1D(EigenValueProblem):
     def calculate_dispersion(self):
         data = []
         for k in self.list_bloch_vector():
-            tmp = [k]
+            tmp = [k, 0]
             tmp.extend(self.calculate_eigen_frequency(k))
             data.append(tmp)
-        return data
+        return np.array(data)
 
     def oblique_dispersion(self):
         '''propagation along given direction'''
