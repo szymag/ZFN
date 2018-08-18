@@ -66,11 +66,13 @@ class ParsingData:
     def input_fft_file(self):
         return self.input_parameters['numerical_parameters']['fft_file']
 
-    def output_file(self):
-        if self.input_parameters['numerical_parameters']['output_file'][-4:] == '.vec':
-            return self.input_parameters['numerical_parameters']['output_file']
-        else:
+    def output_file(self, data_type):
+        if data_type == 'dispersion':
+            return self.input_parameters['numerical_parameters']['output_file'] + '.dys'
+        elif data_type == 'vectors':
             return self.input_parameters['numerical_parameters']['output_file'] + '.vec'
+        else:
+            return self.input_parameters['numerical_parameters']['output_file']
 
     def x(self):
         return self.input_parameters['system_dimensions']['x']
