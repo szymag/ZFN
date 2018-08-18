@@ -25,8 +25,8 @@ def do_program():  # TODO: file type should represent containing data
     else:
         raise ValueError
 
-    eig_freq = EigenValueProblem2D(direction, input_parameters, 'Fe', 'Ni').calculate_dispersion()
-    np.savetxt(input_parameters.output_file('dispersion'), eig_freq)
+    eig_freq = EigenValueProblem2D(direction, input_parameters, 'Py', 'Co').calculate_dispersion()
+    np.savetxt(input_parameters.output_file('dispersion'), np.array(eig_freq))
     if show_plot:
         return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation(eig_freq)
     else:
