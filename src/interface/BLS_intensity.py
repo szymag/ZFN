@@ -7,21 +7,20 @@ from matplotlib import pyplot as plt
 
 
 input_parameters = ParsingData('Parameter_for_TheImpact.yaml')
-number_of_dispersion_point = 20
 direction = 'x'
-number_of_dispersion_branch = 5
+number_of_dispersion_branch = 35
 x_lim = None
 y_lim = None
 show_plot = True
 
 
 def frequency_weight(vectors):
-    print(vectors.shape)
-    return abs(vectors[:, 3*vectors.shape[1]//4-1])**2
+    return abs(vectors[:, 3*vectors.shape[1]//4])**2
 
 
 def BLS_intensity():
-    tmp = EigenValueProblem2D(direction, input_parameters, 'Fe', 'Ni')
+    # TODO: Define class responsible for handle formats
+    tmp = EigenValueProblem2D(direction, input_parameters, 'Py', 'Co')
     bloch_vectors = tmp.list_bloch_vector()
     dispersion = np.zeros((input_parameters.bloch_vector()[2], 42))
     weights = np.zeros((input_parameters.bloch_vector()[2], 42))

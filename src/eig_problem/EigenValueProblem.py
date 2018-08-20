@@ -76,12 +76,14 @@ class EigenValueProblem2D(EigenValueProblem):
     # TODO: update symbol; add another paths
 
     def calculate_dispersion(self):
-        data = []
-        for k in self.list_bloch_vector():
-            tmp = [k[0], k[1]]
-            tmp.extend(self.calculate_eigen_frequency(k))
-            data.append(tmp)
-        return np.array(data)
+        first_record = self.calculate_eigen_frequency(self.list_bloch_vector()[0])
+        data = np.zeros((self.list_bloch_vector().shape[0], len(first_record) + 2))
+        data[0, :2] = self.list_bloch_vector()[0]
+        data[0, 2:] = first_record
+        for ind, k in enumerate(self.list_bloch_vector()[1:, :]):
+            data[ind + 1, 0:2] = k
+            data[ind + 1, 2:] = self.calculate_eigen_frequency(k)
+        return data
 
     def solve_eigen_problem(self, bloch_vector, param, bloch_vector_perp=0):
         eigen_matrix = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(*self.parameters.rec_vector()),

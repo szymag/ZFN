@@ -37,7 +37,7 @@ class Plot:
 
     def bls(self, frequencies, weights):
         for i in range(self.number_of_disp_branch):
-            plt.scatter(np.hypot(frequencies[:,0], frequencies[:,1]), frequencies[:, i +2], c=weights[:, i+2])
+            plt.scatter(np.hypot(frequencies[:,0], frequencies[:,1]), frequencies[:, i +2], c=weights[:, i+2], s=8)
         plt.show()
 
     def idos(self):
