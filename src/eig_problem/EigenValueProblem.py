@@ -1,5 +1,4 @@
 from src.eig_problem.EigenMatrix import EigenMatrix
-from math import hypot
 import numpy as np
 from math import cos, sin
 from scipy.linalg import eig
@@ -70,6 +69,10 @@ class EigenValueProblem2D(EigenValueProblem):
             self.coordinate = [1, 0]
         elif self.direction == 'xy':
             self.coordinate = [1, 1]
+        elif self.direction == 'oblique':
+            angle = self.parameters.perpendicular_bloch_vector()[0]
+            self.coordinate = [cos(np.radians(angle)), sin(np.radians(angle))]
+
         else:
             sys.exit('Wrong argument for direction was set')
 
