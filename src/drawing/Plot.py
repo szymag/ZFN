@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from math import hypot
 
 
 class Plot:
@@ -36,8 +35,20 @@ class Plot:
         self.show_or_save_plot()
 
     def bls(self, frequencies, weights):
-        for i in range(self.number_of_disp_branch):
-            plt.scatter(np.hypot(frequencies[:,0], frequencies[:,1]), frequencies[:, i +2], c=weights[:, i+2], s=8)
+        plt.rcParams['axes.facecolor'] = '#440255'
+        x = np.hypot(frequencies[:, 0], frequencies[:, 1])
+        y = frequencies[:, 2:]
+        z = weights[:, 2:]
+        for ind, i in enumerate(x):
+            order = z[ind, :].argsort()
+            plt.scatter(np.zeros(y.shape[1]) + i, y[ind, order],
+                        c=z[ind, order], s=8)
+
+        if self.y_lim is not None:
+            plt.ylim(self.y_lim)
+
+        if self.x_lim is not None:
+            plt.xlim(self.x_lim)
         plt.show()
 
     def idos(self):

@@ -1,14 +1,12 @@
 import numpy as np
-from src.fft_from_image.FFT import FFT
 from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
 from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
-from matplotlib import pyplot as plt
 
 
-input_parameters = ParsingData('Parameter_for_TheImpact.yaml')
-direction = 'x'
-number_of_dispersion_branch = 35
+input_parameters = ParsingData('JEMS.yaml')
+direction = 'oblique'
+number_of_dispersion_branch = 40
 x_lim = None
 y_lim = None
 show_plot = True
@@ -36,7 +34,7 @@ def BLS_intensity():
 
 
 def visualize():
-    return Plot(number_of_dispersion_branch).bls(*BLS_intensity())
+    return Plot(number_of_dispersion_branch, y_lim=[0, 25e9]).bls(*BLS_intensity())
 
 
 if __name__ == "__main__":

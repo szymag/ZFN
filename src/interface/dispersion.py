@@ -3,9 +3,8 @@ from src.fft_from_image.FFT import FFT
 from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
 from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
-from matplotlib import pyplot as plt
 
-input_parameters = ParsingData('Parameter_for_TheImpact.yaml')
+input_parameters = ParsingData('JEMS.yaml')
 direction = 'xy'
 number_of_dispersion_branch = 5
 x_lim = None
