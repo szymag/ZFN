@@ -17,9 +17,9 @@ material_parameters:
 
 numerical_parameters:
     fft_file: "stripe.fft"
-    rec_vector_x: 13
-    rec_vector_y: 13
-    output_file: "bls"
+    rec_vector_x: 7
+    rec_vector_y: 7
+    output_file: "map"
 
 physical_parameters:
     mu0H0: 0.05

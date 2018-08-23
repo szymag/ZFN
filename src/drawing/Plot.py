@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from math import sqrt
 
 
 class Plot:
     # TODO: Refactor ths class
+    # TODO: Argument in this class seems to be not wise
     def __init__(self, number_of_disp_branch, x_lim=None, y_lim=None, name_of_output_file=None):
         self.name_of_file = name_of_output_file
         self.number_of_disp_branch = number_of_disp_branch
@@ -49,6 +51,15 @@ class Plot:
 
         if self.x_lim is not None:
             plt.xlim(self.x_lim)
+        plt.show()
+
+    def contour_plot(self, input_data, frequency):
+        X = input_data[:, 0].reshape(80, 80)
+        Y = input_data[:, 1].reshape(80, 80)
+        Z = input_data[:, 2].reshape(80, 80)
+        plt.contour(X.reshape(sqrt(len(X)), sqrt(len(X))),
+                    Y.reshape(sqrt(len(Y)), sqrt(len(Y))),
+                    Z.reshape(sqrt(len(Z)), sqrt(len(Z))))
         plt.show()
 
     def idos(self):
