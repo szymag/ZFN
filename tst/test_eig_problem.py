@@ -72,7 +72,7 @@ class SokolovskyyTestCases(unittest.TestCase):
     def test_dispersion():
         loaded_data_to_compare_1 = np.loadtxt('dispersion_sokolovskyy_0.2T.tst')
         np.testing.assert_array_almost_equal(
-            np.array(EigenValueProblem1D(SokolovskyyTestCases.loaded_data, 'Co', 'Py').calculate_dispersion()),
+            np.array(EigenValueProblem1D(SokolovskyyTestCases.loaded_data, 'Co', 'Py').calculate_dispersion_along_direction()),
             loaded_data_to_compare_1,
             decimal=3)
 

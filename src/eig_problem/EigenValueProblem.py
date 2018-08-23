@@ -6,6 +6,8 @@ import sys
 from src.eig_problem.EigenMatrix1D import EigenMatrix1D
 from src.io.DataReader import ParsingData
 import os.path
+from itertools import repeat
+
 
 scriptpath = os.path.dirname(__file__)
 
@@ -21,7 +23,7 @@ class EigenValueProblem:
         self.mat_1 = mat_1
         self.mat_2 = mat_2
 
-    def calculate_dispersion(self):
+    def calculate_dispersion_along_direction(self):
         pass
 
     def solve_eigen_problem(self, bloch_vector, param, bloch_vector_perp=0):
@@ -63,6 +65,7 @@ class EigenValueProblem2D(EigenValueProblem):
     def __init__(self, direction, input_parameters, mat_1, mat_2):
         EigenValueProblem.__init__(self, input_parameters, mat_1, mat_2)
         self.direction = direction
+        # TODO: this concept seems to be wrong
         if self.direction == 'x':
             self.coordinate = [0, 1]
         elif self.direction == 'y':
@@ -76,14 +79,20 @@ class EigenValueProblem2D(EigenValueProblem):
         else:
             sys.exit('Wrong argument for direction was set')
 
-    # TODO: update symbol; add another paths
+    def calculate_dispersion_map(self):
+        points = np.linspace(*self.parameters.bloch_vector())
+        return self.calculate_dispersion(2 * np.pi * cartesian_product_transpose_pp([points, points])/ \
+               self.parameters.lattice_const())
 
-    def calculate_dispersion(self):
-        first_record = self.calculate_eigen_frequency(self.list_bloch_vector()[0])
-        data = np.zeros((self.list_bloch_vector().shape[0], len(first_record) + 2))
-        data[0, :2] = self.list_bloch_vector()[0]
+    def calculate_dispersion_along_direction(self):
+        return self.calculate_dispersion(self.list_bloch_vector())
+
+    def calculate_dispersion(self, vectors):
+        first_record = self.calculate_eigen_frequency(vectors[0])
+        data = np.zeros((vectors.shape[0], len(first_record) + 2))
+        data[0, :2] = vectors[0]
         data[0, 2:] = first_record
-        for ind, k in enumerate(self.list_bloch_vector()[1:, :]):
+        for ind, k in enumerate(vectors[1:, :]):
             data[ind + 1, 0:2] = k
             data[ind + 1, 2:] = self.calculate_eigen_frequency(k)
         return data
@@ -104,7 +113,7 @@ class EigenValueProblem1D(EigenValueProblem):
     def __init__(self, input_parameters, mat_1, mat_2):
         EigenValueProblem.__init__(self, input_parameters, mat_1, mat_2)
 
-    def calculate_dispersion(self):
+    def calculate_dispersion_along_direction(self):
         data = []
         for k in self.list_bloch_vector():
             tmp = [k, 0]
@@ -135,6 +144,16 @@ class EigenValueProblem1D(EigenValueProblem):
     def list_bloch_vector(self):
         return [2 * np.pi * k / self.parameters.lattice_const()[0]
                 for k in np.linspace(*self.parameters.bloch_vector())]
+
+
+def cartesian_product_transpose_pp(arrays):
+    la = len(arrays)
+    dtype = np.result_type(*arrays)
+    arr = np.empty((la, *map(len, arrays)), dtype=dtype)
+    idx = slice(None), *repeat(None, la)
+    for i, a in enumerate(arrays):
+        arr[i, ...] = a[idx[:la-i]]
+    return arr.reshape(la, -1).T
 
 
 if __name__ == "__main__":
