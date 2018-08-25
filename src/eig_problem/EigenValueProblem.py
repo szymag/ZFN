@@ -53,7 +53,7 @@ class EigenValueProblem:
         eigen_value_index = np.argsort(eigen_value.imag)
         eigen_vector = np.transpose(eigen_vector)
         eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
-        return eigen_vector, np.array(list(sorted(frequencies)[:40]))
+        return eigen_vector[:40, :], np.array(list(sorted(frequencies)[:40]))
 
     def print_eigen_vectors(self):
         np.savetxt(self.parameters.output_file(),

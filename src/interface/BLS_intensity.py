@@ -1,5 +1,5 @@
 import numpy as np
-from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
+from src.eig_problem.EigenValueProblem import EigenValueProblem2D, cartesian_product_transpose_pp
 from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
 
@@ -23,13 +23,33 @@ def BLS_intensity():
     dispersion = np.zeros((input_parameters.bloch_vector()[2], 42))
     weights = np.zeros((input_parameters.bloch_vector()[2], 42))
     for ind, i in enumerate(bloch_vectors):
-        eig = tmp.calculate_eigen_vectors_and_frequency(i)
+        eig_vec, eig_freq = tmp.calculate_eigen_vectors_and_frequency(i)
         dispersion[ind, :2] = i
         weights[ind, :2] = i
 
-        dispersion[ind, 2:] = eig[1]
-        weights[ind, 2:] = frequency_weight(eig[0])[:40]
+        dispersion[ind, 2:] = eig_freq
+        weights[ind, 2:] = frequency_weight(eig_vec)[:40]
+    return dispersion, weights
 
+
+def BLS_intensity_map():
+    tmp = EigenValueProblem2D(direction, input_parameters, 'Py', 'Co')
+    points = np.linspace(*tmp.parameters.bloch_vector())
+    bloch_vectors = 2 * np.pi * cartesian_product_transpose_pp([points, points])/ \
+               tmp.parameters.lattice_const()
+
+    dispersion = np.zeros((bloch_vectors.shape[0], 7))
+    weights = np.zeros((bloch_vectors.shape[0], 7))
+    for ind, i in enumerate(bloch_vectors):
+        eig_vec, eig_freq = tmp.calculate_eigen_vectors_and_frequency(i)
+
+        dispersion[ind, :2] = i
+        weights[ind, :2] = i
+
+        bls_weight = frequency_weight(eig_vec)
+        weights_ind = np.argsort(bls_weight)[-1:-6:-1]
+        dispersion[ind, 2:] = eig_freq[weights_ind]
+        weights[ind, 2:] = bls_weight[weights_ind]
     return dispersion, weights
 
 
@@ -38,4 +58,7 @@ def visualize():
 
 
 if __name__ == "__main__":
-    visualize()
+    Plot(number_of_dispersion_branch).bls_for_given_frequency(
+        np.loadtxt('freq.txt'),
+        np.loadtxt('weight.txt'),
+        9e9)

@@ -53,7 +53,21 @@ class Plot:
             plt.xlim(self.x_lim)
         plt.show()
 
-    def contour_plot(self, input_data, frequency):
+    def bls_for_given_frequency(self, frequencies, weights, frequency):
+        plt.rcParams['axes.facecolor'] = '#440255'
+        positions = np.argwhere(np.abs(frequencies[:, 2:] - frequency) < 0.1e9)
+        for ind, i in enumerate(positions):
+            plt.scatter(weights[i[0], 0], weights[i[0], 1], c=weights[i[0], i[1] + 2], s=8,
+                        vmax=weights[:, 2:].max(), vmin=0)
+
+        if self.y_lim is not None:
+            plt.ylim(self.y_lim)
+
+        if self.x_lim is not None:
+            plt.xlim(self.x_lim)
+        plt.show()
+
+    def contour_plot(self, input_data):
         X = input_data[:, 0].reshape(80, 80)
         Y = input_data[:, 1].reshape(80, 80)
         Z = input_data[:, 2].reshape(80, 80)
