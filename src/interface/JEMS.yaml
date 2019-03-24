@@ -17,8 +17,8 @@ material_parameters:
 
 numerical_parameters:
     fft_file: "stripe.fft"
-    rec_vector_x: 7
-    rec_vector_y: 7
+    rec_vector_x: 11
+    rec_vector_y: 11
     output_file: "map"
 
 physical_parameters:
@@ -35,9 +35,9 @@ system_dimensions:
 
 q_vector:
     start: 0.01
-    end: 3.49
-    dispersion_count: 30
+    end: 0.99
+    dispersion_count: 40
 
 perp_vector:
-    angle: 60
+    angle: 0
     max_value: 1e3

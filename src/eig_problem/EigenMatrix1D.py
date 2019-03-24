@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from math import radians, sin
+from collections.abc import Iterable
+
 
 from src.eig_problem.LoadFFT import LoadFFT1D
 from src.eig_problem.ReciprocalVector import ReciprocalVector
@@ -27,8 +29,12 @@ class EigenMatrix1D:
         self.exchange_len = self.tmp.fourier_coefficient(self.material_A['l'], self.material_B['l'])
         self.reciprocal_vec = ReciprocalVector(self.vectors_count).lista_wektorow1d('min')
         self.shift_to_middle_of_coeff_array = len(self.reciprocal_vec) - 1
-        self.bloch_vec = bloch_vec
-        self.bloch_vec_perp = bloch_vec_perp
+        if isinstance(bloch_vec, Iterable):
+            self.bloch_vec = bloch_vec[0]
+            self.bloch_vec_perp = bloch_vec[1]
+        else:
+            self.bloch_vec = bloch_vec
+            self.bloch_vec_perp = bloch_vec_perp
 
     def generate_and_fill_matrix(self):
         matrix = np.zeros((2 * self.vectors_count, 2 * self.vectors_count), dtype=complex)

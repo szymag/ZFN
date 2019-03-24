@@ -9,7 +9,7 @@ class LoadFFT2D:
             self.loaded_fourier_coefficient_from_file = \
                 pd.read_csv(input_fft, delimiter=' ', dtype=float, header=None).values
         except IOError:
-            print('Can not find such file. Generate fourier coefficient in FFT class in fft_from_file directory')
+            print('Can not find such file: ' + input_fft + ' \n Generate fourier coefficient in FFT class in fft_from_file directory')
             sys.exit()
         self.tab_size = tab_size
 
