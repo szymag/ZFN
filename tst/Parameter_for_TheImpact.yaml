@@ -16,7 +16,7 @@ material_parameters:
         l: 1.7e-17
 
 numerical_parameters:
-    fft_file: "ff=0.5.fft"
+    fft_file: "./tst/ff=0.5.fft"
     rec_vector_x: 7
     rec_vector_y: 7
     output_file: "vec"
@@ -31,7 +31,7 @@ system_dimensions:
     a: 400e-9
     b: 400e-9
     x: 0
-    angle: 0
+    angle: 90
 
 q_vector:
     start: 0.01

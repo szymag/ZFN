@@ -8,30 +8,26 @@ class TheImpactTestCases(unittest.TestCase):
     """Tests for structure in paper "The impact of the lattice symmetry and
        the inclusion shape on the spectrum of 2D magnonic crystals"""
 
-    tested_case_1 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
-                                "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
-    tested_case_2 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(3, 3), np.array([0, 1e-9]),
-                                "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
-    tested_case_3 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([1e-9, 0]),
-                                "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
-    tested_case_4 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([0, 20e-9]),
-                                "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
 
-    tested_case_5 = EigenValueProblem2D('x', "Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
+    tested_case_2 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(3, 3), np.array([0, 1e-9]),
+                                "./tst/Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
+    tested_case_3 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(9, 9), np.array([0, 1e-9]),
+                                "./tst/Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
+    tested_case_4 = EigenMatrix(EigenMatrix.ReciprocalVectorGrid(11, 11), np.array([0, 20e-9]),
+                                "./tst/Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
+
+    tested_case_5 = EigenValueProblem2D('x', "./tst/Parameter_for_TheImpact.yaml", 'Fe', 'Ni')
 
     @staticmethod
     def test_eigen_matrix():
-        tested_data_1 = TheImpactTestCases.tested_case_1.generate_and_fill_matrix().view(float)
         tested_data_2 = TheImpactTestCases.tested_case_2.generate_and_fill_matrix().view(float)
         tested_data_3 = TheImpactTestCases.tested_case_3.generate_and_fill_matrix().view(float)
         tested_data_4 = TheImpactTestCases.tested_case_4.generate_and_fill_matrix().view(float)
 
-        loaded_data_to_compare_1 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].tst')
-        loaded_data_to_compare_2 = np.loadtxt('matrix_to_eig_TheImpact_3_3_q=[0,1e-9].tst')
-        loaded_data_to_compare_3 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[1e-9,0].tst')
-        loaded_data_to_compare_4 = np.loadtxt('matrix_to_eig_TheImpact_11_11_q=[0,20e-9].tst')
+        loaded_data_to_compare_2 = np.loadtxt('./tst/matrix_to_eig_TheImpact_3_3_q=[0,1e-9].tst')
+        loaded_data_to_compare_3 = np.loadtxt('./tst/matrix_to_eig_TheImpact_9_9_q=[0,1e-9].tst')
+        loaded_data_to_compare_4 = np.loadtxt('./tst/matrix_to_eig_TheImpact_11_11_q=[0,20e-9].tst')
 
-        np.testing.assert_array_almost_equal(loaded_data_to_compare_1, tested_data_1, decimal=5)
         np.testing.assert_array_almost_equal(loaded_data_to_compare_2, tested_data_2, decimal=5)
         np.testing.assert_array_almost_equal(loaded_data_to_compare_3, tested_data_3, decimal=5)
         np.testing.assert_array_almost_equal(loaded_data_to_compare_4, tested_data_4, decimal=5)
@@ -40,7 +36,7 @@ class TheImpactTestCases(unittest.TestCase):
     def test_eigen_vector():
         tested_case_5 = TheImpactTestCases.tested_case_5.calculate_eigen_vectors().view(float)
 
-        loaded_data_to_compare_5 = np.loadtxt('vec.vec')
+        loaded_data_to_compare_5 = np.loadtxt('./tst/vec.vec')
 
         np.testing.assert_array_almost_equal(tested_case_5, loaded_data_to_compare_5)
 
@@ -59,22 +55,21 @@ class TheImpactTestCases(unittest.TestCase):
              28783565233.363815, 28792615746.10499, 30688563763.639248, 31036486325.37612])
 
         np.testing.assert_array_almost_equal(EigenValueProblem2D('x',
-                                                                 "Parameter_for_TheImpact.yaml", 'Fe', 'Ni').
+                                                                 "./tst/Parameter_for_TheImpact.yaml", 'Fe', 'Ni').
                                              calculate_eigen_frequency([1e-9, 0]), test_val, decimal=3)
 
 
 class SokolovskyyTestCases(unittest.TestCase):
     """Tests for structure in paper "The magnetostatic modes in planar one-dimensional magnonic crystals
     with nanoscale sizes"""
-    loaded_data = "Sokolovskyy.yaml"
+    loaded_data = "./tst/Sokolovskyy.yaml"
 
     @staticmethod
     def test_dispersion():
-        loaded_data_to_compare_1 = np.loadtxt('dispersion_sokolovskyy_0.2T.tst')
+        loaded_data_to_compare_1 = np.loadtxt('./tst/dispersion_sokolovskyy_0.2T.tst')
         np.testing.assert_array_almost_equal(
             np.array(EigenValueProblem1D(SokolovskyyTestCases.loaded_data, 'Co', 'Py').calculate_dispersion_along_direction()),
-            loaded_data_to_compare_1,
-            decimal=3)
+            loaded_data_to_compare_1)
 
 
 if __name__ == '__main__':
