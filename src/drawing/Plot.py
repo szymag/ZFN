@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from math import sqrt
+from matplotlib.colors import LogNorm
+from matplotlib.ticker import MultipleLocator
 
 
 class Plot:
@@ -36,36 +38,74 @@ class Plot:
 
         self.show_or_save_plot()
 
-    def bls(self, frequencies, weights):
-        plt.rcParams['axes.facecolor'] = '#440255'
+    def bls(self, frequencies, weights, angle):
+        plt.style.use('fivethirtyeight')
+        plt.rcParams['axes.facecolor'] = '#F6FBFC'
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.set_aspect(aspect=0.17)
+        # A = 1.1e-11
+        # ms = 0.86e6
+        # d = 30e-9
+        # mu0 = 1.2566370614359173e-06
+        # gamma = 176e9
+        # H = 0.05 / mu0
+        # heff = H
+        # k = np.arange(1, 3e8, 50)
+        # wh = gamma * mu0 * (heff + 2 * A * k ** 2 / (mu0 * ms))
+        # wm = gamma * mu0 * ms
+        # ax.plot(k/np.pi*200e-9/2, np.sqrt((wh + wm*(1-np.exp(-k*d))/(k*d)) * (wh)) / (2*np.pi*1e9), ls='--')
         x = np.hypot(frequencies[:, 0], frequencies[:, 1])
         y = frequencies[:, 2:]
         z = weights[:, 2:]
         for ind, i in enumerate(x):
             order = z[ind, :].argsort()
-            plt.scatter(np.zeros(y.shape[1]) + i, y[ind, order],
-                        c=z[ind, order], s=8)
+            ax.scatter(np.zeros(y.shape[1]) + i/np.pi*200e-9/2, y[ind, order]/ 1e9,
+                        c=z[ind, order], cmap='BuGn')
 
         if self.y_lim is not None:
-            plt.ylim(self.y_lim)
+            ax.set_ylim(self.y_lim[0], self.y_lim[1])
 
         if self.x_lim is not None:
-            plt.xlim(self.x_lim)
+            plt.xlim(self.x_lim[0], self.x_lim[1])
+        ax.set_xlabel(r'$Wave vector\ (\frac{2\pi}{a})$')
+        ax.set_ylabel(r'$Frequency\ (GHz)$')
+        ax.set_title(str(angle) + r'$^\circ$')
+        plt.tight_layout()
+
+        plt.savefig(str(angle) + 'deg.png', dpi=400)
         plt.show()
 
     def bls_for_given_frequency(self, frequencies, weights, frequency):
+        plt.style.use('fivethirtyeight')
+        plt.rcParams['axes.facecolor'] = '#F6FBFC'
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        #ax.set_aspect(aspect=0.83)
         plt.rcParams['axes.facecolor'] = '#440255'
         positions = np.argwhere(np.abs(frequencies[:, 2:] - frequency) < 0.1e9)
-        for ind, i in enumerate(positions):
-            plt.scatter(weights[i[0], 0], weights[i[0], 1], c=weights[i[0], i[1] + 2], s=8,
-                        vmax=weights[:, 2:].max(), vmin=0)
+        x = weights[positions[:,0], 1]/np.pi*200e-9/2
+        y = weights[positions[:,0], 0]/np.pi*200e-9/2
+        color = weights[positions[:,0], positions[:,1] + 2]
+
+        for i, j in [(1,1), (-1,1), (1,-1), (-1, -1)]:
+            ax.scatter(i * x, j * y, c=color, s=8,
+                    norm=LogNorm(vmax=weights[:, 2:].max(), vmin=weights[:, 2:].min()),
+                    cmap='BuPu')
 
         if self.y_lim is not None:
-            plt.ylim(self.y_lim)
+            ax.set_ylim(self.y_lim[0], self.y_lim[1])
 
         if self.x_lim is not None:
-            plt.xlim(self.x_lim)
-        plt.show()
+            plt.xlim(self.x_lim[0], self.x_lim[1])
+        ax.set_xlabel(r'$Wave 3vector\ (\frac{2\pi}{a})$')
+        ax.set_ylabel(r'$Wave vector\ (\frac{2\pi}{a})$')
+        ax.set_title(r'$' + str(np.around(frequency/1e9, 2)) + ' GHz$')
+        plt.tight_layout()
+        ax.set(aspect='equal')
+        ax.set_xticks(np.arange(-1.5, 2, 0.5))
+        plt.savefig(str(np.around(frequency/1e9, 2)) + 'ghz.png', dpi=400)
+        plt.close()
 
     def contour_plot(self, input_data):
         X = input_data[:, 0].reshape(80, 80)

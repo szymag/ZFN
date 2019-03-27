@@ -4,8 +4,8 @@ from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValuePro
 from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
 
-input_parameters = ParsingData('JEMS.yaml')
-direction = 'xy'
+input_parameters = ParsingData('./tst/Parameter_for_TheImpact.yaml')
+direction = 'x'
 number_of_dispersion_branch = 5
 x_lim = None
 y_lim = None
@@ -35,8 +35,8 @@ def do_program():  # TODO: file type should represent containing data
 
 
 def do_program_1D():
-    eig_freq = EigenValueProblem1D(input_parameters, 'CoFeB_1', 'CoFeB_2').calculate_dispersion_along_direction()
-    np.savetxt(input_parameters.input_fft_file(), eig_freq)
+    eig_freq = EigenValueProblem1D(input_parameters, 'Co', 'Py').calculate_dispersion_along_direction()
+    np.savetxt('dispersion_sokolovskyy_0.2T.tst', eig_freq)
     if show_plot:
         return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation(input_parameters.input_fft_file())
     else:
@@ -45,7 +45,7 @@ def do_program_1D():
 
 def do_program_oblique():
     eig_freq = EigenValueProblem1D('alongwires.yaml', 'Co', 'Py').oblique_dispersion()
-    np.savetxt(input_parameters.output_file('dispersion'), eig_freq)
+    np.savetxt('11dispersion_sokolovskyy_0.2T.tst', eig_freq)
     Plot(5, x_lim, y_lim).dispersion_relation(input_parameters.output_file('dispersion'))
 
 
@@ -63,3 +63,4 @@ def do_program_map():
 if __name__ == "__main__":
     # do_program_oblique()
     do_program_map()
+    #do_program_1D()

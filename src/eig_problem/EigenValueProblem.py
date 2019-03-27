@@ -14,7 +14,7 @@ scriptpath = os.path.dirname(__file__)
 
 class EigenValueProblem:
     def __init__(self, input_parameters, mat_1, mat_2):
-        if isinstance(input_parameters, str):
+        if isinstance(input_parameters, str): # TODO: probably wrong conditions
             self.parameters = ParsingData(input_parameters)
         elif isinstance(input_parameters, dict):
             self.parameters = ParsingData(input_parameters)

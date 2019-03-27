@@ -1,15 +1,16 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from src.fft_from_image.FFT import FFT
-from src.eig_problem.EigenValueProblem import EigenValueProblem2D
+from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
 from src.io.DataReader import ParsingData
+from src.modes.MagnetizationProfile import Profile2D
 
 from src.eig_problem.InputParameter import InputParameter
 from src.drawing.Plot import Plot
 
-input_parameters = ParsingData('Parameter_for_TheImpact.yaml')
-number_of_dispersion_point = 20
-direction = 'xy'
-number_of_dispersion_branch = 5
+input_parameters = ParsingData('./tst/Parameter_for_TheImpact.yaml')
+direction = 'x'
+mode_number = 2
 x_lim = None
 y_lim = None
 show_plot = True
@@ -29,10 +30,11 @@ def do_program():
     else:
         raise ValueError
 
-    eig_vec = EigenValueProblem2D(direction, input_parameters, 'Fe', 'Ni').calculate_eigen_vectors().view(float)
-    np.savetxt(input_parameters.output_file('vectors'), eig_vec)
+    eig_vec = EigenValueProblem2D(direction, input_parameters, 'Fe', 'Ni').calculate_eigen_vectors(bloch_vector=np.array([1,1]))
+    np.savetxt('vec.vec', eig_vec.view(float))
     if show_plot:
-        return 0
+        ax1 = plt.axes()
+        Profile2D(50, eig_vec).generate_plot(mode_number)
     else:
         return 0
 

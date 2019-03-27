@@ -4,7 +4,7 @@ from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
 
 
-input_parameters = ParsingData('JEMS.yaml')
+input_parameters = ParsingData('./src/interface/set5.yaml')
 direction = 'oblique'
 number_of_dispersion_branch = 40
 x_lim = None
@@ -54,11 +54,22 @@ def BLS_intensity_map():
 
 
 def visualize():
-    return Plot(number_of_dispersion_branch, y_lim=[0, 25e9]).bls(*BLS_intensity())
-
+    return Plot(number_of_dispersion_branch,
+                y_lim=[5, 25],
+                x_lim=[0, 3.5]).bls(*BLS_intensity(),
+                                    angle=input_parameters.perpendicular_bloch_vector()[0])
 
 if __name__ == "__main__":
-    Plot(number_of_dispersion_branch).bls_for_given_frequency(
-        np.loadtxt('freq.txt'),
-        np.loadtxt('weight.txt'),
-        9e9)
+    # a,b = BLS_intensity_map()
+    # np.savetxt('freq_set3.txt', a)
+    # np.savetxt('weight_set3.txt', b)
+    # a = np.loadtxt('freq_set3.txt')
+    # b = np.loadtxt('weight_set3.txt')
+    # for i in np.linspace(9e9, 21e9, 24):
+    #    Plot(number_of_dispersion_branch, x_lim=[-1.05, 1.05], y_lim=[-1.05, 1.05]).bls_for_given_frequency(
+    #        a,b, i)
+
+    visualize()
+    #a, b = BLS_intensity()
+    #np.savetxt('freq.txt', a)
+    #np.savetxt('weight.txt', b)
