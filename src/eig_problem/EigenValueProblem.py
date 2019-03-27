@@ -7,6 +7,7 @@ from src.eig_problem.EigenMatrix1D import EigenMatrix1D
 from src.io.DataReader import ParsingData
 import os.path
 from itertools import repeat
+from src.utils.cProfiler import do_cprofile
 
 
 scriptpath = os.path.dirname(__file__)
@@ -14,9 +15,7 @@ scriptpath = os.path.dirname(__file__)
 
 class EigenValueProblem:
     def __init__(self, input_parameters, mat_1, mat_2):
-        if isinstance(input_parameters, str): # TODO: probably wrong conditions
-            self.parameters = ParsingData(input_parameters)
-        elif isinstance(input_parameters, dict):
+        if isinstance(input_parameters, (str, dict)): # TODO: probably wrong conditions
             self.parameters = ParsingData(input_parameters)
         else:
             self.parameters = input_parameters
@@ -45,6 +44,7 @@ class EigenValueProblem:
         eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
         return eigen_vector
 
+    @do_cprofile
     def calculate_eigen_vectors_and_frequency(self, bloch_vector=np.array([1, 1])):
         gamma, mu0H0 = self.parameters.physical_constant()
 

@@ -1,18 +1,23 @@
 import yaml
+import warnings
 
 
 class ParsingData:
     # TODO: Rename class, I guess
     # TODO: consider static method
-    # TODO: Add support for logical values
     def __init__(self, input_parameters):
         if isinstance(input_parameters, str):
             self.input_parameters = self.load_yaml_file(input_parameters)
         elif isinstance(input_parameters, dict):
-            # TODO: when data are loaded in GUI, they should be stored in dict
             self.input_parameters = input_parameters
         else:
-            raise IOError
+            raise IOError('Input parameters not understood: ' + str(input_parameters))
+
+    def __eq__(self, other):
+        return self.input_parameters == other.input_parameters
+
+    def _ne__(self, other):
+        return self.input_parameters != other.input_parameters
 
     def load_yaml_file(self, input_parameters):
         with open(input_parameters, 'r') as stream:
@@ -41,9 +46,18 @@ class ParsingData:
                         pass
         return d
 
-    def set_new_value(self, value, argument_1, argument_2):
-        # TODO: for non existence argument_2, this method doesn't return exception
-        self.input_parameters[argument_1][argument_2] = value
+    def set_new_value(self, value, argument_1, argument_2=None):
+        if argument_2 is None:
+            if not isinstance(self.input_parameters[argument_1], type(value)):
+                warnings.warn('Old values has ' + str(type(self.input_parameters[argument_1]))
+                          + ' while new one has ' + str(type(value)))
+            self.input_parameters[argument_1] = value
+        else:
+
+            if not isinstance(self.input_parameters[argument_1][argument_2], type(value)):
+                warnings.warn('Old values has ' + str(type(self.input_parameters[argument_1][argument_2]))
+                          + ' while new one has ' + str(type(value)))
+            self.input_parameters[argument_1][argument_2] = value
 
     def bloch_vector(self):
         return self.input_parameters['q_vector']['start'], self.input_parameters['q_vector']['end'],\
@@ -88,3 +102,7 @@ class ParsingData:
 
     def perpendicular_bloch_vector(self):
         return self.input_parameters['perp_vector']['angle'], self.input_parameters['perp_vector']['max_value']
+
+
+if __name__ == "__main__":
+    pass
