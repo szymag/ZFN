@@ -5,7 +5,7 @@ import numpy as np
 
 from src.eig_problem.FFTfromFile1D import FFTfromFile1D
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
+# FIXME: Move from ParametryMaterialowe to nwe concept of reading data
 
 
 class StaticDemagnetizingField1D:
@@ -57,9 +57,4 @@ class StaticDemagnetizingField1D:
         np.savetxt('demag_field_' + str(self.field_angle) + '.txt', np.transpose(tmp))
 
 if __name__ == "__main__":
-<<<<<<< HEAD:src/eig_problem/DemagnetizingField.py
-    #for i in range(0, 92, 2):
-    q = StaticDemagnetizingField_1D('p_coef_1000*2.txt', 0).demagnetizing_field_plot()
-=======
-    q = StaticDemagnetizingField1D('c_coef_100.txt', 0).demagnetizing_field_plot()
->>>>>>> master:src/demagnetizing_field/DemagnetizingField.py
+    pass

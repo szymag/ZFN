@@ -23,7 +23,7 @@ class EigenMatrix1D:
 
         self.gamma, self.mu0H0 = self.parameters.physical_constant()
         self.H0 = self.mu0H0 / self.parameters.mu0()
-        self.tmp = LoadFFT1D(self.parameters.input_fft_file())
+        self.tmp = LoadFFT1D(self.parameters.fft_data())
         self.vectors_count = self.tmp.vectors_count
         self.magnetization_sat = self.tmp.fourier_coefficient(self.material_A['Mo'], self.material_B['Mo'])
         self.exchange_len = self.tmp.fourier_coefficient(self.material_A['l'], self.material_B['l'])

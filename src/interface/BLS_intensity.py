@@ -53,23 +53,16 @@ def BLS_intensity_map():
     return dispersion, weights
 
 
-def visualize():
+def visualize(frequencies, weights, angle=None):
     return Plot(number_of_dispersion_branch,
                 y_lim=[5, 25],
-                x_lim=[0, 3.5]).bls(*BLS_intensity(),
-                                    angle=input_parameters.perpendicular_bloch_vector()[0])
+                x_lim=[0, 3.5]).bls(frequencies, weights, angle)
+
+
+def visualize_map(frequencies, weights, frequency):
+    return Plot(number_of_dispersion_branch, x_lim=[-1.05, 1.05], y_lim=[-1.05, 1.05]).bls_for_given_frequency(
+        frequencies, weights, frequency)
+
 
 if __name__ == "__main__":
-    # a,b = BLS_intensity_map()
-    # np.savetxt('freq_set3.txt', a)
-    # np.savetxt('weight_set3.txt', b)
-    # a = np.loadtxt('freq_set3.txt')
-    # b = np.loadtxt('weight_set3.txt')
-    # for i in np.linspace(9e9, 21e9, 24):
-    #    Plot(number_of_dispersion_branch, x_lim=[-1.05, 1.05], y_lim=[-1.05, 1.05]).bls_for_given_frequency(
-    #        a,b, i)
-
-    visualize()
-    #a, b = BLS_intensity()
-    #np.savetxt('freq.txt', a)
-    #np.savetxt('weight.txt', b)
+    pass

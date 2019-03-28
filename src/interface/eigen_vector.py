@@ -5,7 +5,7 @@ from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValuePro
 from src.io.DataReader import ParsingData
 from src.modes.MagnetizationProfile import Profile2D
 
-from src.eig_problem.InputParameter import InputParameter
+
 from src.drawing.Plot import Plot
 
 input_parameters = ParsingData('./tst/Parameter_for_TheImpact.yaml')
@@ -14,17 +14,17 @@ mode_number = 2
 x_lim = None
 y_lim = None
 show_plot = True
-# TODO: input_fft_file is wrong name. This argument is broader
+# TODO: fft_data is wrong name. This argument is broader
 
 
 def do_program():
-    if input_parameters.input_fft_file()[-3:] == 'png':
-        fft = FFT().zwroc_tablice(input_parameters.input_fft_file())
+    if input_parameters.fft_data()[-3:] == 'png':
+        fft = FFT().zwroc_tablice(input_parameters.fft_data())
         np.savetxt('tmp.fft', fft)
         input_parameters.set_new_value('tmp.vec', 'numerical_parameters', 'fft_file')
-    elif input_parameters.input_fft_file()[-3:] == 'fft':
+    elif input_parameters.fft_data()[-3:] == 'fft':
         pass
-    elif input_parameters.input_fft_file()[-3:] == 'vec':
+    elif input_parameters.fft_data()[-3:] == 'vec':
         pass
         # TODO: Should be printed out
     else:

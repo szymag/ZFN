@@ -14,14 +14,14 @@ show_plot = True
 
 def do_program():  # TODO: file type should represent containing data
     # TODO: Input file types hould be moved to DataReader
-    if input_parameters.input_fft_file()[-3:] == 'png':
-        fft = FFT().zwroc_tablice(input_parameters.input_fft_file())
+    if input_parameters.fft_data()[-3:] == 'png':
+        fft = FFT().zwroc_tablice(input_parameters.fft_data())
         np.savetxt('tmp.fft', fft)
         input_parameters.set_new_value('tmp.vec', 'numerical_parameters', 'fft_file')
-    elif input_parameters.input_fft_file()[-3:] == 'fft':
-        fft = np.loadtxt(input_parameters.input_fft_file())
-    elif input_parameters.input_fft_file()[-3:] == 'dys':
-        return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation(input_parameters.input_fft_file())
+    elif input_parameters.fft_data()[-3:] == 'fft':
+        fft = np.loadtxt(input_parameters.fft_data())
+    elif input_parameters.fft_data()[-3:] == 'dys':
+        return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation(input_parameters.fft_data())
     else:
         raise ValueError
 
@@ -38,7 +38,7 @@ def do_program_1D():
     eig_freq = EigenValueProblem1D(input_parameters, 'Co', 'Py').calculate_dispersion_along_direction()
     np.savetxt('dispersion_sokolovskyy_0.2T.tst', eig_freq)
     if show_plot:
-        return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation(input_parameters.input_fft_file())
+        return Plot(number_of_dispersion_branch, x_lim, y_lim).dispersion_relation(input_parameters.fft_data())
     else:
         return 0
 

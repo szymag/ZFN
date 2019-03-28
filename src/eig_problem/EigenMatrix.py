@@ -33,7 +33,6 @@ class EigenMatrix:
                  input_parameters, material_A, material_B):
         # TODO: The constructor should be somehow modified to be more transparent
         # TODO: Info about materials shouldn't be here
-        # TODO: **kwargs should allows to overwrite element in dictionary
         if isinstance(input_parameters, str):
             self.parameters = ParsingData(input_parameters)
         elif isinstance(input_parameters, dict):
@@ -47,7 +46,7 @@ class EigenMatrix:
         self.gamma, self.mu0H0 = self.parameters.physical_constant()
         self.H0 = self.mu0H0 / self.parameters.mu0()
         self.ReciprocalVectorGrid = ReciprocalVectorGrid
-        self.tmp = LoadFFT2D(self.parameters.input_fft_file(),
+        self.tmp = LoadFFT2D(self.parameters.fft_data(),
                              self.ReciprocalVectorGrid.coefficient_grid_size())
         self.vectors_count = self.ReciprocalVectorGrid.vectors_count()
         self.shift_to_middle_of_coeff_array = ReciprocalVectorGrid.shift_to_middle_of_coeff_array()

@@ -77,7 +77,7 @@ class ParsingData:
         return self.input_parameters['physical_parameters']['gamma'],\
                self.input_parameters['physical_parameters']['mu0H0']
 
-    def input_fft_file(self):
+    def fft_data(self):
         return self.input_parameters['numerical_parameters']['fft_file']
 
     def output_file(self, data_type):

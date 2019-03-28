@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import numpy as np
 from math import radians, sin
-from src.eig_problem.ParametryMaterialowe import ParametryMaterialowe
 from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 import matplotlib.gridspec as gridspec
 import matplotlib.image as mpimg
@@ -27,7 +26,6 @@ class MidpointNormalize(colors.Normalize):
 
 from multiprocessing import Pool
 
-from src.eig_problem.InputParameter import InputParameter
 from src.eig_problem.ReciprocalVector import ReciprocalVector
 from src.io.DataReader import ParsingData
 from src.eig_problem.LoadFFT import LoadFFT2D
@@ -38,7 +36,7 @@ class Profile2D:
         # TODO: How to pass lattice constant? InputParameter is depreciated
         self.fourier_coefficients = np.loadtxt(load_data).view(complex)
         self.lattice_const_x = InputParameter.a
-        self.lattice_const_y = InputParameter.b
+        self.lattice_const_y = InputParameter.b # FIXME: take care of it when this class will be corrected
         self.grid = grid
 
     def generate_plot(self, mode_number):
@@ -396,8 +394,10 @@ if __name__ == "__main__":
         plt.show()
 
 
+if __name__ == "__main__":
+    pass
     # show_modes_grid()
-    #fmr(40, 0, 91, 1)
-    make_final_plot()
-    #cross_section(40)
+    # fmr(40, 0, 91, 1)
+    # make_final_plot()
+    # cross_section(40)
 

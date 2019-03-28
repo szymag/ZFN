@@ -19,7 +19,7 @@ class ParsingDataTestCases(unittest.TestCase):
     def test_parameter_type():
         assert ParsingDataTestCases.parameter_set2.rec_vector()[0] is None
         assert isinstance(ParsingDataTestCases.parameter_set1.physical_constant()[1], float)
-        assert isinstance(ParsingDataTestCases.parameter_set1.input_fft_file(), str)
+        assert isinstance(ParsingDataTestCases.parameter_set1.fft_data(), str)
 
     @staticmethod
     def test_equality():

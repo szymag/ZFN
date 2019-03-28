@@ -15,10 +15,12 @@ scriptpath = os.path.dirname(__file__)
 
 class EigenValueProblem:
     def __init__(self, input_parameters, mat_1, mat_2):
-        if isinstance(input_parameters, (str, dict)): # TODO: probably wrong conditions
+        if isinstance(input_parameters, (str, dict)):
             self.parameters = ParsingData(input_parameters)
-        else:
+        elif isinstance(input_parameters, ParsingData):
             self.parameters = input_parameters
+        else:
+            raise IOError('Input parameters not understood: ' + str(input_parameters))
         self.mat_1 = mat_1
         self.mat_2 = mat_2
 
