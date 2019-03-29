@@ -63,11 +63,9 @@ class SokolovskyyTestCases(unittest.TestCase):
     """Tests for structure in paper "The magnetostatic modes in planar one-dimensional magnonic crystals
     with nanoscale sizes"""
     loaded_data = "./tst/Sokolovskyy.yaml"
-
     @staticmethod
     def test_dispersion():
         loaded_data_to_compare_1 = np.loadtxt('./tst/dispersion_sokolovskyy_0.2T.tst')
-        print(loaded_data_to_compare_1 - np.array(EigenValueProblem1D(SokolovskyyTestCases.loaded_data, 'Co', 'Py').calculate_dispersion_along_direction()))
         np.testing.assert_array_almost_equal(
             np.array(EigenValueProblem1D(SokolovskyyTestCases.loaded_data, 'Co', 'Py').calculate_dispersion_along_direction()),
             loaded_data_to_compare_1, decimal=3)
