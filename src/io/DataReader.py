@@ -22,7 +22,7 @@ class ParsingData:
     def load_yaml_file(self, input_parameters):
         with open(input_parameters, 'r') as stream:
             try:
-                return self.convert_to_value(yaml.load(stream))
+                return self.convert_to_value(yaml.safe_load(stream))
             except yaml.YAMLError as exc:
                 return exc
 

@@ -1,10 +1,9 @@
-from math import pi, sqrt
+from math import sqrt
 
 import numpy as np
 
 
 class ReciprocalVector:
-
     def __init__(self, rozmiar_macierzy_blok):
         # TODO: Apply different set of vectors in different directions
         self.ilosc_wektorow = rozmiar_macierzy_blok
@@ -29,6 +28,7 @@ class ReciprocalVector:
 
     def lista_wektorow1d(self, typ):
         return self.wspolrzedna_wektora1d(typ)
+
 
 if __name__ == "__main__":
     pass
