@@ -3,9 +3,8 @@
 *.png
 *.dat
 *.svg
-*.pyc
 
-.idea
-article/
+*.idea
+
 src/fft_from_image/niuzywane/
 

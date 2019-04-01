@@ -16,7 +16,7 @@ material_parameters:
         l: 1.7e-17
 
 numerical_parameters:
-    fft_file: "./tst/soko.txt"
+    fft_file: "./tst/soko.fft"
     rec_vector_x: None
     rec_vector_y: None
     output_file: None
