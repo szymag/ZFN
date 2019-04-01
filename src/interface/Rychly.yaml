@@ -1,0 +1,39 @@
+material_parameters:
+    Co:
+        Mo: 1.445e6
+        l: 3.46e-17
+    Py:
+        Mo: 0.86e6
+        l: 2.80e-17
+    Fe:
+        Mo: 1.752e6
+        l: 1.09e-17
+    Ni:
+        Mo: 0.484e6
+        l: 5.84e-17
+    YIG:
+        Mo: 0.194e6
+        l: 1.7e-17
+
+numerical_parameters:
+    fft_file: "./f_coef_50*14.txt"
+    rec_vector_x: None
+    rec_vector_y: None
+    output_file: "idos"
+
+physical_parameters:
+    mu0H0: 0.1
+    gamma: 176e9
+    mu0: 1.2566370614359173e-06
+
+system_dimensions:
+    d: 30e-9
+    a: 34307e-9
+    b: None
+    x: 0
+    angle: 90
+
+q_vector:
+    start: 0.01
+    end: 0.02
+    dispersion_count: 1

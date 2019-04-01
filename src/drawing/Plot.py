@@ -116,8 +116,15 @@ class Plot:
                     Z.reshape(sqrt(len(Z)), sqrt(len(Z))))
         plt.show()
 
-    def idos(self):
-        pass
+    def idos(self, input_data):
+        f = plt.figure()
+        ax = f.add_subplot(111)
+        ax.step(input_data, np.arange(len(input_data)))
+        if self.x_lim is not None:
+            ax.set_xlim(self.x_lim)
+        if self.y_lim is not None:
+            ax.set_ylim(self.y_lim)
+        self.show_or_save_plot()
 
     def fmr_freq_function_of_magnetic_field(self, begin_of_name_file,
                                             start_number, end_number, scaling_factor_x_axis=1):

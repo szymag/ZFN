@@ -37,7 +37,7 @@ class EigenMatrix1D:
             self.bloch_vec_perp = bloch_vec_perp
 
     def generate_and_fill_matrix(self):
-        matrix = np.zeros((2 * self.vectors_count, 2 * self.vectors_count), dtype=complex)
+        matrix = np.zeros((2 * self.vectors_count, 2 * self.vectors_count), dtype=np.complex128)
         indeks = self.vectors_count
         self.kroneker_delta(matrix)
         for i in range(indeks, 2 * indeks):
