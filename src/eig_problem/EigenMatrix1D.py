@@ -107,8 +107,7 @@ class EigenMatrix1D:
         return tmp2 * tmp1 / self.H0
 
     def save_matrix_to_file(self):
-        self.generate_and_fill_matrix(1e-9)
-        np.savetxt('macierz.txt', np.array(self.matrix))
+        np.savetxt('macierz.txt', np.array(self.generate_and_fill_matrix()).view(float))
 
 
 if __name__ == "__main__":
