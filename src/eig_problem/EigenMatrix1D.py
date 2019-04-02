@@ -57,10 +57,14 @@ class EigenMatrix1D:
         return matrix
 
     def exp_function(self, vec_1, vec_2):
-        tmp = self.demag_field_factor(vec_1, vec_2)
-        return tmp*np.exp(-np.linalg.norm([vec_1 + vec_2, self.bloch_vec_perp]) * self.parameters.thickness() / 2)
+        tmp = self.demag_field_factor(vec_1, vec_2) # if disabled, spin wave spectra are calculated on surface
+        return tmp * np.exp(-np.linalg.norm([vec_1 + vec_2, self.bloch_vec_perp]) * self.parameters.thickness() / 2)
 
     def demag_field_factor(self, vec_1, vec_2):
+        """
+        This factor is says where spin wave spectra are calculated. By default it is done on
+        surface so we can neglect this term : x=0
+        """
         x = np.linspace(-self.parameters.thickness()/2, self.parameters.thickness()/2, 50)
         norm_vec = np.cosh(np.linalg.norm([vec_1 + vec_2, self.bloch_vec_perp]) * x[:, np.newaxis])
         tmp = np.trapz(norm_vec, x, axis=0) / self.parameters.thickness()
@@ -73,15 +77,22 @@ class EigenMatrix1D:
             matrix[i][i - self.vectors_count] -= 1.
 
     def exchange_field(self, vec_1):
-        vec_l = np.transpose(np.broadcast_to(self.reciprocal_vec, (self.vectors_count, self.vectors_count)))
-        tmp1 = self.exchange_len[vec_l - self.reciprocal_vec + self.shift_to_middle_of_coeff_array]
-        tmp2 = self.magnetization_sat[vec_1 - vec_l + self.shift_to_middle_of_coeff_array]
-        tmp3 = (self.bloch_vec + 2 * np.pi * self.reciprocal_vec /
-                self.parameters.lattice_const()[0]) * (2 * np.pi * vec_l /
-                                                       self.parameters.lattice_const()[0] + self.bloch_vec) + \
-               self.bloch_vec_perp**2
-        e3 = lambda a, b, c, d: ne.evaluate('sum({a}*{b}*{c}/{d}, 0)'.format(a='a', b='b', c='c', d='d'))
-        return e3(tmp1, tmp2, tmp3, self.H0)
+        mid_point = self.shift_to_middle_of_coeff_array
+        rec_vec = self.reciprocal_vec
+        lat_const = self.parameters.lattice_const()[0]
+        bloch_vec = self.bloch_vec
+        bloch_vec_perp = self.bloch_vec_perp
+        pi = np.pi
+        H0 = self.H0
+        vec_l = np.broadcast_to(rec_vec, (self.vectors_count, self.vectors_count)).T
+        tmp1 = self.exchange_len[ne.evaluate('vec_l - rec_vec + mid_point')]
+        tmp2 = self.magnetization_sat[ne.evaluate('vec_1 - vec_l + mid_point')]
+        # tmp3 = ne.evaluate('(bloch_vec + 2 * pi * rec_vec / lat_const) * (2 * pi * vec_l / lat_const + bloch_vec) + bloch_vec_perp**2')
+
+        # e3 = lambda a, b, c, d: ne.evaluate('sum({a}*{b}*{c}/{d}, 0)'.format(a='a', b='b', c='c', d='d'))
+        # return e3(tmp1, tmp2, tmp3, self.H0)
+
+        return ne.evaluate('sum(tmp1*tmp2*((bloch_vec + 2 * pi * rec_vec / lat_const) * (2 * pi * vec_l / lat_const + bloch_vec) + bloch_vec_perp**2)/H0, 0)')
 
     def exchange_field_simplified(self, vec_1):
         tmp1 = self.exchange_len[vec_1 - self.reciprocal_vec + self.shift_to_middle_of_coeff_array]
