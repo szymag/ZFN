@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 from src.eig_problem.EigenMatrix import EigenMatrix
+from src.eig_problem.EigenMatrix1D import EigenMatrix1D
 from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
 
 
@@ -63,6 +64,17 @@ class SokolovskyyTestCases(unittest.TestCase):
     """Tests for structure in paper "The magnetostatic modes in planar one-dimensional magnonic crystals
     with nanoscale sizes"""
     loaded_data = "./tst/Sokolovskyy.yaml"
+
+    tested_case_1 = EigenMatrix1D([0, 1e-9], loaded_data, 'Co', 'Py')
+
+    @staticmethod
+    def test_eigen_matrix():
+        loaded_data_to_compare_1 = np.loadtxt('./tst/matrix_to_eig_Sokolovskyy_q=[0,1e-9].tst')
+        tested_data_1 = SokolovskyyTestCases.tested_case_1.generate_and_fill_matrix().view(float)
+
+        np.testing.assert_array_almost_equal(loaded_data_to_compare_1, tested_data_1, decimal=5)
+
+
     @staticmethod
     def test_dispersion():
         loaded_data_to_compare_1 = np.loadtxt('./tst/dispersion_sokolovskyy_0.2T.tst')

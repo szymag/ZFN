@@ -1,0 +1,41 @@
+material_parameters:
+    Co:
+        Mo: 1.15e6
+        l: 3.46e-17
+    Py:
+        Mo: 0.658e6
+        l: 4.05e-17
+    Fe:
+        Mo: 1.752e6
+        l: 1.09e-17
+    Ni:
+        Mo: 0.484e6
+        l: 5.84e-17
+    YIG:
+        Mo: 0.194e6
+        l: 1.7e-17
+
+numerical_parameters:
+    fft_file: "./p_coef_10*150.txt"
+    rec_vector_x: None
+    rec_vector_y: None
+    output_file: None
+
+
+physical_parameters:
+    mu0H0: 0.2
+    gamma: 194.6e9
+    mu0: 1.2566370614359173e-06
+
+system_dimensions:
+    d: 30e-9
+    a: 500e-9
+    b: None
+    x: 0
+    angle: 90
+
+q_vector:
+    start: 0.01
+    end: 0.99
+    dispersion_count: 20
+    parallel_component: 0
