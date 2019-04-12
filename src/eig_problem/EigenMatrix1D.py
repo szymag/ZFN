@@ -8,7 +8,6 @@ import numexpr as ne
 from src.eig_problem.LoadFFT import LoadFFT1D
 from src.eig_problem.ReciprocalVector import ReciprocalVector
 from src.io.DataReader import ParsingData
-from src.utils.cProfiler import do_cprofile
 
 
 class EigenMatrix1D:
@@ -38,7 +37,6 @@ class EigenMatrix1D:
             self.bloch_vec = bloch_vec
             self.bloch_vec_perp = bloch_vec_perp
 
-    @do_cprofile
     def generate_and_fill_matrix(self):
         matrix = np.zeros((2 * self.vectors_count, 2 * self.vectors_count), dtype=np.complex128)
         indeks = self.vectors_count

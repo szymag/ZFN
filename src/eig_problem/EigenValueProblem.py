@@ -46,7 +46,6 @@ class EigenValueProblem:
         eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
         return eigen_vector
 
-    @do_cprofile
     def calculate_eigen_vectors_and_frequency(self, bloch_vector=np.array([1, 1])):
         gamma, mu0H0 = self.parameters.physical_constant()
 

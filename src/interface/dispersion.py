@@ -4,7 +4,7 @@ from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValuePro
 from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
 
-input_parameters = ParsingData('./src/interface/Rychly.yaml')
+input_parameters = ParsingData('./src/interface/Periodic.yaml')
 direction = 'x'
 number_of_dispersion_branch = 5
 x_lim = None
@@ -59,16 +59,18 @@ def do_program_map():
     else:
         return 0
 
+
 def do_program_idos():
-    eig_freq = EigenValueProblem1D(input_parameters, 'Py', 'Co').calculate_eigen_frequency(1e5)
-    np.savetxt('idos2.dys', eig_freq)
+    eig_freq = EigenValueProblem1D(input_parameters, 'Py', 'Co').calculate_eigen_frequency(1e4)
+    np.savetxt('periodic.dys', eig_freq)
     if show_plot:
         return Plot(number_of_dispersion_branch, x_lim, y_lim).idos(eig_freq)
     else:
         return 0
 
+
 if __name__ == "__main__":
     # do_program_oblique()
     do_program_idos()
     # do_program_1D()
-    #Plot(number_of_dispersion_branch, x_lim, y_lim).idos(np.loadtxt('idos2.dys'))
+
