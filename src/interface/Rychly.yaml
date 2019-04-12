@@ -16,7 +16,7 @@ material_parameters:
         l: 1.7e-17
 
 numerical_parameters:
-    fft_file: "./f_coef_50*14.txt"
+    fft_file: f_coef_10*14.txt
     rec_vector_x: None
     rec_vector_y: None
     output_file: "idos"

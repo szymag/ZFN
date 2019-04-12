@@ -16,7 +16,7 @@ material_parameters:
         l: 1.7e-17
 
 numerical_parameters:
-    fft_file: random_140_9.fft
+    fft_file: periodic_0.1_4.fft
     rec_vector_x: None
     rec_vector_y: None
     output_file: "idos"
@@ -28,7 +28,7 @@ physical_parameters:
 
 system_dimensions:
     d: 30e-9
-    a: 68614e-9
+    a: 34307e-9
     b: None
     x: 0
     angle: 90
