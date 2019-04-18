@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from src.fft_from_image.FFT import FFT
-from src.fft_from_image.Sequences import Phason, Fibonacci
+from src.fft_from_image.Sequences import Phason, Fibonacci, Periodic
 from src.io.DataReader import ParsingData
 from src.modes.MagnetizationProfile import Profile1D
 from src.interface.eigen_vector import do_program_1D
@@ -60,8 +60,10 @@ def mode(mode_number, phasons_percentage, sample_number, structure_type,  ax):
 
 def draw_structure(phasons_percentage, sample_number, structure_type, axis):
     phasons = np.array(np.loadtxt(define_name_phason(phasons_percentage, sample_number, structure_type) + '.pos'), dtype=int) + 1
-    fib = Fibonacci(repetition_seq, fib_number)
-    seq = fib.sequence_generator()
+    if structure_type == ' F':
+        seq = Fibonacci(repetition_seq, fib_number).sequence_generator()
+    elif structure_type == 'P':
+        seq = Periodic(repetition_seq, fib_number).sequence_generator()
     Plot(1).draw_structure(axis, seq, phasons, 91)
 
 
@@ -108,12 +110,12 @@ if __name__ == "__main__":
     """
     calculate fft from disturbed structure
     """
-    # save_structure(20, 10, 'F')
+    save_structure(20, 10, 'F')
 
     """
     calculate modes
     """
-    # save_eig_vector(20, 6, 'F')
+    save_eig_vector(20, 6, 'F')
 
     plot_modes(143, 20, 6, 'F')
     plt.show()
