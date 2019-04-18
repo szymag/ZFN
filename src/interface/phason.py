@@ -17,54 +17,58 @@ gray_stripes = 'Co'
 bloch_vec = [1e4, 0]
 
 
-def save_structure(phasons_percentage, samples_count):
+def save_structure(phasons_percentage, samples_count, structure_type):
     for i in range(samples_count):
-        f = Phason('P', repetition_seq, fib_number, phasons_percentage)
+        f = Phason(structure_type, repetition_seq, fib_number, phasons_percentage)
         seq, phason_positions = f.sequence_shuffling(f.seq)
 
         seq = f.sequence(seq)
         fft_seq = FFT().fft1d(seq)
-        np.savetxt(define_name_phason(phasons_percentage, i) + '.fft', fft_seq)
-        np.savetxt(define_name_phason(phasons_percentage, i) + '.pos', phason_positions)
+        np.savetxt(define_name_phason(phasons_percentage, i, structure_type) + '.fft', fft_seq)
+        np.savetxt(define_name_phason(phasons_percentage, i, structure_type) + '.pos', phason_positions)
 
 
-def save_eig_vector(phasons_percentage, sample_number):
-    fft_file = define_name_phason(phasons_percentage, sample_number) + '.fft'
-    input_parameters.set_new_value(fft_file, 'numerical_parameters', 'fft_file')
+def save_eig_vector(phasons_percentage, sample_number, structure_type):
+    file_name = define_name_phason(phasons_percentage, sample_number, structure_type)
+    fft_file = file_name
+    input_parameters.set_new_value(fft_file + '.fft', 'numerical_parameters', 'fft_file')
+    input_parameters.set_new_value(file_name + '.vec', 'numerical_parameters', 'output_file')
+    print(input_parameters.output_file(''))
+    do_program_1D(input_parameters, green_stripes, gray_stripes, bloch_vec)
 
-    np.savetxt(define_name_phason(phasons_percentage, sample_number) + '.vec',
-               do_program_1D(input_parameters, green_stripes, gray_stripes, bloch_vec))
 
-
-def define_name_phason(phasons_percentage, sample_number, path=None):
+def define_name_phason(phasons_percentage, sample_number, structure_type, path=None):
     if path is not None:
-        return path + 'phason_' + str(phasons_percentage) + '_' + str(sample_number)
+        return path + structure_type + '_' + str(phasons_percentage) + '_' + str(sample_number)
     else:
-        return 'phason_' + str(phasons_percentage) + '_' + str(sample_number)
+        return structure_type + '_' + str(phasons_percentage) + '_' + str(sample_number)
 
 
-def plot_modes():
-    pass
+def plot_modes(mode_number, phasons_percentage, sample_number, structure_type):
+    plt.rc('xtick', labelsize='xx-large')
+    plt.rc('ytick', labelsize='xx-large')
+    ax1 = plt.axes()
+    draw_structure(phasons_percentage, sample_number, structure_type, ax1)
+    mode(mode_number, phasons_percentage, sample_number, structure_type, ax1)
 
 
-def mode(mode_number, phasons_percentage, sample_number, ax):
-    vec_name = define_name_phason(phasons_percentage, sample_number) + '.vec'
-    print(vec_name)
+def mode(mode_number, phasons_percentage, sample_number, structure_type,  ax):
+    vec_name = define_name_phason(phasons_percentage, sample_number, structure_type) + '.vec'
     mod = Profile1D(mode_number, vec_name, None, input_parameters)
     return mod.generate_plot(ax, 0)
 
 
-def draw_structure(phasons_percentage, sample_number, ax):
-    phasons = np.array(np.loadtxt(define_name_phason(phasons_percentage, sample_number) + '.pos'), dtype=int) + 1
+def draw_structure(phasons_percentage, sample_number, structure_type, axis):
+    phasons = np.array(np.loadtxt(define_name_phason(phasons_percentage, sample_number, structure_type) + '.pos'), dtype=int) + 1
     fib = Fibonacci(repetition_seq, fib_number)
     seq = fib.sequence_generator()
-    Plot(1).draw_structure(ax, seq, phasons, 91)
+    Plot(1).draw_structure(axis, seq, phasons, 91)
 
 
 def plot_idos(phasons_percentage, start_point, end_point, path=None):
     plt.style.use('seaborn')
     plt.rc('text', usetex=False)
-    plt.rc('xtick',labelsize='x-large')
+    plt.rc('xtick', labelsize='x-large')
     plt.rc('ytick', labelsize='x-large')
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -104,33 +108,19 @@ if __name__ == "__main__":
     """
     calculate fft from disturbed structure
     """
-    #save_structure(0.1, 100)
+    # save_structure(20, 10, 'F')
 
     """
     calculate modes
     """
-    #save_eig_vector(0.1, 91)
-    # for i in range(50, 352):
-    #     ax1 = plt.axes()
-    #     draw_structure(0.1, 91, ax1)
-    #     mode(i, 0.1, 91, ax1)
-    #     plt.show()
-    #     plt.clf()
-    #     plt.close()
-    # plt.rc('xtick', labelsize='xx-large')
-    # plt.rc('ytick', labelsize='xx-large')
-    # ax1 = plt.axes()
-    # mode_num = 140
-    # draw_structure(0.1, 91, ax1)
-    # mode(mode_num, 0.1, 91, ax1)
-    # ax1.set_xlim(15, 17.5)
-    # ax1.set_aspect(aspect=0.4)
-    # plt.savefig('mode ' + str(mode_num) + 'f.svg')
-    # plt.clf()
-    # plt.close()
+    # save_eig_vector(20, 6, 'F')
+
+    plot_modes(143, 20, 6, 'F')
+    plt.show()
+
     """
     plotting idos structure
     """
-    plot_idos(0.1, 1, 99, './phason - JEMS2019/idos/')
-    plt.show()
+    # plot_idos(0.1, 1, 99, './phason - JEMS2019/idos/')
+    # plt.show()
     # plt.savefig('idos.svg')

@@ -40,6 +40,8 @@ def draw_structure(phasons_percentage, sample_number, ax):
                 ax.add_patch(Rectangle((index*91, 0), 91, 1, color='green', alpha=0.5, linewidth=0, edgecolor=None))
             else:
                 ax.add_patch(Rectangle((index*91, 0), 91, 1, color='gray', alpha=0.5, linewidth=0, edgecolor=None))
+
+
 def save_eig_vector(phasons_percentage, sample_number):
     np.savetxt('periodic_' + str(phasons_percentage) + '_' + str(sample_number) + '.vec',
                calculate_eig_vector(phasons_percentage, sample_number).view(float))
