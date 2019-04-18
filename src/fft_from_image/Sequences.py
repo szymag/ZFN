@@ -60,7 +60,6 @@ class Periodic(ChainGeneration):
     def sequence_generator(self):
         seq = np.zeros(self.num)
         seq[::2] += 1
-        #seq %= 2
         return seq
 
     def sequence(self):
@@ -111,18 +110,35 @@ class Phason:
         self.repeat = repeat
         self.len = len(self.seq)
         self.where_one = self.find_all_phasons(self.seq)
-        self.phasons_count = int(phason_parameter * len(self.where_one))
-        print(self.phasons_count)
+        self.phason_parameter = phason_parameter
+        if phason_parameter <= 1:
+            self.phasons_count = int(phason_parameter * len(self.where_one))
+        else:
+            self.phasons_count = phason_parameter
 
     def find_all_phasons(self, seq):
-        return np.argwhere(seq == 1)
+        a = np.argwhere(seq == 1).T[0]
+        b = np.concatenate((np.diff(a), np.array([(self.len - a[-1] + a[0])])))
+        return np.compress(np.where(b == 1, 0, 1) == 1, a)
 
     def sequence_shuffling(self, seq):
-        phasons_pos = np.random.permutation(self.find_all_phasons(seq))[0:self.phasons_count]
-        seq = self.seq
-        seq[phasons_pos] = 0
-        seq[(phasons_pos + 1) % self.len] = 1
+        if self.phason_parameter <= 1:
+            phasons_pos = np.random.permutation(self.find_all_phasons(seq))[0:self.phasons_count]
+            seq = self.make_shufling(phasons_pos)
+        else:
+            collect_phasons = np.zeros(self.phasons_count)
+            for i in range(self.phasons_count):
+                phasons_pos = np.random.permutation(self.find_all_phasons(seq))[0]
+                seq = self.make_shufling(phasons_pos)
+                collect_phasons[i] = phasons_pos
+            phasons_pos = collect_phasons
         return seq, phasons_pos
+
+    def make_shufling(self, stripe_position):
+        seq = self.seq
+        seq[stripe_position] = (seq[(stripe_position + 1) % self.len])
+        seq[(stripe_position + 1) % self.len] = 1
+        return seq
 
     def sequence(self, seq):
         return np.repeat(seq, self.repeat)
