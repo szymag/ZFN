@@ -163,20 +163,22 @@ class Plot:
         return axis.legend(label_in_legend)
 
     def draw_structure(self, axis, sequence, phasons, stripe_width):
-        #phasons += 1
         seq = sequence
-        stripe = lambda color, alpha: axis.add_patch(Rectangle((index * stripe_width, 0), stripe_width, 1,
-                                                               color=color, alpha=alpha, linewidth=0, edgecolor=None))
+        for i in phasons:
+            seq[(i + 1) % len(seq)] = 2
+            seq[i] = -2
+
+        stripe = lambda index, color, alpha: axis.add_patch(Rectangle((index * stripe_width, 0), stripe_width, 1,
+                        color=color, alpha=alpha, linewidth=0, edgecolor=None))
         for index, el in enumerate(seq):
-            if index in phasons:
-                stripe('red', 0.8)
-            elif index + 1 in phasons:
-                stripe('red', 0.4)
-            else:
-                if el == 0:
-                    stripe('green', 0.5)
-                else:
-                    stripe('gray', 0.5)
+            if el == 0:
+                stripe(index, 'green', 0.5)
+            elif el == 1:
+                stripe(index, 'gray', 0.5)
+            elif el < 0:
+                stripe(index, 'red', 0.4)
+            elif el > 1:
+                stripe(index, 'red', 0.8)
 
     def show_or_save_plot(self):
         if self.name_of_file is None:
