@@ -5,16 +5,29 @@ from src.fft_from_image.Sequences import Phason, Fibonacci, Periodic
 from src.io.DataReader import ParsingData
 from src.modes.MagnetizationProfile import Profile1D
 from src.interface.eigen_vector import do_program_1D
+from src.interface.dispersion import do_program_idos
 from src.drawing.Plot import Plot
 
 
 input_parameters = ParsingData('./src/interface/Rychly.yaml')
 
-repetition_seq = 10
-fib_number = 14
+repetition_seq = 5
+fib_number = 11
 green_stripes = 'Py'
 gray_stripes = 'Co'
 bloch_vec = [1e4, 0]
+
+samples_count = 100
+phasons = 10
+sample_number = 0
+sequence_type = 'F'
+
+
+def define_name_phason(phasons_percentage, sample_number, structure_type, path=None):
+    if path is not None:
+        return path + structure_type + '_' + str(phasons_percentage) + '_' + str(sample_number)
+    else:
+        return structure_type + '_' + str(phasons_percentage) + '_' + str(sample_number)
 
 
 def save_structure(phasons_percentage, samples_count, structure_type):
@@ -28,8 +41,7 @@ def save_structure(phasons_percentage, samples_count, structure_type):
         np.savetxt(define_name_phason(phasons_percentage, i, structure_type) + '.pos', phason_positions)
 
 
-def save_eig_vector(phasons_percentage, sample_number, structure_type):
-    file_name = define_name_phason(phasons_percentage, sample_number, structure_type)
+def save_eig_vector(file_name):
     fft_file = file_name
     input_parameters.set_new_value(fft_file + '.fft', 'numerical_parameters', 'fft_file')
     input_parameters.set_new_value(file_name + '.vec', 'numerical_parameters', 'output_file')
@@ -37,26 +49,15 @@ def save_eig_vector(phasons_percentage, sample_number, structure_type):
     do_program_1D(input_parameters, green_stripes, gray_stripes, bloch_vec)
 
 
-def define_name_phason(phasons_percentage, sample_number, structure_type, path=None):
-    if path is not None:
-        return path + structure_type + '_' + str(phasons_percentage) + '_' + str(sample_number)
-    else:
-        return structure_type + '_' + str(phasons_percentage) + '_' + str(sample_number)
-
-
-def plot_modes(mode_number, phasons_percentage, sample_number, structure_type):
+def plot_modes(mode_number, file_name):
     plt.rc('xtick', labelsize='xx-large')
     plt.rc('ytick', labelsize='xx-large')
     ax1 = plt.axes()
-    draw_structure(phasons_percentage, sample_number, structure_type, ax1)
-    mode(mode_number, phasons_percentage, sample_number, structure_type, ax1)
+    draw_structure(file_name, ax1)
+    mode(mode_number, file_name).generate_plot(ax1, 0)
 
 
-def mode(mode_number, phasons_percentage, sample_number, structure_type,  ax):
-    vec_name = define_name_phason(phasons_percentage, sample_number, structure_type) + '.vec'
-    mod = Profile1D(mode_number, vec_name, None, input_parameters)
-    return mod.generate_plot(ax, 0)
-
+<<<<<<< HEAD
 
 def draw_structure(phasons_percentage, sample_number, structure_type, axis):
     phasons = np.array(np.loadtxt(define_name_phason(phasons_percentage, sample_number, structure_type) + '.pos'), dtype=int) + 1
@@ -64,10 +65,26 @@ def draw_structure(phasons_percentage, sample_number, structure_type, axis):
         seq = Fibonacci(repetition_seq, fib_number).sequence_generator()
     elif structure_type == 'P':
         seq = Periodic(repetition_seq, fib_number).sequence_generator()
+=======
+def draw_structure(file_name, axis):
+    phasons = np.array(np.loadtxt(file_name + '.pos'), dtype=int)
+    fib = Fibonacci(repetition_seq, fib_number)
+    seq = fib.sequence_generator()
+>>>>>>> 79dfbc3ee292445e8e2ba04f124463658d071d26
     Plot(1).draw_structure(axis, seq, phasons, 91)
 
 
-def plot_idos(phasons_percentage, start_point, end_point, path=None):
+def mode(mode_number, file_name):
+    return Profile1D(mode_number, file_name + '.vec' , None, input_parameters)
+
+
+def calculate_idos(file_name):
+    input_parameters.set_new_value(file_name + '.fft', 'numerical_parameters', 'fft_file')
+    input_parameters.set_new_value(file_name + '.dys', 'numerical_parameters', 'output_file')
+    do_program_idos(input_parameters, green_stripes, gray_stripes, bloch_vec)
+
+
+def plot_idos(phasons_percentage, start_point, end_point, structure_type, orginal_struct, path=None):
     plt.style.use('seaborn')
     plt.rc('text', usetex=False)
     plt.rc('xtick', labelsize='x-large')
@@ -77,23 +94,23 @@ def plot_idos(phasons_percentage, start_point, end_point, path=None):
     ax.set_xlabel('Frequency (GHz)', fontsize='x-large')
     ax.set_ylabel('IDOS', fontsize='x-large')
 
-    fib = np.loadtxt('./idos_fib_10_14.dys')
+    fib = np.loadtxt(orginal_struct)
 
-    axins1 = ax.inset_axes([0.1, 0.5, 0.47, 0.47])
+    axins1 = ax.inset_axes([0.9, 0.9, 0.07, 0.07])
     idos_inset(ax, axins1, [19.5, 23], [270, 390], 0.05)
 
-    axins3 = ax.inset_axes([0.03, 0.15, 0.25, 0.28])
+    axins3 = ax.inset_axes([0.9, 0.9, 0.05, 0.08])
     idos_inset(ax, axins3, [14.3, 16], [80, 100], 0.05)
 
     for i in range(start_point, end_point):
-        a = np.loadtxt(define_name_phason(phasons_percentage, i, path) + '.dys')
+        a = np.loadtxt(define_name_phason(phasons_percentage, i, 'F', path) + '.dys')
         for j in [axins1, axins3, ax]:
             Plot(1).idos(j, a, 'C0', alpha=0.02)
 
     for j in [ax, axins1, axins3]:
         Plot(1).idos(j, fib, 'C2', alpha=1)
 
-    ax.set_aspect(aspect=0.05)
+    #ax.set_aspect(aspect=0.05)
     plt.tight_layout()
 
 
@@ -106,23 +123,79 @@ def idos_inset(axis, axis_inset, xlim, ylim, aspect):
     axis_inset.set_aspect(aspect=aspect)
 
 
+def calculate_localization(mode_number, file_name, grid):
+    mod = mode(mode_number, file_name).spatial_distribution_dynamic_magnetization(grid, mode_number)[1]
+    mod =  mod / np.sum(abs(mod)) * grid
+    return 1 / grid * np.sum(np.log(abs(mod)))
+
+def calculate_fmr(mode_number, file_name, grid):
+    mod_class = mode(mode_number, file_name)
+    mod = mod_class.spatial_distribution_dynamic_magnetization(grid, mode_number)[1]
+    return mod_class.fmr_intensity(mod)
+
 if __name__ == "__main__":
     """
     calculate fft from disturbed structure
     """
+<<<<<<< HEAD
     save_structure(20, 10, 'F')
+=======
+    # save_structure(phasons, samples_count, 'F')
+>>>>>>> 79dfbc3ee292445e8e2ba04f124463658d071d26
 
     """
     calculate modes
     """
+<<<<<<< HEAD
     save_eig_vector(20, 6, 'F')
 
     plot_modes(143, 20, 6, 'F')
     plt.show()
+=======
+    # file = define_name_phason(phasons, sample_number, sequence_type)
+    # save_eig_vector('./f_coef_5*11')
+    """
+    Plot modes
+    """
+    # file = define_name_phason(phasons, 0, 'F')
+    # for i in range(0, 9):
+    #     plot_modes(i, file)
+    #     plt.show()
+>>>>>>> 79dfbc3ee292445e8e2ba04f124463658d071d26
 
+    """
+    calculate idos structure
+    """
+    # input_parameters.set_new_value('./f_coef_5*11.txt', 'numerical_parameters', 'fft_file')
+    # input_parameters.set_new_value('F_5_11' + '.dys', 'numerical_parameters', 'output_file')
+    # do_program_idos(input_parameters, green_stripes, gray_stripes, bloch_vec)
+    #
+    # for i in range(samples_count):
+    #     file = define_name_phason(phasons, i, 'F')
+    #     calculate_idos(file)
     """
     plotting idos structure
     """
-    # plot_idos(0.1, 1, 99, './phason - JEMS2019/idos/')
+    # plot_idos(phasons, 0, 99, 'F', './F_5_11.dys')
     # plt.show()
     # plt.savefig('idos.svg')
+    """
+    calculate localization factor
+    """
+    # a = np.zeros(100)
+    # for i in range(100):
+    #     # name = define_name_phason(phasons, 0, 'F')
+    #     a[i] = calculate_localization(i, './f_coef_5*11', 1000)
+    # plt.plot(a, np.arange(100))
+    # print(a)
+    # plt.show()
+    """
+    calculate fmr
+    """
+    a = np.zeros(100)
+    for i in range(100):
+        name = define_name_phason(phasons, 0, 'F')
+        a[i] = calculate_fmr(i, name, 1000)
+    plt.plot(np.arange(100), a)
+    print(a)
+    plt.show()

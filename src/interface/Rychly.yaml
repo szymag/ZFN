@@ -28,7 +28,7 @@ physical_parameters:
 
 system_dimensions:
     d: 30e-9
-    a: 34307e-9
+    a: 8099e-9
     b: None
     x: 0
     angle: 90

@@ -100,24 +100,25 @@ class FFT:
         # TODO: Sprawdzić normowanie
         if typ_struktury == 'TM':
             tab = ThueMorse(repeat, len_num).sequence()
-            np.savetxt('tm_coef_' + str(repeat) + '*' + str(len_num) + '.txt', self.fft1d(tab))
+            np.savetxt('tm_coef_' + str(repeat) + '*' + str(len_num) + '.fft', self.fft1d(tab))
         elif typ_struktury == 'F':
             tab = Fibonacci(repeat, len_num).sequence()
-            np.savetxt('f_coef_' + str(repeat) + '*' + str(len_num) + '.txt', self.fft1d(tab))
+            np.savetxt('f_coef_' + str(repeat) + '*' + str(len_num) + '.fft', self.fft1d(tab))
         elif typ_struktury == 'P':
             tab = Periodic(repeat, len_num).sequence()
-            np.savetxt('p_coef_' + str(repeat) + '*' + str(len_num) + '.txt', self.fft1d(tab))
+            np.savetxt('p_coef_' + str(repeat) + '*' + str(len_num) + '.fft', self.fft1d(tab))
         elif typ_struktury == 'C':
             tab = Heated(repeat).cos_sequence()
-            np.savetxt('c_coef_' + str(repeat) + '.txt', self.fft1d(tab))
+            np.savetxt('c_coef_' + str(repeat) + '.fft', self.fft1d(tab))
         elif typ_struktury == 'Custom':
-            tab = Custom('real_Ni.txt').sequence()
-            np.savetxt('heat_fft_Ni.txt', self.fft1d(tab))
+            tab = Custom('real_Ni.fft').sequence()
+            np.savetxt('heat_fft_Ni.fft', self.fft1d(tab))
 
         return np.fft.fftshift(np.fft.fft(tab))
 
 
 if __name__ == "__main__":
-    a = FFT().wywolaj_fft1d('F', 5, 14)
-    FFT().wypisz_do_pliku()
+    a = FFT().wywolaj_fft1d('F', 5, 11)
+
+    #FFT().wypisz_do_pliku()
     #a = FFT().wypisz_do_pliku()

@@ -136,8 +136,8 @@ class Phason:
 
     def make_shufling(self, stripe_position):
         seq = self.seq
-        seq[stripe_position] = (seq[(stripe_position + 1) % self.len])
-        seq[(stripe_position + 1) % self.len] = 1
+        seq[(stripe_position + 1) % len(seq)] = 1
+        seq[stripe_position] = 0
         return seq
 
     def sequence(self, seq):
