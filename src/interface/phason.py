@@ -57,20 +57,10 @@ def plot_modes(mode_number, file_name):
     mode(mode_number, file_name).generate_plot(ax1, 0)
 
 
-<<<<<<< HEAD
-
-def draw_structure(phasons_percentage, sample_number, structure_type, axis):
-    phasons = np.array(np.loadtxt(define_name_phason(phasons_percentage, sample_number, structure_type) + '.pos'), dtype=int) + 1
-    if structure_type == ' F':
-        seq = Fibonacci(repetition_seq, fib_number).sequence_generator()
-    elif structure_type == 'P':
-        seq = Periodic(repetition_seq, fib_number).sequence_generator()
-=======
 def draw_structure(file_name, axis):
     phasons = np.array(np.loadtxt(file_name + '.pos'), dtype=int)
     fib = Fibonacci(repetition_seq, fib_number)
     seq = fib.sequence_generator()
->>>>>>> 79dfbc3ee292445e8e2ba04f124463658d071d26
     Plot(1).draw_structure(axis, seq, phasons, 91)
 
 
@@ -103,7 +93,7 @@ def plot_idos(phasons_percentage, start_point, end_point, structure_type, orgina
     idos_inset(ax, axins3, [14.3, 16], [80, 100], 0.05)
 
     for i in range(start_point, end_point):
-        a = np.loadtxt(define_name_phason(phasons_percentage, i, 'F', path) + '.dys')
+        a = np.loadtxt(define_name_phason(phasons_percentage, i, structure_type, path) + '.dys')
         for j in [axins1, axins3, ax]:
             Plot(1).idos(j, a, 'C0', alpha=0.02)
 
@@ -128,30 +118,33 @@ def calculate_localization(mode_number, file_name, grid):
     mod =  mod / np.sum(abs(mod)) * grid
     return 1 / grid * np.sum(np.log(abs(mod)))
 
+
 def calculate_fmr(mode_number, file_name, grid):
     mod_class = mode(mode_number, file_name)
     mod = mod_class.spatial_distribution_dynamic_magnetization(grid, mode_number)[1]
     return mod_class.fmr_intensity(mod)
 
+
+def calculate_gap_statisitc(phasons_percentage, start_point, end_point, structure_type, range_to_look):
+    gaps = np.zeros(end_point - start_point)
+    for index, i in enumerate(range(start_point, end_point)):
+        a = np.loadtxt(define_name_phason(phasons_percentage, i, 'F', path) + '.dys')
+        gaps[index] = calculate_gap(a, range_to_look)
+    return np.average(gaps), np.std(gaps)
+
+
+def calculate_gap(data, range_to_look):
+    return np.max(np.diff(data[range_to_look[0]:range_to_look[1]]))
+
 if __name__ == "__main__":
     """
     calculate fft from disturbed structure
     """
-<<<<<<< HEAD
-    save_structure(20, 10, 'F')
-=======
     # save_structure(phasons, samples_count, 'F')
->>>>>>> 79dfbc3ee292445e8e2ba04f124463658d071d26
 
     """
     calculate modes
     """
-<<<<<<< HEAD
-    save_eig_vector(20, 6, 'F')
-
-    plot_modes(143, 20, 6, 'F')
-    plt.show()
-=======
     # file = define_name_phason(phasons, sample_number, sequence_type)
     # save_eig_vector('./f_coef_5*11')
     """
@@ -161,7 +154,6 @@ if __name__ == "__main__":
     # for i in range(0, 9):
     #     plot_modes(i, file)
     #     plt.show()
->>>>>>> 79dfbc3ee292445e8e2ba04f124463658d071d26
 
     """
     calculate idos structure
