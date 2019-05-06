@@ -7,18 +7,18 @@ from src.modes.MagnetizationProfile import Profile1D
 from src.interface.eigen_vector import do_program_1D
 from src.interface.dispersion import do_program_idos
 from src.drawing.Plot import Plot
-
+from src.utils.cProfiler import do_cprofile
 
 input_parameters = ParsingData('./src/interface/Rychly.yaml')
 
-repetition_seq = 5
-fib_number = 11
+repetition_seq = 10
+fib_number = 14
 green_stripes = 'Py'
 gray_stripes = 'Co'
 bloch_vec = [1e4, 0]
 
 samples_count = 100
-phasons = 10
+phasons = 5
 sample_number = 0
 sequence_type = 'F'
 
@@ -65,7 +65,7 @@ def draw_structure(file_name, axis):
 
 
 def mode(mode_number, file_name):
-    return Profile1D(mode_number, file_name + '.vec' , None, input_parameters)
+    return Profile1D(mode_number, file_name + '.vec', None, input_parameters)
 
 
 def calculate_idos(file_name):
@@ -86,26 +86,25 @@ def plot_idos(phasons_percentage, start_point, end_point, structure_type, orgina
 
     fib = np.loadtxt(orginal_struct)
 
-    axins1 = ax.inset_axes([0.9, 0.9, 0.07, 0.07])
-    idos_inset(ax, axins1, [19.5, 23], [270, 390], 0.05)
+    axins1 = ax.inset_axes([0.2, 0.7, 0.4, 0.3])
+    idos_inset(axins1, [19.5, 23], [270, 300], 0.2)
 
-    axins3 = ax.inset_axes([0.9, 0.9, 0.05, 0.08])
-    idos_inset(ax, axins3, [14.3, 16], [80, 100], 0.05)
+    axins3 = ax.inset_axes([0.5, 0.01, 0.4, 0.4])
+    idos_inset(axins3, [14.5, 16], [75, 115], 0.02)
 
     for i in range(start_point, end_point):
         a = np.loadtxt(define_name_phason(phasons_percentage, i, structure_type, path) + '.dys')
         for j in [axins1, axins3, ax]:
             Plot(1).idos(j, a, 'C0', alpha=0.02)
 
-    for j in [ax, axins1, axins3]:
+    for j in [axins1, axins3, ax]:
         Plot(1).idos(j, fib, 'C2', alpha=1)
 
-    #ax.set_aspect(aspect=0.05)
+    ax.set_aspect(aspect=0.05)
     plt.tight_layout()
 
 
-def idos_inset(axis, axis_inset, xlim, ylim, aspect):
-    axis.indicate_inset_zoom(axis_inset)
+def idos_inset(axis_inset, xlim, ylim, aspect):
     axis_inset.set_xlim(xlim)
     axis_inset.set_ylim(ylim)
     axis_inset.set_xticklabels('')
@@ -113,81 +112,148 @@ def idos_inset(axis, axis_inset, xlim, ylim, aspect):
     axis_inset.set_aspect(aspect=aspect)
 
 
-def calculate_localization(mode_number, file_name, grid):
-    mod = mode(mode_number, file_name).spatial_distribution_dynamic_magnetization(grid, mode_number)[1]
-    mod =  mod / np.sum(abs(mod)) * grid
+def calculate_localization(mode, grid):
+    mod = mode / np.sum(abs(mode)) * grid
     return 1 / grid * np.sum(np.log(abs(mod)))
 
 
-def calculate_fmr(mode_number, file_name, grid):
-    mod_class = mode(mode_number, file_name)
-    mod = mod_class.spatial_distribution_dynamic_magnetization(grid, mode_number)[1]
-    return mod_class.fmr_intensity(mod)
+def plot_localization(file_name, grid, title):
+    plt.style.use('seaborn')
+    plt.rc('text', usetex=False)
+    plt.rc('xtick', labelsize='x-large')
+    plt.rc('ytick', labelsize='x-large')
+    a = np.zeros(400)
+
+    mod = mode(0, file_name)
+    for index in range(len(a)):
+        a[index] = calculate_localization(mod.spatial_distribution_dynamic_magnetization(grid, index)[1], grid)
+        print(index)
+    x_label = np.loadtxt(file_name + '.dys')[0:len(a)]
+    plt.scatter(x_label, a, s=25)
+    plt.ylabel('$\lambda$', fontsize='x-large')
+    plt.xlabel('Frequency (GHz)', fontsize='x-large')
+    plt.ylim([-8, 0.1])
+    plt.title(title)
+    plt.savefig(title + '.svg')
+
+
+def plot_fmr(file_name, grid, title):
+    plt.style.use('seaborn')
+    plt.rc('text', usetex=False)
+    plt.rc('xtick', labelsize='x-large')
+    plt.rc('ytick', labelsize='x-large')
+    a = np.zeros(400)
+
+    mod = mode(0, file_name)
+    for index in range(len(a)):
+        a[index] = calculate_fmr(mod.spatial_distribution_dynamic_magnetization(grid, index)[1])
+    x_label = np.loadtxt(file_name + '.dys')[0:len(a)]
+    # a[0] = 1000
+    plt.scatter(x_label, a, s=25)
+    plt.ylabel('Intensity', fontsize='x-large')
+    plt.xlabel('Frequency (GHz)', fontsize='x-large')
+    print(np.argsort(a)[-5:][::-1])
+    plt.title(title)
+    plt.savefig(title + '.svg')
+
+
+def calculate_fmr(mode):
+    return np.abs(np.trapz(mode)) ** 2 / np.trapz(np.abs(mode) ** 2)
+
+
+def plot_gap_width(phasons, frequency_ranges, title):
+    plt.style.use('seaborn')
+    plt.rc('text', usetex=False)
+    plt.rc('xtick', labelsize='x-large')
+    plt.rc('ytick', labelsize='x-large')
+    results = np.zeros((4, len(phasons)))
+    error = np.zeros((4, len(phasons)))
+    for num, freq in enumerate(frequency_ranges):
+        for index, i in enumerate(phasons):
+            results[num][index], error[num][index] = calculate_gap_statisitc(i, 0, 100, 'F', freq)
+        plt.errorbar(phasons, results[num], error[num], fmt='--o', label='gap at: ' + str((freq[0] + freq[1])/2/1e9) + ' GHz')
+    plt.legend()
+    plt.xlabel("Phasons", fontsize='x-large')
+    plt.ylabel("Gap width (GHz)", fontsize='x-large')
+    plt.savefig(title + '.svg')
 
 
 def calculate_gap_statisitc(phasons_percentage, start_point, end_point, structure_type, range_to_look):
     gaps = np.zeros(end_point - start_point)
     for index, i in enumerate(range(start_point, end_point)):
-        a = np.loadtxt(define_name_phason(phasons_percentage, i, 'F', path) + '.dys')
+        a = np.loadtxt(define_name_phason(phasons_percentage, i, structure_type) + '.dys')
         gaps[index] = calculate_gap(a, range_to_look)
-    return np.average(gaps), np.std(gaps)
+    return np.average(gaps)/1e9, np.std(gaps)/1e9
 
 
 def calculate_gap(data, range_to_look):
+    range_to_look = [np.argmin(abs(data - i)) for i in range_to_look]
     return np.max(np.diff(data[range_to_look[0]:range_to_look[1]]))
+
 
 if __name__ == "__main__":
     """
     calculate fft from disturbed structure
     """
-    # save_structure(phasons, samples_count, 'F')
+    # for i in [5, 15, 25, 35, 45, 55, 65, 80, 100, 120, 140]:
+    #    save_structure(i, samples_count, 'F')
 
     """
     calculate modes
     """
-    # file = define_name_phason(phasons, sample_number, sequence_type)
-    # save_eig_vector('./f_coef_5*11')
+    # for i in [5, 15, 25, 35, 45, 55, 65, 80, 100, 120, 140]:
+    #     for j in range(10):
+    #         file = define_name_phason(phasons, sample_number, sequence_type)
+    #         file = define_name_phason(i, j, 'F')
+    #         save_eig_vector(file)
+    # save_eig_vector('./f_coef_10*14')
     """
     Plot modes
     """
-    # file = define_name_phason(phasons, 0, 'F')
-    # for i in range(0, 9):
-    #     plot_modes(i, file)
-    #     plt.show()
+    # file = define_name_phason(25, 3, 'F')
+    # for i in [300, 302, 288, 291]:
+    #      plot_modes(i, file)
+    #      plt.show()
 
     """
     calculate idos structure
     """
-    # input_parameters.set_new_value('./f_coef_5*11.txt', 'numerical_parameters', 'fft_file')
-    # input_parameters.set_new_value('F_5_11' + '.dys', 'numerical_parameters', 'output_file')
+    # input_parameters.set_new_value('./f_coef_10*14.txt', 'numerical_parameters', 'fft_file')
+    # input_parameters.set_new_value('Fib_14' + '.dys', 'numerical_parameters', 'output_file')
     # do_program_idos(input_parameters, green_stripes, gray_stripes, bloch_vec)
-    #
-    # for i in range(samples_count):
-    #     file = define_name_phason(phasons, i, 'F')
-    #     calculate_idos(file)
+    # #
+    # for phas in [5, 15, 25, 35, 45, 55, 65, 80, 100, 120, 140]:
+    #     for i in range(samples_count):
+    #         file = define_name_phason(phas, i, 'F')
+    #         calculate_idos(file)
     """
     plotting idos structure
     """
-    # plot_idos(phasons, 0, 99, 'F', './F_5_11.dys')
-    # plt.show()
-    # plt.savefig('idos.svg')
+    # for i in [5, 15, 25, 35, 45, 55, 65, 80, 100, 120, 140]:
+    #     plot_idos(i, 0, 100, 'F', './Fib_14.dys')
+    # # plt.show()
+    #     plt.savefig('idos_' + str(i) + '.svg')
+    #     plt.clf()
+    #     plt.close()
     """
-    calculate localization factor
+    plot localization factor
     """
-    # a = np.zeros(100)
-    # for i in range(100):
-    #     # name = define_name_phason(phasons, 0, 'F')
-    #     a[i] = calculate_localization(i, './f_coef_5*11', 1000)
-    # plt.plot(a, np.arange(100))
-    # print(a)
-    # plt.show()
+    # for i in range(10):
+    #    name = define_name_phason(140, i, 'F')
+    #    plot_localization(name, 7000, 'lambda, 140 phason ' + str(i) + ' series')
+
+    #plot_localization('./Fib_14', 5000, 'lambda, 0 phason')
+
     """
     calculate fmr
     """
-    a = np.zeros(100)
-    for i in range(100):
-        name = define_name_phason(phasons, 0, 'F')
-        a[i] = calculate_fmr(i, name, 1000)
-    plt.plot(np.arange(100), a)
-    print(a)
-    plt.show()
+    # for i in range(3, 4):
+    #     name = define_name_phason(25, i, 'F')
+    #     plot_fmr(name, 7000, '5 phasons, '+ str(i) +  ' series')
+    # plot_fmr('./Fib_14', 7000, '0 phasons')
+    """
+    calculate localization
+    """
+    # a = [5, 15, 25, 35, 45, 55, 65, 80, 100, 120, 140]
+    # b = [(13.8e9, 14.2e9), (15e9, 15.5e9), (16.05e9, 19.4e9), (20.1e9, 21.7e9)]
+    # plot_gap_width(a, b, 'localization')

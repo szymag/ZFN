@@ -122,25 +122,21 @@ class Profile1D:
         mode = self.eig_vectors[mode_number, 0:self.eig_vectors.shape[1] // 2]
         x = np.linspace(0, self.lattice_const, grid)
         tmp = np.zeros(grid, dtype=complex)
-        for ind in enumerate(x):
-            tmp[ind[0]] = self.inverse_discrete_fourier_transform(mode, ind[1])
+        tmp[:] = self.inverse_discrete_fourier_transform(mode, x)
         return x * 10 ** 9, tmp
 
     def elementary_cell_reconstruction(self, grid):
         coefficient = np.transpose(np.loadtxt('c_coef_100.txt').view(complex))
         x = np.linspace(-self.lattice_const, self.lattice_const, grid)
         tmp = np.zeros(grid)
-        for ind in enumerate(x):
-            tmp[ind[0]] = abs(self.inverse_discrete_fourier_transform(coefficient, ind[1]))
+        tmp[:] = abs(self.inverse_discrete_fourier_transform(coefficient, x))
         return x * 10 ** 9, tmp / (10 / 7) + 0.3
 
     def inverse_discrete_fourier_transform(self, data, vector_position):
-        reciprocal_vectors = np.array(
-            2 * np.pi * WektorySieciOdwrotnej(max(data.shape)).lista_wektorow1d('min') / self.lattice_const)
         reciprocal_vectors = np.array(2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow1d('min')
                                       / self.lattice_const)
-
-        return np.sum(data * np.exp(1j * reciprocal_vectors * vector_position))
+        vec = np.tile(vector_position, (len(reciprocal_vectors), 1)).T
+        return np.sum(data * np.exp(1j * reciprocal_vectors * vec), axis=1)
 
     def fmr_intensity(self, mode):
         return np.abs(np.trapz(mode)) ** 2 / np.trapz(np.abs(mode) ** 2)
