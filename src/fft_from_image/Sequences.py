@@ -72,10 +72,13 @@ class Random(ChainGeneration):
         self.num = num
         self.stripes1_count = stripes1_count
 
-    def sequence(self):
+    def sequence_generator(self):
         seq = np.zeros(self.num)
         seq[:self.stripes1_count] += 1
-        return np.repeat(np.random.permutation(seq), self.repeat)
+        return np.random.permutation(seq)
+
+    def sequence(self):
+        return np.repeat(self.sequence_generator(), self.repeat)
 
 
 class Heated(ChainGeneration):
@@ -105,13 +108,19 @@ class Phason:
         elif sequence_type == 'P':
             self.p = Periodic(1, num)
             self.seq = self.p.sequence()
+        elif sequence_type == 'R':
+            struct = Fibonacci(1, num).fib_number()
+            stripes1 = Fibonacci(1, num - 2).fib_number()
+            self.p = Random(1, struct, stripes1) # randomized Fibonacci
+            self.seq = self.p.sequence()
         else:
             raise ValueError('No more types supported at the moment')
         self.repeat = repeat
         self.len = len(self.seq)
         self.where_one = self.find_all_phasons(self.seq)
         self.phason_parameter = phason_parameter
-        if phason_parameter <= 1:
+        self.sequence_type  = sequence_type
+        if phason_parameter < 1:
             self.phasons_count = int(phason_parameter * len(self.where_one))
         else:
             self.phasons_count = phason_parameter
@@ -122,17 +131,22 @@ class Phason:
         return np.compress(np.where(b == 1, 0, 1) == 1, a)
 
     def sequence_shuffling(self, seq):
-        if self.phason_parameter <= 1:
-            phasons_pos = np.random.permutation(self.find_all_phasons(seq))[0:self.phasons_count]
-            seq = self.make_shufling(phasons_pos)
+        if self.sequence_type == "R":
+            phason_pos =  np.argwhere(self.p.sequence_generator() == 1)
+            print(phason_pos)
+            return self.seq, phason_pos
         else:
-            collect_phasons = np.zeros(self.phasons_count)
-            for i in range(self.phasons_count):
-                phasons_pos = np.random.permutation(self.find_all_phasons(seq))[0]
+            if self.phason_parameter < 1:
+                phasons_pos = np.random.permutation(self.find_all_phasons(seq))[0:self.phasons_count]
                 seq = self.make_shufling(phasons_pos)
-                collect_phasons[i] = phasons_pos
-            phasons_pos = collect_phasons
-        return seq, phasons_pos
+            else:
+                collect_phasons = np.zeros(self.phasons_count)
+                for i in range(self.phasons_count):
+                    phasons_pos = np.random.permutation(self.find_all_phasons(seq))[0]
+                    seq = self.make_shufling(phasons_pos)
+                    collect_phasons[i] = phasons_pos
+                phasons_pos = collect_phasons
+            return seq, phasons_pos
 
     def make_shufling(self, stripe_position):
         seq = self.seq

@@ -43,7 +43,7 @@ class LoadFFT1D:
         try:
             self.file = np.transpose(np.loadtxt(input_fft))
         except IOError:
-            print('Can not find such file. Generate fourier coefficient in FFT class in fft_from_file directory')
+            print('Can not find such file: ' + input_fft + ' \n Generate fourier coefficient in FFT class in fft_from_file directory')
             sys.exit()
         self.coeff = self.file[0] + self.file[1] * 1j
         self.vectors_count = len(self.file[0]) // 2
