@@ -38,7 +38,7 @@ class Fibonacci(ChainGeneration):
             n = int(n / 2)
         return j
 
-    def sequence(self):
+    def sequence_generator(self):
         seq1 = [1]
         seq2 = [0]
         seq = seq2 + seq1
@@ -46,7 +46,10 @@ class Fibonacci(ChainGeneration):
             seq = seq2 + seq1
             seq1 = seq2
             seq2 = seq
-        return np.repeat(seq, self.repeat)
+        return np.array(seq)
+
+    def sequence(self):
+        return np.repeat(self.sequence_generator(), self.repeat)
 
 
 class Periodic(ChainGeneration):
@@ -54,11 +57,26 @@ class Periodic(ChainGeneration):
         ChainGeneration.__init__(self, repeat)
         self.num = num
 
-    def sequence(self):
+    def sequence_generator(self):
         seq = np.zeros(self.num)
         seq[::2] += 1
-        #seq %= 2
-        return np.repeat(seq, self.repeat)
+        return seq
+
+    def sequence(self):
+        return np.repeat(self.sequence_generator(), self.repeat)
+
+
+class Random(ChainGeneration):
+    def __init__(self, repeat, num, stripes1_count):
+        ChainGeneration.__init__(self, repeat)
+        self.num = num
+        self.stripes1_count = stripes1_count
+
+    def sequence(self):
+        seq = np.zeros(self.num)
+        seq[:self.stripes1_count] += 1
+        return np.repeat(np.random.permutation(seq), self.repeat)
+
 
 class Heated(ChainGeneration):
     def __init__(self, repeat):
@@ -66,6 +84,7 @@ class Heated(ChainGeneration):
 
     def cos_sequence(self):
         return (np.cos(np.linspace(0, 2 * np.pi, self.repeat)) + 1) / 2
+
 
 class Custom(ChainGeneration):
     def __init__(self, file_name, repeat=1):
@@ -76,3 +95,54 @@ class Custom(ChainGeneration):
 
     def sequence(self):
         return self.data
+
+
+class Phason:
+    def __init__(self, sequence_type, repeat, num, phason_parameter):
+        if sequence_type == 'F':
+            self.f = Fibonacci(1, num)
+            self.seq = self.f.sequence()
+        elif sequence_type == 'P':
+            self.p = Periodic(1, num)
+            self.seq = self.p.sequence()
+        else:
+            raise ValueError('No more types supported at the moment')
+        self.repeat = repeat
+        self.len = len(self.seq)
+        self.where_one = self.find_all_phasons(self.seq)
+        self.phason_parameter = phason_parameter
+        if phason_parameter <= 1:
+            self.phasons_count = int(phason_parameter * len(self.where_one))
+        else:
+            self.phasons_count = phason_parameter
+
+    def find_all_phasons(self, seq):
+        a = np.argwhere(seq == 1).T[0]
+        b = np.concatenate((np.diff(a), np.array([(self.len - a[-1] + a[0])])))
+        return np.compress(np.where(b == 1, 0, 1) == 1, a)
+
+    def sequence_shuffling(self, seq):
+        if self.phason_parameter <= 1:
+            phasons_pos = np.random.permutation(self.find_all_phasons(seq))[0:self.phasons_count]
+            seq = self.make_shufling(phasons_pos)
+        else:
+            collect_phasons = np.zeros(self.phasons_count)
+            for i in range(self.phasons_count):
+                phasons_pos = np.random.permutation(self.find_all_phasons(seq))[0]
+                seq = self.make_shufling(phasons_pos)
+                collect_phasons[i] = phasons_pos
+            phasons_pos = collect_phasons
+        return seq, phasons_pos
+
+    def make_shufling(self, stripe_position):
+        seq = self.seq
+        seq[(stripe_position + 1) % len(seq)] = 1
+        seq[stripe_position] = 0
+        return seq
+
+    def sequence(self, seq):
+        return np.repeat(seq, self.repeat)
+
+
+if __name__ == "__main__":
+    pass

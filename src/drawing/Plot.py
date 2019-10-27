@@ -3,6 +3,7 @@ import numpy as np
 from math import sqrt
 from matplotlib.colors import LogNorm
 from matplotlib.ticker import MultipleLocator
+from matplotlib.patches import Rectangle
 
 
 class Plot:
@@ -116,8 +117,8 @@ class Plot:
                     Z.reshape(sqrt(len(Z)), sqrt(len(Z))))
         plt.show()
 
-    def idos(self):
-        pass
+    def idos(self, axis, input_data, color, alpha):
+        axis.step(input_data / 1e9, np.arange(len(input_data)), color=color, alpha=alpha)
 
     def fmr_freq_function_of_magnetic_field(self, begin_of_name_file,
                                             start_number, end_number, scaling_factor_x_axis=1):
@@ -160,6 +161,24 @@ class Plot:
         for i in range(1, self.number_of_disp_branch):
             label_in_legend.append('mode ' + str(i))
         return axis.legend(label_in_legend)
+
+    def draw_structure(self, axis, sequence, phasons, stripe_width):
+        seq = sequence
+        for i in phasons:
+            seq[(i + 1) % len(seq)] = 2
+            seq[i] = -2
+
+        stripe = lambda index, color, alpha: axis.add_patch(Rectangle((index * stripe_width, 0), stripe_width, 1,
+                        color=color, alpha=alpha, linewidth=0, edgecolor=None))
+        for index, el in enumerate(seq):
+            if el == 0:
+                stripe(index, 'green', 0.5)
+            elif el == 1:
+                stripe(index, 'gray', 0.5)
+            elif el < 0:
+                stripe(index, 'red', 0.4)
+            elif el > 1:
+                stripe(index, 'red', 0.8)
 
     def show_or_save_plot(self):
         if self.name_of_file is None:

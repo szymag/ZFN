@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 from src.fft_from_image.FFT import FFT
 from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValueProblem1D
 from src.io.DataReader import ParsingData
-from src.modes.MagnetizationProfile import Profile2D
+from src.modes.MagnetizationProfile import Profile2D, Profile1D
 
 
 from src.drawing.Plot import Plot
 
-input_parameters = ParsingData('./tst/Parameter_for_TheImpact.yaml')
+input_parameters = ParsingData('./src/interface/Rychly.yaml')
 direction = 'x'
 mode_number = 2
 x_lim = None
@@ -39,5 +39,11 @@ def do_program():
         return 0
 
 
+def do_program_1D(input_param, mat_1, mat_2, bloch_vec):
+    eig_vec = EigenValueProblem1D(input_param, mat_1, mat_2).calculate_eigen_vectors(bloch_vector=bloch_vec)
+
+    np.savetxt(input_param.output_file('vec'), eig_vec.view(float))
+
+
 if __name__ == "__main__":
-    do_program()
+    pass

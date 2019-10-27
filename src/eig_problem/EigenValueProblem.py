@@ -37,7 +37,7 @@ class EigenValueProblem:
         gamma, mu0H0 = self.parameters.physical_constant()
         eigen_vector = self.solve_eigen_problem(bloch_vector, param=False, bloch_vector_perp=bloch_vector_perp)
         eigen_value = [i.imag * gamma * mu0H0 / 2.0 / np.pi for i in eigen_vector if i.imag > 0]
-        return np.array(list(sorted(eigen_value)[:50]))  # TODO: create smarter choice
+        return np.array(list(sorted(eigen_value)[:400]))  # TODO: create smarter choice
 
     def calculate_eigen_vectors(self, bloch_vector=np.array([1, 1])):
         eigen_value, eigen_vector = self.solve_eigen_problem(bloch_vector, param=True)
@@ -46,7 +46,6 @@ class EigenValueProblem:
         eigen_vector = eigen_vector[eigen_value_index[len(eigen_value) // 2:]]
         return eigen_vector
 
-    @do_cprofile
     def calculate_eigen_vectors_and_frequency(self, bloch_vector=np.array([1, 1])):
         gamma, mu0H0 = self.parameters.physical_constant()
 

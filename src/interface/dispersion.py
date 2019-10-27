@@ -4,12 +4,12 @@ from src.eig_problem.EigenValueProblem import EigenValueProblem2D, EigenValuePro
 from src.io.DataReader import ParsingData
 from src.drawing.Plot import Plot
 
-input_parameters = ParsingData('./tst/Parameter_for_TheImpact.yaml')
+input_parameters = ParsingData('./src/interface/Periodic.yaml')
 direction = 'x'
 number_of_dispersion_branch = 5
 x_lim = None
 y_lim = None
-show_plot = True
+show_plot = False
 
 
 def do_program():  # TODO: file type should represent containing data
@@ -60,7 +60,17 @@ def do_program_map():
         return 0
 
 
+def do_program_idos(input_param, mat_1, mat_2, bloch_vec):
+    eig_freq = EigenValueProblem1D(input_param, mat_1, mat_2).calculate_eigen_frequency(bloch_vector=bloch_vec)
+
+    np.savetxt(input_param.output_file('dys'), eig_freq)
+    if show_plot:
+        return Plot(number_of_dispersion_branch, x_lim, y_lim).idos(eig_freq)
+    else:
+        return 0
+
+
 if __name__ == "__main__":
     # do_program_oblique()
-    do_program_map()
-    #do_program_1D()
+    do_program_idos()
+    # do_program_1D()

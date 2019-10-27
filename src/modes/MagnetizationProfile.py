@@ -6,14 +6,13 @@ from src.eig_problem.WektorySieciOdwrotnej import WektorySieciOdwrotnej
 import matplotlib.gridspec as gridspec
 import matplotlib.image as mpimg
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-
+from src.eig_problem.ReciprocalVector import ReciprocalVector
+from multiprocessing import Pool
 from matplotlib import rcParams
 
 rcParams.update({'figure.autolayout': True})
+plt.rc('text', usetex=False)
 
-plt.rc('text', usetex=True)
-rcParams['font.family'] = 'sans-serif'
-rcParams['font.sans-serif'] = ['Helvetica']
 
 class MidpointNormalize(colors.Normalize):
     def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
@@ -23,12 +22,6 @@ class MidpointNormalize(colors.Normalize):
     def __call__(self, value, clip=None):
         x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
         return np.ma.masked_array(np.interp(value, x, y))
-
-from multiprocessing import Pool
-
-from src.eig_problem.ReciprocalVector import ReciprocalVector
-from src.io.DataReader import ParsingData
-from src.eig_problem.LoadFFT import LoadFFT2D
 
 
 class Profile2D:
@@ -74,9 +67,9 @@ class Profile2D:
 
 
 class Profile1D:
-    def __init__(self, mode_number, load_data, name_of_file, **kwargs):
+    def __init__(self, mode_number, load_data, name_of_file, input_parameter, **kwargs):
         self.eig_vectors = np.loadtxt(load_data).view(complex)
-        self.lattice_const = InputParameter.a
+        self.lattice_const = input_parameter.lattice_const()[0]
         self.mode_number = mode_number - 1
         self.name_of_file = name_of_file
 
@@ -86,8 +79,10 @@ class Profile1D:
             self.field = kwargs['field']
 
     def generate_plot(self, ax, color_index, dummy=False):
+
         colors = ['C0', 'C3', 'C2']
-        x, magnetization = self.spatial_distribution_dynamic_magnetization(500, self.mode_number)
+        x, magnetization = self.spatial_distribution_dynamic_magnetization(5000, self.mode_number)
+        magnetization /= np.max(abs(magnetization))
         phase = np.abs(np.arctan2(magnetization.imag, magnetization.real))
         parameter = np.array([0 if i < 0.5 * np.pi else 1 for i in phase])
         if dummy:
@@ -100,10 +95,10 @@ class Profile1D:
                 x, magnetization2, colors[color_index] + '--')
 
         #ax.set_ylim(-0.05, 3)
-        plt.setp(ax, xticks=[-1100, 0, 1100], xticklabels=[r'$-\Lambda$', 0, r'$\Lambda$'],
-                 yticks=[0])
-        ax.set_xlabel('Position', fontsize=12)
-        ax.set_ylabel(r'$\left|\textup{m}_{\textup{z}}\right|$', fontsize=12)
+        #plt.setp(ax, xticks=[-1100, 0, 1100], xticklabels=[r'$-\Lambda$', 0, r'$\Lambda$'],
+        #         yticks=[0])
+        ax.set_xlabel('x ($\mu$m)', fontsize='xx-large')
+        ax.set_ylabel(r'|m|',  fontsize='xx-large')
         # self.output_plot()
 
     def output_plot(self):
@@ -118,34 +113,30 @@ class Profile1D:
             return 'wrong argument was put'
 
     def save_to_file(self):
-        to_file = self.spatial_distribution_dynamic_magnetization(500, self.mode_number)[1].real, \
-                  self.spatial_distribution_dynamic_magnetization(500, self.mode_number)[1].imag
+        to_file = self.spatial_distribution_dynamic_magnetization(15500, self.mode_number)[1].real, \
+                  self.spatial_distribution_dynamic_magnetization(15500, self.mode_number)[1].imag
 
         np.savetxt(self.name_of_file + '.txt', np.transpose(to_file))
 
     def spatial_distribution_dynamic_magnetization(self, grid, mode_number):
         mode = self.eig_vectors[mode_number, 0:self.eig_vectors.shape[1] // 2]
-        x = np.linspace(-self.lattice_const, self.lattice_const, grid)
+        x = np.linspace(0, self.lattice_const, grid)
         tmp = np.zeros(grid, dtype=complex)
-        for ind in enumerate(x):
-            tmp[ind[0]] = self.inverse_discrete_fourier_transform(mode, ind[1])
+        tmp[:] = self.inverse_discrete_fourier_transform(mode, x)
         return x * 10 ** 9, tmp
 
     def elementary_cell_reconstruction(self, grid):
         coefficient = np.transpose(np.loadtxt('c_coef_100.txt').view(complex))
         x = np.linspace(-self.lattice_const, self.lattice_const, grid)
         tmp = np.zeros(grid)
-        for ind in enumerate(x):
-            tmp[ind[0]] = abs(self.inverse_discrete_fourier_transform(coefficient, ind[1]))
+        tmp[:] = abs(self.inverse_discrete_fourier_transform(coefficient, x))
         return x * 10 ** 9, tmp / (10 / 7) + 0.3
 
     def inverse_discrete_fourier_transform(self, data, vector_position):
-        reciprocal_vectors = np.array(
-            2 * np.pi * WektorySieciOdwrotnej(max(data.shape)).lista_wektorow1d('min') / self.lattice_const)
         reciprocal_vectors = np.array(2 * np.pi * ReciprocalVector(max(data.shape)).lista_wektorow1d('min')
                                       / self.lattice_const)
-
-        return np.sum(data * np.exp(1j * reciprocal_vectors * vector_position))
+        vec = np.tile(vector_position, (len(reciprocal_vectors), 1)).T
+        return np.sum(data * np.exp(1j * reciprocal_vectors * vec), axis=1)
 
     def fmr_intensity(self, mode):
         return np.abs(np.trapz(mode)) ** 2 / np.trapz(np.abs(mode) ** 2)
@@ -400,4 +391,3 @@ if __name__ == "__main__":
     # fmr(40, 0, 91, 1)
     # make_final_plot()
     # cross_section(40)
-
