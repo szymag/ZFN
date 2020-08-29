@@ -72,5 +72,5 @@ def do_program_idos(input_param, mat_1, mat_2, bloch_vec):
 
 if __name__ == "__main__":
     # do_program_oblique()
-    do_program_idos()
+    do_program_idos(input_parameters, 'Co', 'Py', 1e3)
     # do_program_1D()

@@ -79,10 +79,14 @@ class Profile1D:
             self.field = kwargs['field']
 
     def generate_plot(self, ax, color_index, dummy=False):
-
+        # plt.style.use('seaborn')
+        # plt.rc('text', usetex=False)
+        # plt.rc('xtick', labelsize='small')
+        # plt.rc('ytick', labelsize='small')
         colors = ['C0', 'C3', 'C2']
         x, magnetization = self.spatial_distribution_dynamic_magnetization(5000, self.mode_number)
         magnetization /= np.max(abs(magnetization))
+
         phase = np.abs(np.arctan2(magnetization.imag, magnetization.real))
         parameter = np.array([0 if i < 0.5 * np.pi else 1 for i in phase])
         if dummy:
@@ -91,14 +95,15 @@ class Profile1D:
         else:
             magnetization1 = np.ma.masked_where(parameter != 0, abs(magnetization) ** 2)
             magnetization2 = np.ma.masked_where(parameter == 0, abs(magnetization) ** 2)
-        ax.plot(x, magnetization1, colors[color_index] + '-',
-                x, magnetization2, colors[color_index] + '--')
+        ax.plot(x, magnetization1, 'k' + '-',
+                x, magnetization2, 'k' + '--')
 
         #ax.set_ylim(-0.05, 3)
         #plt.setp(ax, xticks=[-1100, 0, 1100], xticklabels=[r'$-\Lambda$', 0, r'$\Lambda$'],
         #         yticks=[0])
-        ax.set_xlabel('x ($\mu$m)', fontsize='xx-large')
-        ax.set_ylabel(r'|m|',  fontsize='xx-large')
+        ax.set_xlabel('x ($\mu$m)')
+        ax.set_ylabel(r'|m|')
+
         # self.output_plot()
 
     def output_plot(self):
@@ -123,7 +128,7 @@ class Profile1D:
         x = np.linspace(0, self.lattice_const, grid)
         tmp = np.zeros(grid, dtype=complex)
         tmp[:] = self.inverse_discrete_fourier_transform(mode, x)
-        return x * 10 ** 9, tmp
+        return x * 10 ** 6, tmp
 
     def elementary_cell_reconstruction(self, grid):
         coefficient = np.transpose(np.loadtxt('c_coef_100.txt').view(complex))
