@@ -49,14 +49,13 @@ class ParsingData:
     def set_new_value(self, value, argument_1, argument_2=None):
         if argument_2 is None:
             if not isinstance(self.input_parameters[argument_1], type(value)):
-                warnings.warn('Old values has ' + str(type(self.input_parameters[argument_1]))
-                          + ' while new one has ' + str(type(value)))
+                warnings.warn('Old values has ' + type(self.input_parameters[argument_1])
+                          + ' while new one has ' + type(value))
             self.input_parameters[argument_1] = value
         else:
 
             if not isinstance(self.input_parameters[argument_1][argument_2], type(value)):
-                warnings.warn('Old values has ' + str(type(self.input_parameters[argument_1][argument_2]))
-                          + ' while new one has ' + str(type(value)))
+                warnings.warn('Old values has ' + str(type(self.input_parameters[argument_1][argument_2]))+ ' while new one has ' + str(type(value)))
             self.input_parameters[argument_1][argument_2] = value
 
     def bloch_vector(self):

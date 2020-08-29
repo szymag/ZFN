@@ -16,7 +16,7 @@ material_parameters:
         l: 1.7e-17
 
 numerical_parameters:
-    fft_file: "./p_coef_10*150.txt"
+    fft_file: None
     rec_vector_x: None
     rec_vector_y: None
     output_file: None
@@ -28,14 +28,14 @@ physical_parameters:
     mu0: 1.2566370614359173e-06
 
 system_dimensions:
-    d: 30e-9
-    a: 500e-9
+    d: 20e-9
+    a: 100e-9
     b: None
     x: 0
     angle: 90
 
 q_vector:
-    start: 0.01
-    end: 0.99
-    dispersion_count: 20
+    start: 0.0001
+    end: 0.499
+    dispersion_count: 1
     parallel_component: 0
