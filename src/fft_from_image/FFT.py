@@ -88,6 +88,10 @@ class FFT:
         tab = np.fft.fftshift(np.fft.fft(tablica)) / len(tablica)
         return np.stack((tab.real, tab.imag), axis=-1)
 
+    @staticmethod
+    def inverse_fft1d(tablica):
+        return np.fft.ifft(tablica)
+
     def wywolaj_fft1d(self, typ_struktury, repeat, len_num):
         """
         Metoda obliczająca wspoółczynniki Fouriera dla struktur jednowymiarowych.

@@ -41,8 +41,7 @@ def do_program():
 
 def do_program_1D(input_param, mat_1, mat_2, bloch_vec):
     eig_vec = EigenValueProblem1D(input_param, mat_1, mat_2).calculate_eigen_vectors(bloch_vector=bloch_vec)
-
-    np.savetxt(input_param.output_file('vec'), eig_vec.view(float))
+    np.savetxt(input_param.output_file('vectors'), eig_vec.view(float))
 
 
 if __name__ == "__main__":

@@ -21,10 +21,10 @@ class EigenMatrix1D:
 
         self.material_A = self.parameters.material_constant(material_A)
         self.material_B = self.parameters.material_constant(material_B)
-
         self.gamma, self.mu0H0 = self.parameters.physical_constant()
         self.H0 = self.mu0H0 / self.parameters.mu0()
         self.tmp = LoadFFT1D(self.parameters.fft_data())
+
         self.vectors_count = self.tmp.vectors_count
         self.magnetization_sat = self.tmp.fourier_coefficient(self.material_A['Mo'], self.material_B['Mo'])
         self.exchange_len = self.tmp.fourier_coefficient(self.material_A['l'], self.material_B['l'])
@@ -48,10 +48,11 @@ class EigenMatrix1D:
         dyn_in_plane = np.array(pool.map(self.dynamic_demagnetizing_field_in_plane, w1))
         dyn_out_plane = np.array(pool.map(self.dynamic_demagnetizing_field_out_of_plane, w1))
         static =  np.array(pool.map(self.static_demagnetizing_field, w1))
-        matrix[indeks:, 0:indeks] += -ex - dyn_in_plane * np.sin(radians(self.parameters.angle())) ** 2 + static * np.cos(radians(self.parameters.angle())) ** 2  # yx
-        matrix[0:indeks, indeks:] += ex + dyn_out_plane - static * np.cos(radians(self.parameters.angle()))**2  # xy
+        # matrix[indeks:, 0:indeks] += -ex - dyn_in_plane * np.sin(radians(self.parameters.angle())) ** 2 + static * np.cos(radians(self.parameters.angle())) ** 2  # yx
+        # matrix[0:indeks, indeks:] += ex + dyn_out_plane - static * np.cos(radians(self.parameters.angle()))**2  # xy
+        matrix[indeks:, 0:indeks] += -ex
+        matrix[0:indeks, indeks:] += ex
         pool.close()
-
         return matrix
 
     def exp_function(self, vec_1, vec_2):
